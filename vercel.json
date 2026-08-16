@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/login",
+      "destination": "https://stocklink-demo-admin.vercel.app/"
+    },
+    {
+      "source": "/login/:path*",
+      "destination": "https://stocklink-demo-admin.vercel.app/:path*"
+    }
+  ]
+}
