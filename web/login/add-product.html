@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+    (function () {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Phone Store | Product View</title>
+
+    <link rel="stylesheet" href="shared.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
+    />
+
+    <link rel="stylesheet" href="add-product.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="admin-container">
+      <header>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <aside>
+       
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+           <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
+  <span class="theme-switch-track">
+    <span class="theme-switch-thumb">
+      <i class="fa-solid fa-sun sun-icon"></i>
+      <i class="fa-solid fa-moon moon-icon"></i>
+    </span>
+  </span>
+</button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+       
+      </aside>
+
+      <main>
+        <!--
+          Skeleton placeholder shown only while loadProduct() is in flight
+          in edit mode (see product-form.js: showFormSkeleton /
+          hideFormSkeleton). Populated at runtime with shimmer rows via
+          Skeleton.listItems(), so no static markup is needed here -
+          product-form.js fills and clears it. Hidden by default so
+          "Add Product" mode never sees it.
+        -->
+        <div
+          id="product-form-skeleton"
+          class="form-skeleton"
+          style="display: none"
+        ></div>
+
+        <!--
+          Everything below is the real form. product-form.js hides this
+          whole block (display:none) while product-form-skeleton is
+          showing, and reveals it again once fillProductInformation()
+          has run (or the load failed) - same content as before, just
+          wrapped so it can be toggled as one unit.
+        -->
+        <div id="product-form-content">
+          
+          <section class="form-card">
+            <div class="form-card-header">
+              <h2>Product Information</h2>
+
+              <p>Enter the basic details of the product</p>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="product-name">
+                  Product Name
+                  <span class="required">*</span>
+                </label>
+
+                <div class="brand-search-wrapper">
+                  <input
+                    type="text"
+                    id="product-name"
+                    class="brand-search-input"
+                    placeholder="e.g. iPhone 17 Pro Max"
+                    autocomplete="off"
+                  />
+
+                  <div
+                    class="brand-search-dropdown"
+                    id="product-name-dropdown"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="brand-search-input">
+                  Brand
+                  <span class="required">*</span>
+                </label>
+
+                <div class="brand-picker" id="brand-picker">
+                  <div class="brand-search-wrapper">
+                    <input
+                      type="text"
+                      id="brand-search-input"
+                      class="brand-search-input"
+                      placeholder="Search brand..."
+                      autocomplete="off"
+                    />
+
+                    <div
+                      class="brand-search-dropdown"
+                      id="brand-search-dropdown"
+                    ></div>
+                  </div>
+
+                  <!--
+                  Hidden input holding the actual selected brand value.
+                  add-products.js reads/writes this via
+                  document.getElementById("brand") (cached as
+                  `brandOption`) everywhere it needs the current brand -
+                  save/validate/reset/edit-mode load all go through it.
+                  The visible text field above is just the search/display
+                  UI; this is what's actually submitted.
+                -->
+                  <input type="hidden" id="brand" value="" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="category">
+                  Category
+                  <span class="required">*</span>
+                </label>
+
+                <select id="category">
+                  <option value="">Select category</option>
+                  <option value="Phone">Phone</option>
+
+                  <option value="Tablet">Tablet</option>
+
+                  <option value="Watch">Watch</option>
+
+                  <option value="Accessory">Accessory</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="display: none">
+                <label for="product-sku"> SKU </label>
+
+                <input
+                  type="text"
+                  id="product-sku"
+                  placeholder="APL-IP16PM-256-BLK"
+                />
+              </div>
+              <div class="form-group">
+                <label for="product-warranty"> Warranty </label>
+
+                <input
+                  type="text"
+                  id="product-warranty"
+                  placeholder="e.g. 1 year , 30 Days , No Warranty"
+                />
+              </div>
+              <label class="checkbox">
+                <input type="checkbox" id="featured-product" />
+                Show on Hot Deals
+              </label>
+            </div>
+          </section>
+          <section class="form-card">
+            <div class="input-group">
+              <h3>Product Descreption</h3>
+
+              <textarea
+                id="product-description"
+                rows="8"
+                maxlength="300"
+                placeholder="Describe this product..."
+              ></textarea>
+
+              <div class="description-footer">
+                <span id="description-count">0 / 300</span>
+              </div>
+            </div>
+          </section>
+          <section class="form-card">
+            <div id="specifications-container" class="specifications-grid">
+              <!-- Generated by JavaScript -->
+            </div>
+
+            <div class="custom-specs-section">
+              <h3>Custom Specifications</h3>
+
+              <div id="custom-specs-container"></div>
+
+              <button type="button" id="add-spec-btn">
+                + Add Specification
+              </button>
+            </div>
+          </section>
+
+          <section class="form-card">
+            <h3>Product Variants</h3>
+
+            <div class="variant-option" id="storage-option">
+              <p id="storage-icon">
+                <span class="storage-icon-inline">
+                  <span class="label"></span>
+                  <span class="ports"></span>
+                </span>
+              </p>
+              <h4>Available Storage</h4>
+
+              <div class="option-boxes" id="storage-options">
+                <div class="option-box">64GB</div>
+
+                <div class="option-box">128GB</div>
+
+                <div class="option-box">256GB</div>
+
+                <div class="option-box">512GB</div>
+
+                <div class="option-box">1TB</div>
+
+                <div class="option-box">2TB</div>
+              </div>
+            </div>
+
+            <div class="variant-option" id="ram-option">
+              <p id="ram-icon">
+                <span class="ram-icon-inline">
+                  <span class="chip"></span>
+                  <span class="chip"></span>
+                  <span class="chip"></span>
+                  <span class="pins"></span>
+                </span>
+              </p>
+              <h4>Available Memory</h4>
+
+              <div class="option-boxes" id="ram-options">
+                <div class="option-box">3GB</div>
+                <div class="option-box">4GB</div>
+                <div class="option-box">6GB</div>
+                <div class="option-box">8GB</div>
+                <div class="option-box">10GB</div>
+                <div class="option-box">12GB</div>
+                <div class="option-box">16GB</div>
+              </div>
+            </div>
+            <div class="variant-option" id="size-option">
+              <h4>Available Size</h4>
+
+              <div class="color-picker" id="size-picker">
+                <div class="color-search-wrapper">
+                  <input
+                    type="text"
+                    id="size-search-input"
+                    class="color-search-input"
+                    placeholder="Search or type a size..."
+                    autocomplete="off"
+                  />
+                  <div
+                    class="color-search-dropdown"
+                    id="size-search-dropdown"
+                  ></div>
+                </div>
+
+                <div class="selected-color-chips" id="size-options"></div>
+              </div>
+            </div>
+            <div class="variant-option">
+              <div class="color-title section-title">
+                <div class="color-variant-dot"></div>
+                <h4>Available Colors</h4>
+              </div>
+
+              <!--
+              BUG FIX / FEATURE: this used to be 3 hardcoded option-boxes
+              (Black, White, Blue) - any color not in that fixed list simply
+              couldn't be added as a variant option. Replaced with a
+              searchable picker: typing filters a built-in color list (see
+              COLOR_LIST in add-products.js), clicking a result - or a
+              typed name with no match - adds it as a removable chip below.
+              #color-options now holds JS-rendered chips instead of static
+              markup; the color image upload boxes underneath (Product
+              Photos section) already key off selectedOptions.colors, so
+              they pick up new/removed colors automatically with no
+              further changes needed.
+            -->
+              <div class="color-picker" id="color-picker">
+                <div class="color-search-wrapper">
+                  <input
+                    type="text"
+                    id="color-search-input"
+                    class="color-search-input"
+                    placeholder="Search or type a color name..."
+                    autocomplete="off"
+                  />
+
+                  <div
+                    class="color-search-dropdown"
+                    id="color-search-dropdown"
+                  ></div>
+                </div>
+
+                <div class="selected-color-chips" id="color-options"></div>
+              </div>
+            </div>
+
+            <div class="variant-option">
+              <div class="section-title">
+                <span class="condition-title-icon" aria-hidden="true">
+                  <span class="condition-title-dot new"></span>
+                  <span class="condition-title-dot used"></span>
+                  <span class="condition-title-dot open-box"></span>
+                  <span class="condition-title-dot refurbished"></span>
+                </span>
+                <h4>Available Condition</h4>
+              </div>
+
+              <div class="option-boxes" id="condition-options">
+                <div class="option-box">
+                  <span class="condition-dot new"></span>
+
+                  New
+                </div>
+
+                <div class="option-box">
+                  <span class="condition-dot open-box"></span>
+                  Open box
+                </div>
+                <div class="option-box">
+                  <span class="condition-dot used"></span>
+                  Used
+                </div>
+
+                <div class="option-box">
+                  <span class="condition-dot refurbished"></span>
+                  Refurbished
+                </div>
+              </div>
+            </div>
+
+            <div id="variants-table-container"></div>
+          </section>
+          <section class="product-images-section">
+            <h3>Product Photos</h3>
+
+            <div id="color-images-container"></div>
+            <div class="product-actions">
+              <button type="button" id="reset-product-btn" class="reset-btn">
+                Reset
+              </button>
+
+              <button type="button" id="save-product-btn" class="save-btn">
+                Save Product
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div id="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+
+        <div class="logout-actions">
+          <button class="cancel-logout">Cancel</button>
+
+          <button class="confirm-logout">Logout</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <script src="dom.js"></script>
+    <script src="csv-load/specsLoader.js"></script>
+    <script src="csv-load/specsLookUp.js"></script>
+    <script src="csv-load/specsAutoFill.js"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="skeleton.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="modelNameSearch.js"></script>
+
+    <!--
+      add-products.js has been split by functionality. Order matters here:
+      each file is a plain (non-module) script sharing the global scope,
+      so state.js/utils.js must load first, and every feature file must
+      load before product-form.js, whose top-level code calls into all of
+      them to bootstrap the page.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    <script src="state.js"></script>
+    <script src="utils.js"></script>
+    <script src="brand-picker.js"></script>
+    <script src="color-picker.js"></script>
+    <script src="size-picker.js"></script>
+    <script src="upload-progress.js"></script>
+    <script src="color-images.js"></script>
+    <script src="variants.js"></script>
+    <script src="specifications.js"></script>
+    <script src="product-form.js"></script>
+  </body>
+</html>

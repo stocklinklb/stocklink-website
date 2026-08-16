@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+    (function () {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Store | Admin</title>
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="admin-container">
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <header>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
+  <span class="theme-switch-track">
+    <span class="theme-switch-thumb">
+      <i class="fa-solid fa-sun sun-icon"></i>
+      <i class="fa-solid fa-moon moon-icon"></i>
+    </span>
+  </span>
+</button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main>
+        <h1 class="home-title">Home</h1>
+
+        <div class="quick-stock quick">
+          <h2>Quick Stock Overview:</h2>
+          <div class="cards">
+            <div class="card" data-tone="all">
+              <div class="card-icon"><i class="fa-solid fa-box-open"></i></div>
+              <div>
+                <span id="allProducts">0</span>
+                <span>All Products</span>
+              </div>
+            </div>
+            <div class="card" data-tone="in">
+              <div class="card-icon"><i class="fa-solid fa-check"></i></div>
+
+              <div>
+                <span id="inStock">0</span>
+                <span>In Stock</span>
+              </div>
+            </div>
+            <div class="card" data-tone="low">
+              <div class="card-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+              </div>
+              <div>
+                <span id="lowStock">0</span>
+                <span>Low Stock</span>
+              </div>
+            </div>
+            <div class="card" data-tone="out">
+              <div class="card-icon"><i class="fa-solid fa-xmark"></i></div>
+              <div>
+                <span id="outOfStock">0</span>
+                <span>Out Of Stock</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions quick">
+          <h2>Quick Actions:</h2>
+          <div class="cards">
+            <div class="quick-card" data-href="add-product.html">
+              <i class="fa-solid fa-circle-plus"></i> <span> Add Product</span>
+            </div>
+
+            <div class="quick-card" data-href="products.html">
+              <i class="fa-solid fa-boxes-stacked"></i>
+              <span>Manage Products</span>
+            </div>
+            <div
+              class="quick-card"
+              data-href="https://stoclink-demo-front-end.vercel.app/index.html"
+            >
+              <i
+                class="fa-solid fa-arrow-right"
+                style="transform: rotate(-45deg)"
+              ></i
+              ><span>View Store</span>
+            </div>
+            <div
+              class="quick-card coming-soon"
+              data-href="excel-import.html"
+              id="excelImportBtn"
+            >
+              <span>⇪ Excel Import</span>
+            </div>
+          </div>
+          <input
+            type="file"
+            id="excelImportInput"
+            accept=".xlsx,.xls,.csv"
+            hidden
+          />
+        </div>
+        <div class="coming-overlay" style="display: none">
+          <span class="glow-dot"></span>
+          <span>Coming Soon</span>
+        </div>
+        <div class="recent-activities">
+          <h2
+            class="quick-heading"
+            style="font-size: 16px; font-weight: 700; margin-bottom: 14px"
+          >
+            Quick Stats:
+          </h2>
+          <div class="dashboard-bottom">
+            <section class="activity-box">
+              <h2>Recent Activity</h2>
+              <div id="activityList">
+                <div class="activity-item">
+                  <div class="activity-icon">+</div>
+                  <div>
+                    <p><b id="user-name">John</b> added iPhone 16 Pro Max</p>
+                    <span>5 minutes ago</span>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-icon">↻</div>
+                  <div>
+                    <p><b></b> updated Galaxy S25 stock</p>
+                    <span>20 minutes ago</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <a id="view-all-activity" href="analytics.html"
+                  >View all activity</a
+                >
+              </div>
+            </section>
+
+            <section class="low-stock-box">
+              <div class="low-stock-box-title">
+                <h2>Low Stock</h2>
+                <button id="view-low-stock">View All Products ↗</button>
+              </div>
+
+              <div id="lowStockList">
+                <div class="stock-item">
+                  <p>iPhone 15 Pro</p>
+                  <span>3 left</span>
+                </div>
+                <div class="stock-item">
+                  <p>AirPods Pro 2</p>
+                  <span>2 left</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="inventory-overview">
+            <h2>Inventory Overview</h2>
+            <div class="inventory-cards" id="inventoryCards">
+              <div class="inventory-card">
+                <div class="inventory-icon">
+                  <i class="fa-solid fa-mobile"></i>
+                </div>
+                <h3>Phones</h3>
+                <strong>120</strong>
+                <p>60% of inventory</p>
+              </div>
+              <div class="inventory-card">
+                <div class="inventory-icon">
+                  <i class="fa-solid fa-tablet"></i>
+                </div>
+                <h3>Tablets</h3>
+                <strong>30</strong>
+                <p>15% of inventory</p>
+              </div>
+              <div class="inventory-card">
+                <div class="inventory-icon">
+                  <i class="fa-solid fa-watch"></i>
+                </div>
+                <h3>Wearables</h3>
+                <strong>25</strong>
+                <p>12% of inventory</p>
+              </div>
+              <div class="inventory-card">
+                <div class="inventory-icon">
+                  <i class="fa-solid fa-headset"></i>
+                </div>
+                <h3>Accessories</h3>
+                <strong>25</strong>
+                <p>13% of inventory</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+
+        <div class="logout-actions">
+          <button class="cancel-logout">Cancel</button>
+
+          <button class="confirm-logout">Logout</button>
+        </div>
+      </div>
+    </div>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="skeleton.js"></script>
+    <script>
+      // Runs before admin.js, so these are the *first* paint the user
+      // sees. Each call is self-clearing once admin.js writes real
+      // data in - see skeleton.js for how, and the comment block at
+      // the end of this file for the two spots admin.js should call
+      // Skeleton.clear() explicitly (nothing else needs edited there).
+      Skeleton.autoReveal("#greeting");
+      ["#allProducts", "#inStock", "#lowStock", "#outOfStock"].forEach((sel) =>
+        Skeleton.autoReveal(sel),
+      );
+      document
+        .querySelectorAll(".inventory-card strong, .inventory-card p")
+        .forEach((el) => Skeleton.autoReveal(el));
+
+      Skeleton.listItems(document.getElementById("activityList"), {
+        rows: 3,
+        height: 40,
+      });
+      Skeleton.listItems(document.getElementById("lowStockList"), {
+        rows: 2,
+        height: 36,
+      });
+    </script>
+    <script src="admin.js"></script>
+    <script src="sidebar.js"></script>
+    <!--
+      Integration notes for admin.js (not included in this upload, so
+      wiring these two spots by hand):
+
+      1) Stat cards / greeting / inventory cards: nothing to do. They
+         use Skeleton.autoReveal() above, which watches each element
+         and un-masks itself the moment admin.js sets its textContent
+         to the real value (with a 6s fallback either way).
+
+      2) Activity feed & Low stock list: Skeleton.listItems() above
+         fills #activityList/#lowStockList with placeholder rows.
+         Whatever admin.js already does to populate them for real
+         (almost certainly `activityList.innerHTML = ...` and
+         `lowStockList.innerHTML = ...`, matching how the old
+         hardcoded demo markup worked) will overwrite the skeleton
+         rows the same way it would have overwritten the old demo
+         content - no changes needed there either.
+    -->
+  </body>
+</html>

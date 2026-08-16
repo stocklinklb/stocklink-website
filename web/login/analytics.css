@@ -1,0 +1,876 @@
+/* =========================================================
+   ANALYTICS — SAAS DASHBOARD REDESIGN
+
+   Design plan (for reference):
+   - Type: Sora (600/700) for display — hero title, KPI values,
+     section labels, chart title. Inter for everything else —
+     body copy, labels, list rows, controls. Two roles only.
+   - Color: reuses the app's existing tokens (--surface, --border,
+     --text, --muted, --surface-secondary, --text-secondary) so
+     the page stays in the app's visual language. Adds a single
+     accent (indigo) used ONLY for the active/primary states —
+     active period toggle, primary KPI, chart line, focus rings.
+     A second cool violet is used once, for the arrow/expand
+     affordance, to keep the palette from feeling flat.
+   - Layout: vertical rhythm of stacked sections (Overview →
+     Performance → Products & Search → Activity), each preceded
+     by a small eyebrow label instead of a bordered box. Only the
+     chart and the activity log keep a full elevated card
+     treatment (they're the two places people actually look
+     closely); the four secondary insight panels are merged into
+     one bordered "insights-panel" with internal hairline
+     dividers, echoing the same divided-strip pattern used by the
+     KPI row — one recurring structural device instead of four
+     separate boxes.
+   - Signature: the divided-strip pattern (KPI strip + insights
+     panel) as the page's one repeating structural idea, paired
+     with a single oversized "primary" KPI number that anchors
+     the whole page.
+========================================================= */
+
+:root {
+  --a-accent: #5b64f0;
+  --a-accent-soft: rgba(91, 100, 240, 0.1);
+  --a-accent-2: #8b5cf6;
+  --a-positive: #16a34a;
+  --a-warning: #f59e0b;
+
+  /* Aliases onto shared.css's actual tokens — analytics.css was
+     written against --text/--muted/--surface-secondary/--text-secondary,
+     but shared.css only defines --ink/--ink-soft/--surface-muted etc.
+     Without these, every var(--text)/var(--muted)/var(--surface-secondary)
+     reference below silently resolves to nothing (undefined custom
+     properties fall back to the property's initial value instead of
+     erroring), which is why colors/backgrounds looked off across the
+     whole page, not just the select dropdowns. */
+  --text: var(--ink);
+  --muted: var(--ink-soft);
+  --text-secondary: var(--ink-soft);
+  --surface-secondary: var(--surface-muted);
+
+  --a-font-display: "Sora", "Inter", -apple-system, sans-serif;
+  --a-font-body:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --a-radius-lg: 14px;
+  --a-radius-md: 10px;
+  --a-radius-sm: 8px;
+}
+
+/* =========================================================
+   MAIN LAYOUT — vertical section rhythm, no more card grid
+========================================================= */
+
+main {
+  display: flex;
+  flex-direction: column;
+
+  gap: 44px;
+
+  align-content: start;
+
+  font-family: var(--a-font-body);
+}
+
+.analytics-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: var(--muted);
+
+  font-family: var(--a-font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.section-label::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.hero h1 {
+  margin: 0;
+
+  font-family: var(--a-font-display);
+  font-size: clamp(1.9rem, 2.6vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.hero p {
+  max-width: 560px;
+
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   KPI STRIP
+========================================================= */
+
+.kpi-strip {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--a-radius-lg);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 8px 24px rgba(0, 0, 0, 0.025);
+}
+
+.kpi-card {
+  position: relative;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 24px 26px;
+
+  background: var(--surface);
+}
+
+.kpi-card + .kpi-card {
+  border-left: 1px solid var(--border);
+}
+
+.kpi-label {
+  color: var(--muted);
+
+  font-family: var(--a-font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.kpi-value {
+  color: var(--accent);
+
+  font-family: var(--a-font);
+  font-size: clamp(1.8rem, 2.6vw, 2.2rem);
+  font-weight: 700;
+
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Primary KPI reads as the anchor number of the whole page */
+.kpi-card--primary .kpi-value {
+  font-size: clamp(2.6rem, 4.4vw, 3.6rem);
+  letter-spacing: -0.03em;
+  color: var(--a-accent);
+}
+
+.kpi-card--primary .kpi-label {
+  color: var(--text-secondary, var(--muted));
+}
+
+/* =========================================================
+   SHARED CARD SURFACE (chart + activity only)
+========================================================= */
+
+.stat-card {
+  position: relative;
+  min-width: 0;
+
+  overflow: hidden;
+
+  padding: 22px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--a-radius-lg);
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.025),
+    0 5px 18px rgba(0, 0, 0, 0.018);
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 4px;
+}
+
+.stat-card-header h3 {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+
+  color: var(--text);
+
+  font-family: var(--a-font-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.stat-card-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--a-radius-sm);
+
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   PERFORMANCE — primary chart card
+========================================================= */
+
+.chart-card {
+  padding: 24px 24px 18px;
+}
+
+.chart-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  margin-bottom: 20px;
+}
+
+.chart-card-head h3 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-family: var(--a-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.period-toggle {
+  display: flex;
+  gap: 2px;
+
+  padding: 3px;
+
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.period-toggle button {
+  border: 0;
+  background: transparent;
+
+  padding: 6px 12px;
+  border-radius: 6px;
+
+  color: var(--muted);
+
+  font-family: var(--a-font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.period-toggle button:hover {
+  color: var(--text);
+}
+
+.period-toggle button.active {
+  background: var(--surface);
+  color: var(--accent);
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.chart-type-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+
+  padding: 7px 13px;
+  border-radius: var(--a-radius-sm);
+
+  font-family: var(--a-font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.chart-type-btn:hover {
+  background: var(--surface-secondary);
+  border-color: color-mix(in srgb, var(--border) 70%, var(--text));
+}
+
+#visitors-chart {
+  width: 100% !important;
+  max-height: 360px;
+}
+
+@media (max-width: 700px) {
+  #visitors-chart {
+    max-height: 220px;
+  }
+}
+
+/* =========================================================
+   PRODUCTS & SEARCH — merged insights panel
+   (same divided-strip pattern as the KPI strip, on purpose)
+========================================================= */
+
+.insights-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+
+  /* the panel's own background IS the divider color — the 1px gap
+     between cells shows this through as a hairline seam, which reads
+     reliably even when --border is very close in value to --surface */
+  background: var(--border);
+
+  border: 1px solid var(--border);
+  border-radius: var(--a-radius-lg);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.025),
+    0 5px 18px rgba(0, 0, 0, 0.018);
+}
+
+.insight-cell {
+  min-width: 0;
+  padding: 20px 22px;
+
+  background: var(--surface);
+}
+
+.insight-cell-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 14px;
+}
+
+.insight-cell-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--a-radius-sm);
+
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+
+  font-size: 11px;
+}
+
+.insight-cell-header h3 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-family: var(--a-font-body);
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* =========================================================
+   LISTS (shared by insight cells)
+========================================================= */
+
+.analytics-line {
+  display: flex;
+  align-items: center;
+
+  min-height: 40px;
+
+  margin: 0;
+  padding: 9px 0;
+
+  border-bottom: 1px solid var(--border);
+
+  color: var(--text);
+
+  font-size: 0.85rem;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.analytics-line:first-child {
+  padding-top: 0;
+}
+
+.analytics-line:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.analytics-empty-line {
+  min-height: 90px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 0.82rem;
+}
+
+/* =========================================================
+   ACTIVITY
+========================================================= */
+
+.activity-card .stat-card-header {
+  margin-bottom: 18px;
+}
+
+.filter-list {
+  flex-shrink: 0;
+}
+
+.filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+
+  border: 1px solid var(--border);
+  background: var(--surface-secondary)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+
+  color: var(--text);
+
+  padding: 7px 30px 7px 12px;
+  border-radius: var(--a-radius-sm);
+
+  font-family: var(--a-font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: border-color 0.15s ease;
+}
+
+.filter-select:hover {
+  border-color: color-mix(in srgb, var(--border) 70%, var(--text));
+}
+
+.activity-log-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid var(--border);
+
+  cursor: pointer;
+}
+
+.activity-log-row:first-child {
+  padding-top: 0;
+}
+
+.activity-log-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.activity-log-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+}
+
+.activity-log-icon i {
+  font-size: 11px;
+}
+
+.activity-log-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  min-width: 0;
+  flex: 1;
+}
+
+.activity-log-summary {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: 0.85rem;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.activity-log-summary p {
+  display: inline;
+  margin: 0;
+
+  color: var(--text);
+  font-weight: 700;
+}
+
+.activity-log-time {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--muted);
+
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+
+  white-space: nowrap;
+}
+
+.activity-log-arrow {
+  color: var(--a-accent-2);
+  font-size: 10px;
+
+  transition: transform 0.2s ease;
+}
+
+.activity-log-arrow.open {
+  transform: rotate(180deg);
+}
+
+.activity-log-details {
+  padding: 0 0 0 44px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  border-bottom: none;
+  transition:
+    max-height 0.05s ease,
+    opacity 0.3s ease,
+    padding 0.3s ease;
+}
+
+.activity-log-details.open {
+  padding: 10px 0 12px 44px;
+  max-height: 500px;
+  opacity: 1;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-log-details:last-child {
+  border-bottom: 0;
+}
+/* =========================================================
+   ACTIVITY — pager
+========================================================= */
+
+.activity-log-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  margin-top: 16px;
+  padding-top: 16px;
+
+  border-top: 1px solid var(--border);
+}
+
+.activity-log-pager button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+
+  min-width: 34px;
+  padding: 7px 12px;
+  border-radius: var(--a-radius-sm);
+
+  font-family: var(--a-font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.activity-log-pager button:first-child {
+  margin-right: auto;
+}
+
+.activity-log-pager button:last-child {
+  margin-left: auto;
+}
+
+.activity-log-pager button:hover:not(:disabled):not(.active) {
+  background: var(--surface-secondary);
+  border-color: color-mix(in srgb, var(--border) 70%, var(--text));
+}
+
+.activity-log-pager button.active {
+  background: var(--accent);
+  border-color: var(--a-accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+.activity-log-pager button.active:hover {
+  background: #5b8af0;
+  border-color: var(--a-accent);
+  color: #fff;
+
+
+}
+.activity-log-summary-count {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+/* =========================================================
+   MICRO-INTERACTIONS
+========================================================= */
+
+.stat-card,
+.insights-panel,
+.kpi-strip {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeSection 0.32s ease forwards;
+}
+
+@keyframes fadeSection {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.activity-log-row:hover {
+  background: var(--surface-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Visible focus states */
+.period-toggle button:focus-visible,
+.chart-type-btn:focus-visible,
+.filter-select:focus-visible,
+.activity-log-row:focus-visible {
+  outline: 2px solid var(--a-accent);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  main {
+    gap: 34px;
+  }
+
+  .insights-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero h1 {
+    font-size: 1.9rem;
+  }
+
+  .hero p {
+    font-size: 0.86rem;
+  }
+
+  .kpi-strip {
+    grid-template-columns: 1fr;
+    border-radius: 12px;
+  }
+
+  .kpi-card {
+    padding: 20px 20px;
+  }
+
+  .kpi-card + .kpi-card {
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+
+  .kpi-card--primary .kpi-value {
+    font-size: 2.6rem;
+  }
+
+  .stat-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .insights-panel {
+    border-radius: 12px;
+  }
+
+  .insight-cell {
+    padding: 18px;
+  }
+
+  .chart-card-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .chart-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .stat-card-header {
+    flex-wrap: wrap;
+  }
+
+  .filter-list {
+    width: 100%;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .activity-log-content {
+    gap: 9px;
+  }
+
+  .activity-log-details {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .activity-log-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .activity-log-summary {
+    font-size: 0.8rem;
+  }
+
+  .activity-log-time {
+    font-size: 0.68rem;
+  }
+
+  .period-toggle button {
+    padding-inline: 9px;
+  }
+}

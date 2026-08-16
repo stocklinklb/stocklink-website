@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+    (function () {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Store | Product View</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="shared.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
+    />
+
+    <link rel="stylesheet" href="products.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-container">
+      <header>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+     <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
+  <span class="theme-switch-track">
+    <span class="theme-switch-thumb">
+      <i class="fa-solid fa-sun sun-icon"></i>
+      <i class="fa-solid fa-moon moon-icon"></i>
+    </span>
+  </span>
+</button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main>
+        <div class="title-row">
+          <div>
+            <h1>Products</h1>
+            <p>Manage your store inventory</p>
+          </div>
+          <div class="buttons">
+            <button class="add-product-btn" id="addProductBtn">
+              + Add Product
+            </button>
+            <button class="select-products-btn" id="selectProductBtn">
+              Select Products
+            </button>
+          </div>
+        </div>
+        <div class="filters-row">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3-3"></path>
+            </svg>
+
+            <input
+              type="text"
+              placeholder="Search products by name, brand, SKU..."
+              id="searchInput"
+            />
+          </div>
+          <div class="filter-dropdown" id="brand-dropdown">
+            <button class="filter-btn" id="filter-btn">
+              Brand
+              <span>⌄</span>
+            </button>
+
+            <div class="filter-menu" id="brand-menu"></div>
+          </div>
+          <div class="filter-dropdown" id="category-dropdown">
+            <button class="filter-btn" id="category-btn">
+              Category
+              <span>⌄</span>
+            </button>
+
+            <div class="filter-menu" id="category-menu"></div>
+          </div>
+          <div class="filter-dropdown price-filter" id="price-dropdown">
+            <button class="filter-btn" id="price-btn">
+              Price
+              <span>⌄</span>
+            </button>
+
+            <div class="filter-menu price-menu" id="price-menu">
+              <div class="price-values">
+                <span id="min-price"></span>
+                <span id="max-price"></span>
+              </div>
+
+              <div id="price-slider"></div>
+            </div>
+          </div>
+          <div class="filter-dropdown" id="stock-dropdown">
+            <button class="filter-btn" id="stock-btn">
+              Stock
+              <span>⌄</span>
+            </button>
+
+            <div class="filter-menu" id="stock-menu">
+              <label>
+                <input type="checkbox" value="in-stock" />
+                In Stock
+              </label>
+
+              <label>
+                <input type="checkbox" value="low-stock" />
+                Low Stock
+              </label>
+
+              <label>
+                <input type="checkbox" value="out-stock" />
+                Out of Stock
+              </label>
+            </div>
+          </div>
+          <button class="reset-filters-btn" id="resetFiltersBtn" type="button">
+            <svg
+              class="reset-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+              <path d="M3 4v5h5"></path>
+            </svg>
+            Reset Filters
+          </button>
+        </div>
+        <div class="table-header">
+          <p id="productsSummary">
+            Showing <strong id="resultCount">0</strong> products
+          </p>
+
+          <div class="sort-box">
+            <div class="bulk-actions">
+              <button id="blkDelete">
+                <i class="fa-solid fa-trash"></i> Delete Selected
+              </button>
+              <button id="blkEdit" style="display: none">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Bulk Edit
+              </button>
+            </div>
+            <span>Sort by:</span>
+
+            <div class="sort-dropdown" id="sort-dropdown">
+              <button class="sort-btn" id="sort-btn">
+                <span id="sort-label">Newest Added</span>
+                <span>⌄</span>
+              </button>
+
+              <div class="sort-menu">
+                <div class="sort-option active" data-sort="newest">
+                  Newest Added
+                </div>
+                <div class="sort-option" data-sort="oldest">Oldest Added</div>
+                <div class="sort-option" data-sort="price-asc">
+                  Price: Low to High
+                </div>
+                <div class="sort-option" data-sort="price-desc">
+                  Price: High to Low
+                </div>
+                <div class="sort-option" data-sort="name-asc">Name: A-Z</div>
+                <div class="sort-option" data-sort="stock-desc">
+                  Stock: Highest
+                </div>
+                <div class="sort-option" data-sort="stock-asc">
+                  Stock: Lowest
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="products-table-container">
+          <table class="products-table" id="products-table">
+            <thead>
+              <tr>
+                <th class="select-header">
+                  <input type="checkbox" id="selectAllCheckbox" />
+                </th>
+                <th>Product</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th class="actions-header">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="products-tbody">
+              <tr class="empty-row">
+                <td colspan="7">Loading products…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <div class="pagination-info">
+            <p id="pagination-summary">Showing 0 of 0 products</p>
+          </div>
+
+          <div class="pagination-right">
+            <div class="rows-dropdown" id="rows-dropdown">
+              <span>Rows:</span>
+
+              <button class="rows-btn" id="rows-btn">
+                <span id="rows-label">10</span>
+                <span>⌄</span>
+              </button>
+
+              <div class="rows-menu">
+                <div class="rows-option" data-rows="10">10</div>
+                <div class="rows-option" data-rows="25">25</div>
+                <div class="rows-option" data-rows="50">50</div>
+                <div class="rows-option" data-rows="100">100</div>
+              </div>
+            </div>
+
+            <div class="pagination-controls" id="pagination-controls"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="bulkedit-modal-overlay" id="bulkedit-modal">
+      <div class="bulkedit-modal">
+        <h3 id="bulkedit-modal-title">Bulk Edit Products</h3>
+        <p class="bulkedit-modal-subtitle">
+          Choose the fields you want to update for the selected products.
+        </p>
+
+        <div class="bulkedit-elements bulkedit-elements--price">
+          <div class="price-checkbox">
+            <input type="checkbox" id="modal-price" />
+            <label for="modal-price">Price</label>
+          </div>
+
+          <div class="bulkedit-mode-row">
+            <div class="bulkedit-mode-option">
+              <input
+                type="radio"
+                id="price-set-mode"
+                name="price-mode"
+                checked
+              />
+              <label for="price-set-mode">Set to</label>
+            </div>
+            <div class="bulkedit-mode-option">
+              <input type="radio" id="price-adjust-mode" name="price-mode" />
+              <label for="price-adjust-mode">Adjust by</label>
+            </div>
+          </div>
+
+          <div class="bulkedit-input-wrap">
+            <span class="bulkedit-input-prefix">$</span>
+            <input
+              type="number"
+              id="price-input"
+              placeholder="0.00"
+              class="bulkedit-input-with-prefix"
+            />
+          </div>
+          <p class="bulkedit-hint">
+            When adjusting, use a negative number to decrease.
+          </p>
+        </div>
+
+        <div class="bulkedit-elements bulkedit-elements--stock">
+          <div class="stock-checkbox">
+            <input type="checkbox" id="modal-stock" />
+            <label for="modal-stock">Stock</label>
+          </div>
+
+          <div class="bulkedit-mode-row">
+            <div class="bulkedit-mode-option">
+              <input
+                type="radio"
+                id="stock-set-mode"
+                name="stock-mode"
+                checked
+              />
+              <label for="stock-set-mode">Set to</label>
+            </div>
+            <div class="bulkedit-mode-option">
+              <input type="radio" id="stock-adjust-mode" name="stock-mode" />
+              <label for="stock-adjust-mode">Adjust by</label>
+            </div>
+          </div>
+
+          <div class="bulkedit-input-wrap">
+            <input type="number" id="stock-input" placeholder="0" />
+            <span class="bulkedit-input-suffix">units</span>
+          </div>
+          <p class="bulkedit-hint">
+            When adjusting, use a negative number to decrease.
+          </p>
+        </div>
+
+        <div class="bulkedit-elements bulkedit-elements--category">
+          <div class="category-checkbox">
+            <input type="checkbox" id="modal-category" />
+            <label for="modal-category">Category</label>
+          </div>
+
+          <label for="modal-dropdown" class="bulkedit-select-label"
+            >New category</label
+          >
+          <select id="modal-dropdown">
+            <option value="Phone">Phone</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Watch">Watch</option>
+            <option value="Accessory">Accessory</option>
+          </select>
+        </div>
+
+        <div class="bulkedit-modal-actions">
+          <button id="cancel-bulkedit-btn">Cancel</button>
+          <button id="confirm-bulkedit-btn">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="delete-modal-overlay" id="delete-modal">
+      <div class="delete-modal">
+        <h3 id="modal-title">Delete Product</h3>
+
+        <p>
+          Are you sure you want to delete
+          <strong id="delete-product-name"></strong>
+        </p>
+
+        <div class="delete-modal-actions">
+          <button id="cancel-delete-btn">Cancel</button>
+          <button id="confirm-delete-btn">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+
+        <div class="logout-actions">
+          <button class="cancel-logout">Cancel</button>
+
+          <button class="confirm-logout">Logout</button>
+        </div>
+      </div>
+    </div>
+    <div style="position: absolute; left: -9999px; opacity: 0">
+      <i class="fa-solid fa-box-open"></i>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="skeleton.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="selectBtnFunctionalitty.js"></script>
+    <script src="products.js"></script>
+  </body>
+</html>

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+    (function () {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stocklink | Excel Import</title>
+
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="excel-import.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="admin-container">
+      <header>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
+  <span class="theme-switch-track">
+    <span class="theme-switch-thumb">
+      <i class="fa-solid fa-sun sun-icon"></i>
+      <i class="fa-solid fa-moon moon-icon"></i>
+    </span>
+  </span>
+</button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main>
+        <div class="excel-title">
+          <h1>Import Inventory</h1>
+          <p>Upload your Excel files and add products automatically</p>
+        </div>
+        <div class="steps-container">
+          <div class="step active" data-step="1">
+            <div class="step-circle">
+              <i class="fa-solid fa-upload"></i>
+            </div>
+            <span>Upload File</span>
+          </div>
+
+          <div class="step-line"></div>
+
+          <div class="step" data-step="2">
+            <div class="step-circle">
+              <i class="fa-solid fa-table"></i>
+            </div>
+            <span>Review Data</span>
+          </div>
+
+          <div class="step-line"></div>
+
+          <div class="step" data-step="3">
+            <div class="step-circle">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <span>Complete</span>
+          </div>
+        </div>
+        <div class="upload">
+          <h2>Upload Excel File</h2>
+
+          <div class="upload-card">
+            <div class="upload-empty-state" id="upload-empty-state">
+              <div class="upload-icon">
+                <i class="fa-solid fa-file-excel"></i>
+              </div>
+
+              <p class="upload-instructions">
+                Drag and drop your inventory file here or choose a file from
+                your computer.
+              </p>
+
+              <label class="upload-btn">
+                <i class="fa-solid fa-upload"></i>
+                Choose File
+                <input type="file" id="excel-file" accept=".xlsx,.xls" />
+              </label>
+
+              <p class="supported">Supported formats: .xlsx, .xls</p>
+            </div>
+
+            <div class="selected-file" id="selected-file">
+              <div class="file-info">
+                <div class="file-info-icon">
+                  <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <div class="file-info-meta">
+                  <p id="file-name"></p>
+                  <p id="file-size"></p>
+                </div>
+              </div>
+              <div class="buttons">
+                <button
+                  class="remove-file"
+                  id="remove-file"
+                  aria-label="Remove file"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+                <button class="continue-btn" id="continue-btn">
+                  Continue
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="template-section">
+            <a
+              href="csv-load/stocklink-inventory-template.xlsx"
+              download=""
+              class="template-link"
+              id="template-link"
+            >
+              <i class="fa-solid fa-arrow-down"></i>
+              Download Excel Template
+            </a>
+            <p class="template-columns">
+              Template includes: Brand, Model, Storage, Color, Condition, Price,
+              Stock , Category
+            </p>
+          </div>
+
+          <div class="parsing-loader" id="parsing-loader">
+            <span class="spinner"></span>
+            <span>Reading your file&hellip;</span>
+          </div>
+        </div>
+
+        <div class="review-section" id="review-section">
+          <button class="back-btn" id="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Choose a different file
+          </button>
+
+          <p class="table-scroll-hint">
+            <i class="fa-solid fa-arrows-left-right"></i>
+            Swipe to see all columns
+          </p>
+
+          <div class="review-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Brand</th>
+                  <th>Model</th>
+                  <th>Storage</th>
+                  <th>Color</th>
+                  <th>Condition</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Issues</th>
+                </tr>
+              </thead>
+
+              <tbody id="validation-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="review-actions-bar" id="review-actions-bar">
+          <div class="cards-stats" id="cards-stats">
+            <div class="totalCount card">
+              <h2>Total</h2>
+              <p class="total-count"></p>
+            </div>
+            <div class="validRows card">
+              <h2>Valid</h2>
+              <p class="valid-count"></p>
+            </div>
+            <div class="invalidRows card">
+              <h2>Invalid</h2>
+              <p class="invalid-count"></p>
+            </div>
+          </div>
+
+          <!--
+            Only affects rows that MATCH an existing variant (same
+            brand+model+storage+color+condition). Brand-new variants
+            always just start at the imported stock number either way.
+          -->
+          <div class="stock-mode" id="stock-mode">
+            <span class="stock-mode-label"
+              >For existing variants, imported stock should:</span
+            >
+            <label class="stock-mode-option">
+              <input type="radio" name="stock-mode" value="replace" checked />
+              Replace existing stock
+            </label>
+            <label class="stock-mode-option">
+              <input type="radio" name="stock-mode" value="add" />
+              Add to existing stock
+            </label>
+          </div>
+
+          <button class="import-btn" id="import-btn">
+            Import Valid Products
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </main>
+    </div>
+    <div id="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="config.js"></script>
+    <script src="csv-load/specsLookUp.js"></script>
+    <script src="csv-load/specsLoader.js"></script>
+    <script src="csv-load/specsAutoFill.js"></script>
+    <script src="shared.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="excel-import.js"></script>
+  </body>
+</html>

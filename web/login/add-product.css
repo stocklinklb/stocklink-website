@@ -1,0 +1,1860 @@
+/* ===========================================================
+   ADMIN — ADD PRODUCT
+   Local design tokens, scoped to the admin pages. Kept separate
+   from shared.css's --accent (the storefront's yellow brand color)
+   so admin controls get their own consistent blue/neutral palette
+   instead of accidentally inheriting the storefront theme.
+   =========================================================== */
+
+/* shared.css sets a global input:focus-visible outline (2px, brand
+   yellow, 2px offset) for the storefront. Every input on this page
+   already gets its own focus ring below (border-color + box-shadow),
+   so that global outline just stacks a second, offset ring on top -
+   the "double border" around focused fields. Turn it off here only. */
+.admin-container input:focus-visible,
+.admin-container select:focus-visible,
+.admin-container textarea:focus-visible {
+  outline: none;
+}
+.variant-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.variant-actions button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.variant-actions button:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.variant-actions button:active {
+  transform: translateY(0);
+}
+
+/* Duplicate */
+.duplicate-variant-button {
+  background: var(--surface);
+  color: var(--text-secondary);
+
+}
+
+.duplicate-variant-button:hover {
+  color: var(--text-secondary);
+}
+
+/* Delete */
+
+.delete-variant-button{
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.07);
+  border-color: rgba(220, 38, 38, 0.25);
+}
+.delete-varaint-button:hover {
+  color:var(--adm-danger);
+}
+/* Sidebar logout button — border reset only; layout/hover for this
+   element lives in the shared admin chrome stylesheet, not here. */
+.logout-btn {
+  border: none;
+}
+
+/* ===========================================================
+   Form Card (section wrapper)
+   =========================================================== */
+
+.form-card {
+  background: var(--adm-surface);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-lg);
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--adm-shadow-sm);
+  transition: box-shadow 0.2s var(--adm-ease);
+}
+
+.form-card-header {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--adm-border);
+}
+
+.form-card-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--adm-ink);
+  letter-spacing: -0.01em;
+}
+
+.form-card-header p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--adm-ink-soft);
+}
+
+.required {
+  color: var(--adm-danger);
+  font-weight: 600;
+  margin-left: 1px;
+}
+
+/* Checkbox row ("Show on Homepage") */
+label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  grid-column: 1 / -1;
+  padding: 12px 14px;
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  background: var(--adm-surface-soft);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--adm-ink);
+  cursor: pointer;
+  width: fit-content;
+}
+
+label.checkbox input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--adm-accent);
+  cursor: pointer;
+}
+
+/* ===========================================================
+   Base Form Grid / Fields
+   =========================================================== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--adm-ink);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  height: 44px;
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+  padding: 0 14px;
+  background: var(--adm-surface);
+  color: var(--adm-ink);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group textarea {
+  height: 100px;
+  resize: none;
+  padding: 12px 14px;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--adm-ink-faint);
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+  border-color: var(--adm-ink-faint);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Product description textarea (top-level, outside .form-group) */
+#product-description {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  margin: 14px 0;
+  padding: 14px 16px;
+
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+  background: var(--adm-surface);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--adm-ink);
+
+  outline: none;
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+#product-description:hover {
+  border-color: var(--adm-ink-faint);
+}
+
+#product-description:focus {
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+.description-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#description-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--adm-ink-faint);
+}
+
+/* ===========================================================
+   Specifications Section
+   =========================================================== */
+
+.specifications-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* A spec section (e.g. "Phone Specifications") acts as a
+   sub-block inside the form card, with its own heading. */
+.spec-section h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--adm-ink);
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 3px solid var(--adm-accent);
+}
+
+/* Denser 3-column layout for spec fields on larger screens */
+.spec-section .form-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+/* Turn each individual specification field into its own card */
+.spec-section .form-group {
+  background: var(--adm-surface-soft);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  padding: 14px 16px;
+  gap: 6px;
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+.spec-section .form-group:focus-within {
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+.spec-section .form-group label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--adm-ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.spec-section .form-group input {
+  height: 36px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+}
+
+.spec-section .form-group input:focus {
+  box-shadow: none;
+}
+
+/* ===========================================================
+   Custom Specifications
+   =========================================================== */
+
+.custom-specs-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--adm-border);
+}
+
+.custom-specs-section h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--adm-ink);
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 3px solid var(--adm-accent);
+}
+
+#custom-specs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* Each custom specification row rendered as its own card */
+.custom-spec-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--adm-surface-soft);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  padding: 12px 14px;
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+.custom-spec-row:focus-within {
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+.custom-spec-row input {
+  flex: 1;
+  height: 38px;
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-sm);
+  padding: 0 12px;
+  background: var(--adm-surface);
+  color: var(--adm-ink);
+  font-size: 13.5px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s var(--adm-ease);
+}
+
+.custom-spec-row input:focus {
+  border-color: var(--adm-accent);
+}
+
+.remove-spec-btn {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-sm);
+  background: var(--adm-surface);
+  color: var(--adm-danger);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s var(--adm-ease),
+    border-color 0.15s var(--adm-ease);
+}
+
+.remove-spec-btn:hover {
+  background: var(--adm-danger-soft);
+  border-color: var(--adm-danger);
+}
+
+#add-spec-btn {
+  width: 100%;
+  height: 44px;
+  border: 1.5px dashed var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+  background: transparent;
+  color: var(--adm-accent);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s var(--adm-ease),
+    border-color 0.15s var(--adm-ease);
+}
+
+#add-spec-btn:hover {
+  background: var(--adm-accent-soft);
+  border-color: var(--adm-accent);
+}
+
+/* =========================
+   Battery Health
+========================= */
+
+.variant-option#battery-option {
+  max-width: 200px;
+}
+
+.battery-health-input-wrapper {
+  position: relative;
+  max-width: 160px;
+}
+
+#battery-health {
+  width: 100%;
+  height: 44px;
+  padding: 0 36px 0 14px;
+
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--adm-ink);
+  background: var(--adm-surface);
+  outline: none;
+
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+#battery-health:hover {
+  border-color: var(--adm-ink-faint);
+}
+
+#battery-health:focus {
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+#battery-health::-webkit-inner-spin-button,
+#battery-health::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.battery-health-suffix {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--adm-ink-soft);
+
+  pointer-events: none;
+}
+
+/* =========================
+   Variants Section
+========================= */
+
+.variant-option {
+  margin-top: 30px;
+}
+
+.variant-option h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--adm-ink);
+}
+
+.option-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  max-width: 500px;
+}
+
+.option-box {
+  height: 52px;
+
+  border: 1.5px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  background: var(--adm-surface);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+
+  color: var(--adm-ink-soft);
+  padding: 12px;
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s var(--adm-ease),
+    color 0.15s var(--adm-ease),
+    background 0.15s var(--adm-ease),
+    transform 0.15s var(--adm-ease);
+}
+
+.option-box:hover {
+  border-color: var(--adm-ink-faint);
+  color: var(--adm-ink);
+}
+
+.option-box.selected {
+  border: 1.5px solid var(--adm-ink);
+  background: var(--adm-surface-muted);
+  color: var(--adm-ink);
+}
+
+.color-dot {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.table-color-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Shared heading row for variant sections that carry an icon
+   (Available Colors, Battery Health, Available Condition) - keeps
+   all three lined up the same way. */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.section-title h4 {
+  display: inline;
+  margin-bottom: 0;
+}
+
+/* "Available Colors" icon - a small multi-hue ring representing
+   "many colors to choose from". */
+.color-variant-dot {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background: conic-gradient(
+    from 0deg,
+    #ef4444,
+    #f59e0b,
+    #22c55e,
+    #3b82f6,
+    #8b5cf6,
+    #ef4444
+  );
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+/* "Battery Health" icon - a small CSS-drawn battery glyph, no icon
+   font needed since this page doesn't load one. */
+.battery-title-icon {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  width: 20px;
+  height: 12px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--adm-ink);
+  border-radius: 3px;
+  padding: 1.5px;
+  box-sizing: border-box;
+}
+
+.battery-title-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -3px;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 5px;
+  background: var(--adm-ink);
+  border-radius: 0 1px 1px 0;
+}
+#ram-icon {
+  display: inline;
+}
+#ram-option h4 {
+  display: inline;
+}
+.battery-title-icon-fill {
+  display: block;
+  width: 70%;
+  height: 100%;
+  background: var(--adm-success);
+  border-radius: 1px;
+}
+.ram-icon-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 1.8em;
+  height: 0.75em;
+  background-color: #1b4d3e; /* Green PCB */
+  border: 1px solid #0f2e24;
+  border-radius: 1px;
+  position: relative;
+  vertical-align: middle; /* Aligns with adjacent text */
+  margin: 0 0.2em; /* Keeps small spacing from words */
+}
+
+/* Micro memory chips */
+.ram-icon-inline .chip {
+  width: 0.35em;
+  height: 0.45em;
+  background-color: #111;
+  border-radius: 0.5px;
+  z-index: 1;
+}
+
+/* Micro gold connector pins */
+.ram-icon-inline .pins {
+  position: absolute;
+  bottom: -1px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    #d4af37,
+    #d4af37 1px,
+    #1b4d3e 1px,
+    #1b4d3e 2px
+  );
+}
+#storage-options {
+  margin-top: 12px;
+}
+#ram-options {
+  margin-top: 12px;
+}
+#storage-option h4 {
+  display: inline;
+  margin-bottom: 15px;
+}
+
+/* Inline container matching the RAM icon's scale */
+.storage-icon-inline {
+  display: inline-block;
+  width: 0.85em;
+  height: 1.1em;
+  background-color: #2d3135; /* Metallic silver/dark grey drive enclosure */
+  border: 1px solid #1a1c1e;
+  border-radius: 2px;
+  position: relative;
+  vertical-align: middle; /* Aligns perfectly with text */
+  margin: 0 0.25em;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Represents the drive label or sticker front */
+.storage-icon-inline .label {
+  position: absolute;
+  top: 0.15em;
+  left: 0.1em;
+  right: 0.1em;
+  bottom: 0.3em;
+  background-color: #e9ecef; /* Light label look */
+  border-radius: 1px;
+  border-bottom: 2px solid #0d6efd; /* Techy blue accent stripe */
+}
+#storage-icon {
+  display: inline;
+}
+/* Micro connection ports at the bottom border */
+.storage-icon-inline .ports {
+  position: absolute;
+  bottom: 0.05em;
+  left: 0.15em;
+  right: 0.15em;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    #d4af37,
+    #d4af37 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+/* "Available Condition" icon - a 2x2 cluster of the same dot colors
+   used on the condition option boxes, representing the range of
+   conditions on offer. */
+.condition-title-icon {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.condition-title-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.condition-title-dot.new {
+  background: #22c55e;
+}
+.condition-title-dot.used {
+  background: #f59e0b;
+}
+.condition-title-dot.refurbished {
+  background: #3b82f6;
+}
+.condition-title-dot.open-box {
+  background: #8b5cf6;
+}
+
+/* ===========================================================
+   Product Actions (Reset / Save)
+   =========================================================== */
+
+.product-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 32px;
+  padding-top: 24px;
+
+  border-top: 1px solid var(--adm-border);
+}
+
+.reset-btn {
+  padding: 12px 22px;
+  border-radius: var(--adm-radius-md);
+  border: 1px solid var(--adm-border-strong);
+  background: var(--adm-surface);
+  color: var(--adm-ink);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s var(--adm-ease),
+    border-color 0.15s var(--adm-ease);
+}
+
+.reset-btn:hover {
+  background: var(--adm-surface-muted);
+  border-color: var(--adm-ink-faint);
+}
+
+.save-btn {
+  padding: 12px 26px;
+  border-radius: var(--adm-radius-md);
+  border: none;
+  background: var(--adm-accent);
+  color: white;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--adm-shadow-sm);
+  transition:
+    background 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease),
+    transform 0.15s var(--adm-ease);
+}
+
+.save-btn:hover {
+  background: var(--adm-accent-dark);
+  box-shadow: var(--adm-shadow-md);
+  transform: translateY(-1px);
+}
+
+.save-btn:active,
+.reset-btn:active {
+  transform: translateY(0);
+}
+
+/* ===========================================================
+   PRODUCT COLOR IMAGES
+   =========================================================== */
+
+.selected-images {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.image-card {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+
+  padding: 8px;
+  background: var(--adm-surface);
+
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+.drag-handle {
+  cursor: pointer;
+}
+.image-card img {
+  width: 100%;
+  aspect-ratio: 1;
+
+  object-fit: contain;
+  background: var(--adm-surface-soft);
+
+  border-radius: var(--adm-radius-sm);
+}
+
+.image-card p {
+  margin-top: 8px;
+
+  font-size: 11px;
+  color: var(--adm-ink-soft);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-image-btn {
+  position: absolute;
+
+  top: 6px;
+  right: 6px;
+
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: none;
+
+  background: var(--adm-danger);
+  color: white;
+
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.15s var(--adm-ease);
+}
+
+.delete-image-btn:hover {
+  background: #b91c1c;
+}
+
+.cover-star-btn {
+  position: absolute;
+
+  top: 6px;
+  left: 6px;
+
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(17, 24, 39, 0.45);
+  color: rgba(255, 255, 255, 0.85);
+
+  font-size: 14px;
+  line-height: 1;
+
+  cursor: pointer;
+  z-index: 2;
+
+  transition:
+    background 0.15s var(--adm-ease),
+    color 0.15s var(--adm-ease),
+    transform 0.15s var(--adm-ease);
+}
+
+.cover-star-btn:hover {
+  background: rgba(17, 24, 39, 0.65);
+  transform: scale(1.08);
+}
+
+.cover-star-btn.is-cover {
+  background: #fef3c7;
+  color: #f59e0b;
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35);
+}
+
+.cover-star-btn.is-cover:hover {
+  background: #fde68a;
+}
+
+#color-images-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.color-image-box {
+  padding: 20px;
+  border-radius: var(--adm-radius-lg);
+  background: var(--adm-surface-soft);
+  border: 1px solid var(--adm-border);
+  transition:
+    border-color 0.2s var(--adm-ease),
+    transform 0.2s var(--adm-ease),
+    box-shadow 0.2s var(--adm-ease);
+}
+
+.color-image-box:hover {
+  border-color: var(--adm-accent);
+  box-shadow: var(--adm-shadow-md);
+  transform: translateY(-2px);
+}
+
+.color-image-box h4 {
+  margin: 0 0 15px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--adm-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ================================
+   DYNAMIC COLOR BUILDER
+================================ */
+
+.color-builder-section {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-lg);
+  background: var(--adm-surface-soft);
+}
+
+.color-builder-section h3 {
+  margin-bottom: 15px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--adm-ink);
+}
+
+#color-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.color-builder-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-name-input {
+  flex: 1;
+  height: 42px;
+  padding: 0 14px;
+
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s var(--adm-ease);
+}
+
+.color-name-input:focus {
+  border-color: var(--adm-accent);
+}
+
+.color-hex-input {
+  width: 50px;
+  height: 42px;
+
+  padding: 3px;
+
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+
+  cursor: pointer;
+}
+
+.remove-color-btn {
+  height: 42px;
+  padding: 0 15px;
+
+  border: none;
+  border-radius: var(--adm-radius-md);
+
+  background: var(--adm-danger-soft);
+  color: var(--adm-danger);
+
+  font-weight: 600;
+  font-size: 13.5px;
+
+  cursor: pointer;
+
+  transition: background 0.15s var(--adm-ease);
+}
+
+.remove-color-btn:hover {
+  background: rgba(220, 38, 38, 0.16);
+}
+
+#add-color-btn {
+  margin-top: 15px;
+
+  padding: 12px 18px;
+
+  border: none;
+  border-radius: var(--adm-radius-md);
+
+  background: var(--adm-ink);
+  color: white;
+
+  font-size: 13.5px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s var(--adm-ease),
+    transform 0.15s var(--adm-ease);
+}
+
+#add-color-btn:hover {
+  background: #1f2937;
+  transform: translateY(-1px);
+}
+
+/* ================================
+   COLOR OPTION BOXES
+================================ */
+
+#color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+#color-options .option-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: auto;
+
+  padding: 11px 16px;
+
+  border: 1.5px solid var(--adm-border);
+  border-radius: var(--adm-radius-pill);
+
+  background: var(--adm-surface);
+  color: var(--adm-ink-soft);
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s var(--adm-ease),
+    background 0.15s var(--adm-ease),
+    color 0.15s var(--adm-ease);
+}
+
+#color-options .option-box:hover {
+  border-color: var(--adm-ink);
+  color: var(--adm-ink);
+}
+
+#color-options .option-box.selected {
+  border-color: var(--adm-ink);
+  background: var(--adm-surface-muted);
+  color: var(--adm-ink);
+}
+
+.color-circle {
+  width: 16px;
+  height: 16px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+
+  display: inline-block;
+}
+
+/* File input */
+
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+  padding: 11px 18px;
+
+  background: var(--adm-accent);
+
+  color: white;
+
+  border-radius: var(--adm-radius-sm);
+
+  font-size: 13.5px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s var(--adm-ease),
+    transform 0.15s var(--adm-ease);
+
+  width: fit-content;
+}
+
+.file-upload-btn:hover {
+  background: var(--adm-accent-dark);
+  transform: translateY(-1px);
+}
+
+.file-upload-btn input {
+  display: none;
+}
+
+/* ================================
+   SEARCHABLE COLOR PICKER
+================================ */
+
+/* One bordered card holds the whole widget (search field + chips) -
+   the input itself is borderless so there's a single outer border,
+   not a bordered input nested inside a bordered container. */
+.color-picker {
+  max-width: 500px;
+  position: relative;
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+  padding: 10px 12px;
+  background: var(--adm-surface);
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+.color-picker:hover {
+  border-color: var(--adm-ink-faint);
+}
+
+.color-picker:focus-within {
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+.color-search-wrapper {
+  position: relative;
+}
+
+.color-search-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 2px;
+
+  border: none;
+  background: transparent;
+
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+.color-search-dropdown,
+.brand-search-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  max-height: 240px;
+  overflow-y: auto;
+
+  background: var(--adm-surface);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  box-shadow: var(--adm-shadow-lg);
+}
+
+.color-search-dropdown.open,
+.brand-search-dropdown.open {
+  display: block;
+}
+
+.color-dropdown-item,
+.brand-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 14px;
+  font-size: 13.5px;
+  color: var(--adm-ink);
+  cursor: pointer;
+  transition: background 0.1s var(--adm-ease);
+}
+
+.color-dropdown-item:hover,
+.brand-dropdown-item:hover,
+.brand-dropdown-item.active,
+.color-dropdown-item.active {
+  background: var(--adm-surface-muted);
+}
+
+.brand-dropdown-item.active,
+.color-dropdown-item.active {
+  background: var(--adm-accent-soft);
+  box-shadow: inset 3px 0 0 var(--adm-accent);
+}
+
+.color-dropdown-item.color-dropdown-add,
+.brand-dropdown-item.brand-dropdown-add {
+  color: var(--adm-accent);
+  font-weight: 600;
+}
+
+.color-dropdown-empty,
+.brand-dropdown-empty {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--adm-ink-faint);
+}
+
+.color-dot-preview {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.selected-color-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.color-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 10px 8px 12px;
+
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-pill);
+
+  background: var(--adm-surface);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--adm-ink);
+}
+
+.color-chip-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.color-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 18px;
+  height: 18px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--adm-surface-muted);
+  color: var(--adm-ink-soft);
+
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+
+  transition:
+    background 0.15s var(--adm-ease),
+    color 0.15s var(--adm-ease);
+}
+
+.chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 18px;
+  height: 18px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--adm-surface-muted);
+  color: var(--adm-ink-soft);
+
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+
+  transition:
+    background 0.15s var(--adm-ease),
+    color 0.15s var(--adm-ease);
+}
+.chip-remove:hover {
+  background: var(--adm-danger-soft);
+  color: var(--adm-danger);
+}
+.color-chip-remove:hover {
+  background: var(--adm-danger-soft);
+  color: var(--adm-danger);
+}
+
+/* ================================
+   SEARCHABLE BRAND PICKER
+================================ */
+
+.brand-picker {
+  position: relative;
+}
+
+.brand-search-wrapper {
+  position: relative;
+}
+
+.brand-search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+.brand-search-input:hover {
+  border-color: var(--adm-ink-faint);
+}
+
+.brand-search-input:focus {
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+/* ================================
+   CONDITION DOTS
+================================ */
+
+.condition-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.condition-dot.new {
+  background: #22c55e;
+}
+.condition-dot.used {
+  background: #f59e0b;
+}
+.condition-dot.refurbished {
+  background: #3b82f6;
+}
+.condition-dot.open-box {
+  background: #8b5cf6;
+}
+.condition-dot.damaged {
+  background: #ef4444;
+}
+
+/* ================================
+   TOASTS
+================================ */
+
+#toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+/* ================================
+   VARIANTS TABLE
+================================ */
+
+#generate-variants-btn {
+  margin-top: 24px;
+  padding: 12px 22px;
+
+  background: var(--adm-ink);
+  color: white;
+
+  border: none;
+  border-radius: var(--adm-radius-md);
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s var(--adm-ease),
+    transform 0.15s var(--adm-ease);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#generate-variants-btn:hover {
+  background: #1f2937;
+  transform: translateY(-1px);
+}
+
+#generate-variants-btn:active {
+  transform: translateY(0);
+}
+
+#generate-variants-btn:focus-visible {
+  outline: 2px solid var(--adm-ink-faint);
+  outline-offset: 2px;
+}
+
+#variants-table-container {
+  margin-top: 28px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#variants-table-container.table-show {
+  animation: fadeInTable 0.25s var(--adm-ease);
+}
+
+@keyframes fadeInTable {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.variant-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  margin: 8px 0 0;
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  overflow: hidden;
+}
+
+.variant-table th,
+.variant-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--adm-border);
+  text-align: left;
+}
+
+.variant-table tr:last-child td {
+  border-bottom: none;
+}
+
+.variant-table th {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--adm-ink-soft);
+  background: var(--adm-surface-soft);
+}
+
+.variant-table tbody tr:hover {
+  background: var(--adm-surface-soft);
+}
+
+.price-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.currency {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--adm-ink-soft);
+}
+
+.variant-price-input,
+.variant-stock-input {
+  padding: 9px 12px;
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--adm-ink);
+  background: var(--adm-surface);
+
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+.variant-price-input {
+  width: 90px;
+}
+
+.variant-stock-input {
+  width: 80px;
+}
+
+.variant-price-input:hover,
+.variant-stock-input:hover {
+  border-color: var(--adm-ink-faint);
+}
+
+.variant-price-input:focus,
+.variant-stock-input:focus {
+  outline: none;
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+.variant-price-input::-webkit-inner-spin-button,
+.variant-price-input::-webkit-outer-spin-button,
+.variant-stock-input::-webkit-inner-spin-button,
+.variant-stock-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.battery-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.battery-gauge {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 8px;
+  border: 1px solid var(--adm-border-strong);
+  border-radius: 4px;
+  background: var(--adm-surface-soft);
+  overflow: hidden;
+}
+
+.battery-gauge-fill {
+  height: 100%;
+  border-radius: 3px 0 0 3px;
+  background: var(--adm-ink-faint);
+  transition:
+    width 0.2s var(--adm-ease),
+    background 0.15s var(--adm-ease);
+}
+
+.battery-cell[data-battery-tier="good"] .battery-gauge-fill {
+  background: var(--adm-success);
+}
+
+.battery-cell[data-battery-tier="fair"] .battery-gauge-fill {
+  background: #d97706;
+}
+
+.battery-cell[data-battery-tier="poor"] .battery-gauge-fill {
+  background: var(--adm-danger);
+}
+
+.battery-cell[data-battery-tier="good"] .battery-gauge,
+.battery-cell[data-battery-tier="fair"] .battery-gauge,
+.battery-cell[data-battery-tier="poor"] .battery-gauge {
+  border-color: var(--adm-ink-soft);
+}
+
+.variant-battery-input {
+  width: 56px;
+  padding: 9px 8px;
+  border: 1px solid var(--adm-border-strong);
+  border-radius: var(--adm-radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--adm-ink);
+  background: var(--adm-surface);
+  text-align: right;
+
+  transition:
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease);
+}
+
+.variant-battery-input:hover {
+  border-color: var(--adm-ink-faint);
+}
+
+.variant-battery-input:focus {
+  outline: none;
+  border-color: var(--adm-accent);
+  box-shadow: 0 0 0 3px var(--adm-accent-ring);
+}
+
+.variant-battery-input::-webkit-inner-spin-button,
+.variant-battery-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.battery-suffix {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--adm-ink-soft);
+}
+
+/* ===========================================================
+   Responsive
+   =========================================================== */
+
+@media (max-width: 900px) {
+  .form-grid,
+  .spec-section .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+
+  .product-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .reset-btn,
+  .save-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .custom-spec-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  #variants-table-container {
+    overflow-x: visible;
+  }
+
+  .variant-table {
+    min-width: 0;
+  }
+
+  .variant-table thead {
+    display: none;
+  }
+
+  .variant-table,
+  .variant-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .variant-table tr {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid var(--adm-border);
+    border-radius: var(--adm-radius-md);
+    overflow: hidden;
+  }
+
+  .variant-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid var(--adm-surface-soft);
+    text-align: right;
+  }
+
+  .variant-table tr td:last-child {
+    border-bottom: none;
+  }
+
+  .variant-table td[data-label]::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--adm-ink-faint);
+    text-align: left;
+  }
+
+  .variant-table .variant-price-input,
+  .variant-table .variant-stock-input,
+  .variant-table .variant-battery-input {
+    width: 110px;
+    text-align: right;
+  }
+}
+
+@media (max-width: 560px) {
+  .form-card {
+    padding: 16px;
+  }
+
+  .custom-spec-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .remove-spec-btn {
+    width: 100%;
+    height: 40px;
+  }
+
+  .option-boxes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #color-images-container {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-images {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  #toast-container {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  #toast-container .toast {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .color-picker,
+  .brand-picker,
+  #color-images-container .color-image-box {
+    max-width: 100%;
+  }
+}

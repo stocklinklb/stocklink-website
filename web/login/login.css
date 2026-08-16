@@ -1,0 +1,363 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: #08101a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: #eef2ff;
+  overflow-x: hidden;
+}
+
+.login-page {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+}
+
+.floating-card {
+  position: absolute;
+
+  z-index: 2;
+
+  width: 140px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(20, 32, 56, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.1);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+  color: #e2e8f0;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  animation: float 6.5s ease-in-out infinite;
+}
+
+.floating-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 22px;
+  color: #ffffff;
+}
+
+.card-one {
+  top: -20px;
+  left: -170px;
+
+  animation-delay: 0s;
+}
+
+.card-two {
+  top: 10px;
+  right: -190px;
+  animation-delay: 2s;
+}
+
+.card-three {
+  bottom: -120px;
+  right: -60px;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(-8deg);
+    
+  }
+  50% {
+    transform: translateY(50px) rotate(8deg);
+    
+  }
+}
+
+.login-card {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 24px;
+  padding: 40px 32px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+  position: relative;
+  z-index: 1;
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  border-radius: 16px;
+  background: #2563eb;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.brand h1 {
+  font-size: 28px;
+  margin: 0;
+  color: #ffffff;
+}
+
+.brand p {
+  margin-top: 8px;
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.login-form {
+  display: grid;
+  gap: 18px;
+}
+
+.form-group {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: #111827;
+  color: #eef2ff;
+  /* 16px is the minimum that keeps iOS Safari from auto-zooming the
+     whole page in when an input is focused - anything under that
+     (this was 15px) triggers the zoom, which is what looked like
+     "the text gets bigger" on click/tap. */
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+input::placeholder {
+  color: #94a3b8;
+}
+
+input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.14);
+}
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.remember input {
+  width: 16px;
+  height: 16px;
+  accent-color: #60a5fa;
+}
+
+button {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.16s ease, background-color 0.16s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: #1d4ed8;
+}
+
+.error-message {
+  min-height: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: #fda4af;
+}
+
+@media (max-width: 900px) {
+  .floating-card {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  body {
+    padding: 16px;
+  }
+
+  .login-card {
+    padding: 30px 22px;
+  }
+
+  .brand h1 {
+    font-size: 26px;
+  }
+
+  .floating-card {
+    width: 128px;
+    padding: 14px 16px;
+  }
+}
+
+input::placeholder {
+  color: #94a3b8;
+}
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: #111827;
+
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.password-field:focus-within {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.16);
+}
+
+/* The input sits flush inside the pill - the wrapper above owns the
+   border/background/focus ring now, so the input doesn't need (or
+   fight with) its own. */
+.password-field input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+}
+
+.password-field input:focus {
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.toggle-password {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 48px;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0 14px 14px 0;
+
+  color: #64748b;
+  cursor: pointer;
+
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.toggle-password:hover {
+  color: #22d3ee;
+  transform: scale(1.1);
+}
+
+.toggle-password:active {
+  transform: scale(0.92);
+}
+
+.toggle-password[aria-pressed="true"] {
+  color: #22d3ee;
+}
+
+.toggle-password .eye-icon {
+  display: none;
+}
+
+/* Password hidden (default): show the open eye. Password visible
+   (aria-pressed="true", toggled by login.js): show the slashed eye. */
+.toggle-password .eye-open {
+  display: block;
+}
+
+.toggle-password[aria-pressed="true"] .eye-open {
+  display: none;
+}
+
+.toggle-password[aria-pressed="true"] .eye-closed {
+  display: block;
+}
+
+input:focus {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.16);
+  transform: translateY(-1px);
+}
+
+button {
+  height: 48px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22d3ee, #6366f1);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.28);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(99, 102, 241, 0.35);
+}
+
+.error-message {
+  min-height: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: #fda4af;
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 32px 22px;
+  }
+}

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function () {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Store | Admin</title>
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="analytics.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="admin-container">
+      <header>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button
+          id="themeToggle"
+          class="theme-switch"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <span class="theme-switch-track">
+            <span class="theme-switch-thumb">
+              <i class="fa-solid fa-sun sun-icon"></i>
+              <i class="fa-solid fa-moon moon-icon"></i>
+            </span>
+          </span>
+        </button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main>
+        <div class="hero">
+          <h1>Analytics</h1>
+          <p>
+            Monitor your store activity and understand what your customers are
+            looking for.
+          </p>
+        </div>
+
+        <!-- ===================== OVERVIEW ===================== -->
+        <section class="analytics-section">
+          <div class="section-label">Overview</div>
+
+          <div class="kpi-strip">
+            <div class="kpi-card kpi-card--primary">
+              <span class="kpi-label">Total Visitors</span>
+              <span class="kpi-value" id="total-visitors">
+                <span class="skeleton kpi-value-skeleton"></span>
+              </span>
+            </div>
+
+            <div class="kpi-card">
+              <span class="kpi-label">Avg Session Time</span>
+              <span class="kpi-value" id="avg-session-time">
+                <span class="skeleton kpi-value-skeleton"></span>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== PERFORMANCE ===================== -->
+        <section class="analytics-section">
+          <div class="section-label">Performance</div>
+
+          <div class="stat-card chart-card">
+            <div class="chart-card-head">
+              <h3>Visitors Over Time</h3>
+              <div class="chart-controls">
+                <div class="period-toggle">
+                  <button
+                    onclick="loadVisitorsOverTime('day')"
+                    data-period="day"
+                  >
+                    Day
+                  </button>
+                  <button
+                    onclick="loadVisitorsOverTime('week')"
+                    data-period="week"
+                  >
+                    Week
+                  </button>
+                  <button
+                    onclick="loadVisitorsOverTime('month')"
+                    data-period="month"
+                  >
+                    Month
+                  </button>
+                </div>
+                <button
+                  id="chart-type-toggle"
+                  class="chart-type-btn"
+                  onclick="toggleChartType()"
+                >
+                  Switch to Bar
+                </button>
+              </div>
+            </div>
+            <div class="visitors-chart-wrapper" id="visitors-chart-wrapper">
+              <div class="visitors-chart-skeleton" id="visitors-chart-skeleton">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              <canvas id="visitors-chart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== PRODUCTS & SEARCH ===================== -->
+        <section class="analytics-section">
+          <div class="section-label">Products &amp; Search</div>
+
+          <div class="insights-panel">
+            <div class="insight-cell">
+              <div class="insight-cell-header">
+                <div class="insight-cell-icon">
+                  <i class="fa-solid fa-eye"></i>
+                </div>
+                <h3>Most Viewed Products</h3>
+              </div>
+              <div id="top-products"></div>
+            </div>
+
+            <div class="insight-cell">
+              <div class="insight-cell-header">
+                <div class="insight-cell-icon">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <h3>Popular Search Queries</h3>
+              </div>
+              <div id="top-searched-query"></div>
+            </div>
+
+            <div class="insight-cell">
+              <div class="insight-cell-header">
+                <div class="insight-cell-icon">
+                  <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </div>
+                <h3>Searches With No Results</h3>
+              </div>
+              <div id="zero-search-result"></div>
+            </div>
+
+            <div class="insight-cell">
+              <div class="insight-cell-header">
+                <div class="insight-cell-icon">
+                  <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h3>High Demand, Out of Stock</h3>
+              </div>
+              <div id="high-demand-out-of-stock"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== ACTIVITY ===================== -->
+        <section class="analytics-section">
+          <div class="section-label">Activity</div>
+
+          <div class="stat-card activity-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+              <h3>Activity Log</h3>
+
+              <div class="filter-list">
+                <select
+                  name="filter-list"
+                  id="filters-list"
+                  class="filter-select"
+                >
+                  <option value="all">All Activity</option>
+                  <option value="product_created">Created Products</option>
+                  <option value="product_updated">Updated Products</option>
+                  <option value="product_deleted">Deleted Products</option>
+                  <option value="bulk_edit">Bulk Edited Products</option>
+                  <option value="bulk_import">Bulk Imported Products</option>
+                  <option value="bulk_delete">Bulk Deleted Products</option>
+                </select>
+              </div>
+              <div class="filter-list">
+                <select name="limit-list" id="limit-list" class="filter-select">
+                  <option value="10">10 per page</option>
+                  <option value="20" selected>20 per page</option>
+                  <option value="50">50 per page</option>
+                  <option value="100">100 per page</option>
+                </select>
+              </div>
+            </div>
+            <div
+              id="activity-log-summary"
+              class="activity-log-summary-count"
+            ></div>
+
+            <div id="activityLogList">
+              <div class="activity-log-row">
+                <div class="activity-log-icon">+</div>
+                <div class="activity-log-content">
+                  <div class="activity-log-summary">
+                    <p>Jaber</p>
+                    Added iPhone 15 Pro
+                  </div>
+                  <div class="activity-log-time">2 minutes ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="activity-log-pager" class="activity-log-pager"></div>
+        </section>
+      </main>
+      <div id="toast-container"></div>
+    </div>
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+
+        <div class="logout-actions">
+          <button class="cancel-logout">Cancel</button>
+
+          <button class="confirm-logout">Logout</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="skeleton.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="analytics.js"></script>
+  </body>
+</html>

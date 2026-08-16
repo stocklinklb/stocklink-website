@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function () {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="settings.css">
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  <title>Settings</title>
+</head>
+<body>
+
+    <div class="admin-container">
+        <header>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+           <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
+  <span class="theme-switch-track">
+    <span class="theme-switch-thumb">
+      <i class="fa-solid fa-sun sun-icon"></i>
+      <i class="fa-solid fa-moon moon-icon"></i>
+    </span>
+  </span>
+</button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main class="settings-container">
+        
+    <div class="settings-card" data-loading>
+        <!-- Skeleton placeholder shown while settings.js's fetch is in
+             flight. Cleared (data-loading attribute removed) once the
+             real form below is populated - see the note at the bottom
+             of this file for the one line settings.js should add. A
+             timed fallback in the inline script further down also
+             reveals it regardless, so it can never get stuck masked. -->
+        <div class="skel-only" aria-hidden="true">
+            <div class="skeleton skeleton-title" style="width:160px;margin-bottom:10px"></div>
+            <div class="skeleton skeleton-text" style="width:60%;margin-bottom:28px"></div>
+
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px">
+                <div class="skeleton skeleton-circle" style="width:64px;height:64px"></div>
+                <div class="skeleton skeleton-btn" style="width:130px"></div>
+            </div>
+
+            <div class="form-grid">
+                <div class="skeleton skeleton-block" style="height:58px"></div>
+                <div class="skeleton skeleton-block" style="height:58px"></div>
+                <div class="skeleton skeleton-block" style="height:58px"></div>
+                <div class="skeleton skeleton-block" style="height:58px"></div>
+            </div>
+
+            <div class="skeleton skeleton-title" style="width:120px;margin:24px 0 10px"></div>
+            <div class="skeleton skeleton-block" style="height:58px;margin-bottom:16px"></div>
+            <div class="skeleton skeleton-block" style="height:58px;margin-bottom:24px"></div>
+
+            <div class="skeleton skeleton-btn" style="width:150px"></div>
+        </div>
+
+        <div class="real-only">
+            <h2>Store Profile</h2>
+            <p class="subtitle">
+                Manage your store information displayed to customers.
+            </p>
+
+            <div class="logo-section">
+
+                <div class="logo-preview">
+                    <img  src="/phone-photos/user.png" alt="Store Logo" id="logo-preview-image">
+                </div>
+                <button class="upload-btn" id="upload-logo-btn">
+                    Upload Logo
+                    <input id ="logo-upload" type="file" accept="image/*" hidden>
+                </button>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Store Name</label>
+                    <input type="text" placeholder="Store name" id="store-name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" placeholder="Phone number" id="phone">
+                </div>
+
+                <div class="form-group">
+                    <label>WhatsApp Number</label>
+                    <input type="text" placeholder="WhatsApp number" id="whatsapp">
+                </div>
+                <div class="form-group full">
+                    <label>Address</label>
+                    <input type="text" placeholder="Store address" id="address">
+                </div>
+
+            </div>
+            <h3>Social Links</h3>
+
+            <div class="form-group">
+                <label>Instagram</label>
+                <input type="text" placeholder="Instagram link" id="instagram">
+            </div>
+
+            <div class="form-group">
+                <label>Facebook</label>
+                <input type="text" placeholder="Facebook link" id="facebook">
+            </div>
+            <div class="form-group">
+                <label>TikTok</label>
+                <input type="text" placeholder="TikTok link" id="tiktok">
+            </div>
+
+            <button class="save-btn" id="save-btn">
+                Save Changes
+            </button>
+        </div>
+    </div>
+    
+</main>
+        <div id="toast-container"></div>
+      <div class="logout-modal-overlay" id="logoutModal">
+        <div class="logout-modal">
+          <h3>Confirm Logout</h3>
+          <p>Are you sure you want to log out?</p>
+
+          <div class="logout-actions">
+            <button class="cancel-logout">Cancel</button>
+            <button class="confirm-logout">Logout</button>
+          </div>
+        </div>
+      </div>
+      <script src="config.js"></script>
+      <script src="shared.js"></script>
+      <script src="skeleton.js"></script>
+      <script src="sidebar.js"></script>
+      <script>
+        // Fallback only: reveals the form 1.2s after load regardless,
+        // so it's never stuck behind the skeleton even without the
+        // settings.js change below. Once that line is added, this
+        // fires a no-op (Skeleton.clear is safe to call twice).
+        setTimeout(() => Skeleton.clear(".settings-card"), 1200);
+      </script>
+      <script src="settings.js"></script>
+      <!--
+        Integration note for settings.js (not included in this
+        upload): for the skeleton to clear exactly when data is ready
+        instead of on a timer, add this one line right after the
+        fetched values are written into the form inputs:
+
+          Skeleton.clear(".settings-card");
+      -->
+</body>
+</html>

@@ -1,0 +1,986 @@
+/* ============================================
+   Design tokens
+   ============================================
+   This page no longer declares its own accent/success/danger/
+   surface tokens — it uses shared.css's :root as the single source
+   of truth (loaded first in excel-import.html), so the accent here
+   always matches the header/sidebar. Only page-local aliases are
+   kept, for the few names this file uses that shared.css doesn't
+   define under the same name. */
+
+:root {
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-soft);
+  --text-muted: var(--ink-faint);
+  --accent-hover: var(--accent-dark);
+}
+
+main {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--bg);
+  /* Safety net: the review table is the one element on this page
+     that's intentionally wider than its container on small screens
+     (see .review-card's overflow-x: auto) - it scrolls within itself,
+     not the page. This guards against anything else doing the same
+     by accident. */
+  overflow-x: hidden;
+}
+
+/* ============================================
+   Page header
+   ============================================ */
+
+.excel-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0 4px;
+}
+
+.excel-title h1 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.excel-title p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ============================================
+   Stepper
+   ============================================ */
+
+/* Fluid by design, not by breakpoint: steps size to their own content
+   (icon + label) and the connecting lines are the only flexible part,
+   shrinking to fill whatever space is left. That means the whole row
+   always exactly fits its container - no fixed widths to overflow at
+   narrow viewports, and no separate mobile override needed. */
+.steps-container {
+  display: flex;
+  align-items: flex-start;
+  margin: 32px auto;
+  width: 100%;
+  max-width: 480px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.step-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 2px solid var(--border-strong);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.step span {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-align: center;
+  max-width: 84px;
+}
+
+.step-line {
+  flex: 1 1 auto;
+  min-width: 12px;
+  height: 2px;
+  background: var(--border-strong);
+  margin-top: 20px;
+  transition: background 0.25s ease;
+}
+
+.step.active .step-circle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.step.active span {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.step.completed .step-circle {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.step.completed .step-circle i {
+  font-size: 15px;
+}
+
+.step.completed span {
+  color: var(--text-primary);
+}
+
+/* ============================================
+   Upload section
+   ============================================ */
+
+.upload h2 {
+  margin: 8px 0 0;
+  padding: 0 0 14px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+}
+
+.upload-card {
+  width: 100%;
+  max-width: 520px;
+  min-height: 300px;
+  box-sizing: border-box;
+
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  margin: 20px auto 32px;
+  padding: 36px 28px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.upload-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.upload-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-icon {
+  width: 64px;
+  height: 64px;
+
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 22px;
+
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+
+  background: var(--accent);
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+}
+
+.upload-btn:hover {
+  background: var(--accent-hover);
+}
+
+.upload-btn:active {
+  transform: scale(0.98);
+}
+
+.upload-btn:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.upload-btn input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.supported {
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+.upload-instructions {
+  margin-top: 4px;
+  padding: 0 30px;
+  max-width: 340px;
+
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ============================================
+   Selected file state
+   ============================================ */
+
+.selected-file {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-sizing: border-box;
+}
+
+.file-info-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--success-soft);
+  color: var(--success);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.file-info-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+#file-name {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+#file-size {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.remove-file,
+.continue-btn,
+.back-btn {
+  border: none;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+/* Icon-only button - fixed square so it stays a comfortable touch
+   target (44px) at any width, which is what lets it stay side-by-side
+   with continue-btn instead of needing to stack on mobile. */
+.remove-file {
+  flex: 0 0 auto;
+  width: 44px;
+  padding: 0;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.remove-file:hover {
+  background: #fde2e2;
+}
+
+.continue-btn {
+  flex: 1;
+  background: var(--accent);
+  color: white;
+}
+
+.continue-btn:hover {
+  background: var(--accent-hover);
+}
+
+.continue-btn:active,
+.remove-file:active {
+  transform: scale(0.98);
+}
+
+.remove-file:focus-visible,
+.continue-btn:focus-visible,
+.back-btn:focus-visible,
+.template-link:focus-visible,
+.import-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Back button used on the review step */
+.back-btn {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
+  margin: 0 auto 18px;
+}
+
+.back-btn:hover {
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+/* ============================================
+   Template download section
+   ============================================ */
+
+.template-section {
+  max-width: 520px;
+  margin: 0 auto 40px;
+
+  padding: 18px 20px;
+
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+
+  text-align: center;
+}
+
+.template-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 14px;
+
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.template-link:hover {
+  text-decoration: underline;
+}
+
+.template-columns {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* ============================================
+   Loading state (parsing file)
+   ============================================ */
+
+.parsing-loader {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 520px;
+  margin: -12px auto 28px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.parsing-loader.visible {
+  display: flex;
+}
+
+.parsing-loader .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   Review table (card)
+   ============================================ */
+
+.review-section {
+  display: none;
+  max-width: 1000px;
+  margin: 0 auto 200px;
+  padding: 0 4px;
+}
+
+.review-section.visible {
+  display: block;
+}
+
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Only relevant once the table gets a wide, non-shrinking layout at
+   narrow viewports (see the table rules inside the 768px breakpoint
+   below) - hidden here, shown there. */
+.table-scroll-hint {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 0 2px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+/* Column weighting for the fixed layout - status/price/stock stay
+   narrow since their values are always short; model/color/brand get
+   more room since those hold the longest text */
+thead th:nth-child(1) {
+  width: 50px;
+}
+thead th:nth-child(2) {
+  width: 11%;
+}
+thead th:nth-child(3) {
+  width: 20%;
+}
+thead th:nth-child(4) {
+  width: 9%;
+}
+thead th:nth-child(5) {
+  width: 12%;
+}
+thead th:nth-child(6) {
+  width: 9%;
+}
+thead th:nth-child(7) {
+  width: 8%;
+}
+thead th:nth-child(8) {
+  width: 7%;
+}
+thead th:nth-child(9) {
+  width: auto;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+thead th:first-child,
+tbody td:first-child {
+  width: 44px;
+  text-align: center;
+}
+
+thead th:last-child {
+  text-align: left;
+}
+
+tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover td {
+  background: var(--bg);
+}
+
+/* Invalid rows get a quiet red wash so problem rows are scannable
+   at a glance without fighting the hover state */
+tbody tr.row-invalid td {
+  background: var(--danger-soft);
+}
+
+tbody tr.row-invalid:hover td {
+  background: #fde4e4;
+}
+
+/* Status badge cell */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.status-badge.valid {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.status-badge.invalid {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* Inline-edit inputs inside table cells */
+.review-card input {
+  /* Fills the cell - column widths are controlled by the table's
+     fixed layout (see thead th:nth-child rules above), not by the
+     input itself. */
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.review-card input:hover {
+  background: var(--surface);
+  border-color: var(--border-strong);
+}
+
+.review-card input:focus {
+  outline: none;
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* Missing/invalid field: red-bordered even before focus, so the exact
+   cell that needs fixing is obvious, not just the row */
+.review-card input.field-invalid {
+  border-color: var(--danger);
+  background: var(--surface);
+}
+
+.review-card input.field-invalid:focus {
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+
+.review-card td.numeric input {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.issues-cell {
+  color: var(--danger);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.issues-cell .none {
+  color: var(--text-muted);
+}
+
+.issues-cell i {
+  margin-right: 5px;
+}
+
+/* ============================================
+   Sticky review summary / action bar (signature element)
+   ============================================ */
+
+.cards-stats {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.cards-stats .card {
+  background: transparent;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+  border-radius: 0;
+}
+
+.cards-stats .card h2 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.cards-stats .card p {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.cards-stats .validRows p {
+  color: var(--success);
+}
+
+.cards-stats .invalidRows p {
+  color: var(--danger);
+}
+
+.review-actions-bar {
+  display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 20;
+
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+
+  width: min(920px, calc(100% - 48px));
+  padding: 16px 22px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.review-actions-bar.visible {
+  display: flex;
+}
+
+.import-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: none;
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+
+  background: var(--accent);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+}
+
+.import-btn:hover {
+  background: var(--accent-hover);
+}
+
+.import-btn:active {
+  transform: scale(0.98);
+}
+
+.import-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+  transform: none;
+}
+.stock-mode {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stock-mode-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+}
+
+.stock-mode-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.stock-mode-option input[type="radio"] {
+  accent-color: var(--primary, #4f46e5);
+  cursor: pointer;
+}
+/* ============================================
+   Responsive
+   ============================================
+   Two breakpoints do the real work:
+
+   - 768px (tablet and below): the review table switches from a
+     shrink-to-fit layout (fine on desktop, unreadable once squeezed
+     into a phone width) to a wide, non-shrinking layout that scrolls
+     horizontally *inside* .review-card only - the page itself never
+     gains horizontal scroll. The sticky action bar also stacks here,
+     since stock-mode + stats + the import button no longer fit in one
+     row once the bar's own width shrinks with the viewport.
+
+   - 480px (phones): spacing, type sizes, and a few widths are tuned
+     down further so nothing feels cramped or oversized on the
+     smallest supported screens. Everything above 480px already scales
+     smoothly on its own (see the fluid stepper, buttons, and card
+     widths earlier in the file) - this breakpoint is refinement, not
+     a structural change.
+   ============================================ */
+
+@media (max-width: 768px) {
+  .excel-title {
+    padding: 4px 12px 4px;
+  }
+
+  .steps-container {
+    margin: 24px auto;
+  }
+
+  .upload-card {
+    padding: 28px 18px;
+  }
+
+  /* ---- Review table: contained horizontal scroll ----
+     table-layout:fixed + width:100% (the desktop rule) makes columns
+     shrink to fit the container - exactly what breaks a 9-column
+     table on a phone. Switching to auto layout with explicit column
+     widths lets the table keep a usable, readable width and overflow
+     .review-card instead, which is the intended scroll surface. */
+  table {
+    table-layout: auto;
+    width: auto;
+    font-size: 13px;
+  }
+
+  thead th:nth-child(1),
+  tbody td:first-child {
+    width: 48px;
+  }
+  thead th:nth-child(2) {
+    width: 110px;
+  }
+  thead th:nth-child(3) {
+    width: 180px;
+  }
+  thead th:nth-child(4) {
+    width: 90px;
+  }
+  thead th:nth-child(5) {
+    width: 110px;
+  }
+  thead th:nth-child(6) {
+    width: 100px;
+  }
+  thead th:nth-child(7) {
+    width: 90px;
+  }
+  thead th:nth-child(8) {
+    width: 90px;
+  }
+  thead th:nth-child(9) {
+    width: 240px;
+  }
+
+  .table-scroll-hint {
+    display: flex;
+  }
+
+  /* ---- Sticky action bar: stack instead of shrink ---- */
+  .review-actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    bottom: 12px;
+    width: calc(100% - 24px);
+    padding: 16px 18px;
+  }
+
+  .cards-stats {
+    justify-content: space-between;
+  }
+
+  .stock-mode {
+    gap: 10px 16px;
+  }
+
+  /* The action bar is now taller once stacked (stats + stock-mode +
+     button), so the review list needs more reserved space beneath it
+     to avoid the last rows sitting behind the fixed bar. */
+  .review-section {
+    margin-bottom: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .excel-title h1 {
+    font-size: 22px;
+  }
+
+  .excel-title p {
+    font-size: 13px;
+  }
+
+  .step span {
+    font-size: 11.5px;
+    max-width: 68px;
+  }
+
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .step-line {
+    margin-top: 17px;
+  }
+
+  .upload-card {
+    padding: 24px 14px;
+  }
+
+  .upload-instructions {
+    padding: 0 8px;
+  }
+
+  .template-section {
+    padding: 16px;
+  }
+
+  .review-actions-bar {
+    bottom: 8px;
+    width: calc(100% - 16px);
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .cards-stats {
+    gap: 8px 14px;
+    flex-wrap: wrap;
+  }
+
+  .import-btn {
+    width: 100%;
+  }
+}

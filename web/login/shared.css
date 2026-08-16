@@ -1,0 +1,1196 @@
+/* ============================================
+   Design tokens — neutral, minimal palette
+   ============================================ */
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=JetBrains+Mono:wght@500;600&display=swap");
+
+:root {
+  /* ============================================
+     Typography
+     ============================================ */
+  --font-display: "Sora", "Inter", Arial, sans-serif;
+  --font-body: "Sora", "Inter", Arial, sans-serif;
+
+  /* ============================================
+     Text
+     ============================================ */
+  --ink: #111827;
+  --ink-soft: #475569;
+  --ink-faint: #94a3b8;
+
+  /* ============================================
+     Backgrounds / Surfaces
+     ============================================ */
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-muted: #f1f5f9;
+
+  /* ============================================
+     Borders
+     ============================================ */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* ============================================
+     Sidebar
+     ============================================ */
+  --sidebar-bg: #ffffff;
+  --sidebar-ink: #64748b;
+  --sidebar-ink-active: #0f172a;
+  --sidebar-active-bg: rgba(37, 99, 235, 0.1);
+  --sidebar-border: #eef1f6;
+  --sidebar-hover-bg: rgba(15, 23, 42, 0.035);
+
+  /* ============================================
+     Accent
+     ============================================ */
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+  --accent-contrast: #ffffff;
+  --accent-soft: #dbeafe;
+  --accent-ring: rgba(37, 99, 235, 0.16);
+
+  /* ============================================
+     Status
+     ============================================ */
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+
+  /* ============================================
+     Overlays / Glass
+     ============================================ */
+  --overlay: rgba(15, 23, 42, 0.45);
+  --overlay-dark: rgba(15, 23, 42, 0.65);
+  --glass: rgba(255, 255, 255, 0.92);
+
+  /* ============================================
+     Shadows
+     ============================================ */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+
+  --shadow-accent-sm: 0 6px 16px rgba(37, 99, 235, 0.12);
+  --shadow-accent-md: 0 8px 30px rgba(37, 99, 235, 0.1);
+  --shadow-accent-lg: 0 10px 24px rgba(37, 99, 235, 0.18);
+
+  /* ============================================
+     Radius
+     ============================================ */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* ============================================
+     Admin compatibility tokens
+     ============================================ */
+  --adm-ink: var(--ink);
+  --adm-ink-soft: var(--ink-soft);
+  --adm-ink-faint: var(--ink-faint);
+
+  --adm-border: var(--border);
+  --adm-border-strong: var(--border-strong);
+
+  --adm-surface: var(--surface);
+  --adm-surface-soft: var(--surface-soft);
+  --adm-surface-muted: var(--surface-muted);
+
+  --adm-accent: var(--accent);
+  --adm-accent-dark: var(--accent-dark);
+  --adm-accent-soft: var(--accent-soft);
+  --adm-accent-ring: var(--accent-ring);
+
+  --adm-danger: var(--danger);
+  --adm-danger-soft: var(--danger-soft);
+
+  --adm-success: var(--success);
+
+  --adm-radius-sm: var(--radius-sm);
+  --adm-radius-md: var(--radius-md);
+  --adm-radius-lg: var(--radius-lg);
+  --adm-radius-pill: var(--radius-pill);
+
+  --adm-shadow-sm: var(--shadow-sm);
+  --adm-shadow-md: var(--shadow-md);
+  --adm-shadow-lg: var(--shadow-lg);
+
+  --adm-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Dark theme
+   ============================================ */
+html[data-theme="dark"] {
+  /* Text */
+  --ink: #f3f4f6;
+  --ink-soft: #a7adb7;
+  --ink-faint: #727985;
+
+  /* Backgrounds / Surfaces */
+  --bg: #0f1115;
+  --surface: #15181d;
+  --surface-soft: #1b1f25;
+  --surface-muted: #22272e;
+
+  /* Borders */
+  --border: #252b33;
+  --border-strong: #343b45;
+
+  /* Sidebar */
+  --sidebar-bg: #121419;
+  --sidebar-ink: #939aa5;
+  --sidebar-ink-active: #f5f6f7;
+  --sidebar-active-bg: rgba(255, 255, 255, 0.075);
+  --sidebar-border: #222730;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.045);
+
+  /* Accent */
+  --accent: #4f7cff;
+  --accent-dark: #3b68e8;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(79, 124, 255, 0.13);
+  --accent-ring: rgba(79, 124, 255, 0.18);
+
+  /* Status */
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.11);
+
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.11);
+
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.11);
+
+  /* Overlays / Glass */
+  --overlay: rgba(0, 0, 0, 0.48);
+  --overlay-dark: rgba(0, 0, 0, 0.68);
+  --glass: rgba(21, 24, 29, 0.94);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.35);
+
+  --shadow-accent-sm: 0 6px 16px rgba(79, 124, 255, 0.08);
+  --shadow-accent-md: 0 8px 30px rgba(79, 124, 255, 0.08);
+  --shadow-accent-lg: 0 10px 24px rgba(79, 124, 255, 0.12);
+}
+/* ============================================
+   Base
+   ============================================ */
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  background: var(--bg);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--bg);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.theme-switch {
+  width: 52px;
+  height: 28px;
+
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+
+  background: transparent;
+  cursor: pointer;
+
+  flex-shrink: 0;
+}
+
+.theme-switch-track {
+  position: relative;
+
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+
+  background: var(--surface-muted);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.theme-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-switch-thumb i {
+  position: absolute;
+  font-size: 12px;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sun-icon {
+  color: var(--warning);
+  opacity: 1;
+  transform: scale(1);
+}
+
+.moon-icon {
+  color: var(--ink-soft);
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+html[data-theme="dark"] .theme-switch-track {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+html[data-theme="dark"] .theme-switch-thumb {
+  transform: translateX(24px);
+}
+
+html[data-theme="dark"] .sun-icon {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+html[data-theme="dark"] .moon-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+.kpi-value-skeleton {
+  display: inline-block;
+  width: 75px;
+  height: 30px;
+  border-radius: 6px;
+}
+.visitors-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 350px;
+}
+
+.visitors-chart-wrapper canvas {
+  position: relative;
+  z-index: 1;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.visitors-chart-skeleton {
+  position: absolute;
+  z-index: 2;
+  inset: 20px 10px 30px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  pointer-events: none;
+}
+
+.visitors-chart-skeleton span {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border-radius: 6px;
+}
+.theme-switch:hover .theme-switch-track {
+  border-color: var(--border-strong);
+}
+
+.theme-switch:active .theme-switch-thumb {
+  width: 24px;
+}
+/* Light theme */
+.sun-icon {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.moon-icon {
+  transform: translateY(20px) scale(0.5);
+  opacity: 0;
+}
+
+/* Dark theme */
+html[data-theme="dark"] .sun-icon {
+  transform: translateY(-20px) scale(0.5);
+  opacity: 0;
+}
+
+html[data-theme="dark"] .moon-icon {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+/* ============================================
+   Logout modal
+   ============================================ */
+.logout-btn {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+
+  border-radius: var(--radius-lg);
+
+  border: 1px solid transparent;
+  text-wrap: nowrap;
+  background: transparent;
+
+  color: var(--ink-soft);
+
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.logout-btn:hover {
+  background: var(--danger-soft);
+
+  color: var(--danger);
+
+  border-color: #fecaca;
+}
+
+.logout-btn:active {
+  transform: scale(0.97);
+}
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1100;
+}
+
+.logout-modal-overlay.active {
+  display: flex;
+}
+
+.logout-modal {
+  background: var(--surface);
+  padding: 25px;
+  border-radius: var(--radius-lg);
+  width: 350px;
+  text-align: center;
+}
+
+.logout-modal h3 {
+  margin-bottom: 10px;
+}
+
+.logout-modal p {
+  color: var(--ink-soft);
+  margin-bottom: 25px;
+}
+
+.logout-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-logout,
+.confirm-logout {
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: none;
+}
+
+.cancel-logout {
+  background: var(--surface-muted);
+}
+
+.confirm-logout {
+  background: var(--danger);
+  color: var(--accent-contrast);
+}
+/* ============================================
+   Logo — bar-chart mark + two-tone wordmark
+   ============================================
+   HTML expected:
+   <div class="header-logo">
+     <span class="logo-mark" aria-hidden="true">
+       <span class="bar bar-1"></span>
+       <span class="bar bar-2"></span>
+       <span class="bar bar-3"></span>
+     </span>
+     <h3 class="logo-text">
+       <span class="logo-stock">Stock</span><span class="logo-link">Link</span>
+     </h3>
+   </div>
+   ============================================ */
+
+.logo-text {
+  display: flex;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.logo-stock {
+  color: var(--ink);
+}
+
+.logo-link {
+  color: var(--accent);
+  position: relative;
+}
+
+.logo-link::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: -3px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+aside > h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+
+  padding: 2px 6px 18px;
+  margin-bottom: 6px;
+
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+aside > h2::before {
+  content: "\f0e7";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 15px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+/* ============================================
+   Typography
+   ============================================ */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: var(--font-body);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.profile-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+  background: var(--surface);
+}
+
+.profile-box:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+}
+
+.profile-box span {
+  color: var(--ink-soft);
+  background: var(--surface-muted);
+
+  padding: 1px 5px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+
+  border: 1px solid var(--border);
+}
+
+.profile-box img {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+  object-fit: cover;
+
+  background: var(--surface-muted);
+}
+
+.profile-info h4 {
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.3;
+
+  color: var(--ink);
+}
+/* ============================================
+   Layout shell
+   ============================================ */
+
+.admin-container {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* ============================================
+   Sidebar
+   ============================================
+   Flat surface, matching the header: solid background, hairline
+   border, no gradient. Active state is a quiet tinted pill rather
+   than a saturated accent block, with a thin accent rule on the
+   leading edge — the common "modern SaaS" active-nav pattern. */
+
+aside {
+  border-right: 1px solid var(--sidebar-border);
+
+  padding: 20px 16px 16px;
+
+  background: var(--sidebar-bg);
+
+  display: flex;
+  flex-direction: column;
+
+  /* position:fixed instead of sticky: sticky was being silently
+     disabled by the overflow-x:hidden set on html/body further up
+     this file (a well-known cross-browser sticky gotcha), which is
+     why the sidebar was scrolling away with the page. Fixed pins it
+     to the viewport unconditionally. main below gets a matching
+     margin-left so content doesn't render underneath it. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  z-index: 20;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  gap: 16px;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 10px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-profile {
+  margin-top: auto;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px;
+
+  border-radius: var(--radius-lg);
+
+  background: var(--surface-muted);
+
+  border: 1px solid var(--sidebar-border);
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.sidebar-profile:hover {
+  background: var(--sidebar-hover-bg);
+
+  border-color: var(--border-strong);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-profile img {
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.18s ease;
+}
+
+.sidebar-profile:hover img {
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+aside a {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 9px 12px;
+
+  border-radius: 8px;
+
+  font-weight: 500;
+
+  font-size: 13.5px;
+  letter-spacing: -0.005em;
+
+  color: var(--ink-soft);
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease;
+}
+
+aside a i {
+  width: 16px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--ink-faint);
+  transition: color 0.16s ease;
+}
+
+aside nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+aside a:hover {
+  background: var(--sidebar-hover-bg);
+
+  color: var(--ink);
+}
+
+aside a:hover i {
+  color: var(--ink);
+}
+
+aside a.active {
+  background: var(--sidebar-active-bg);
+
+  color: var(--accent-dark);
+
+  font-weight: 600;
+}
+
+aside a.active i {
+  color: var(--accent);
+}
+
+/* ============================================
+   Main
+   ============================================ */
+
+main {
+  padding: 32px 36px 48px;
+  margin-left: 240px;
+
+  background: var(--bg);
+}
+
+/* ============================================
+   Mobile navigation
+   ============================================ */
+
+.menu-toggle {
+  display: none;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 4px;
+
+  width: 40px;
+
+  height: 40px;
+
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+
+  cursor: pointer;
+
+  flex-shrink: 0;
+
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.menu-toggle:hover {
+  border-color: var(--border-strong);
+
+  background: var(--surface-muted);
+}
+
+.menu-toggle span {
+  display: block;
+
+  width: 18px;
+
+  height: 2px;
+
+  background: var(--ink);
+
+  border-radius: var(--radius-sm);
+}
+
+.sidebar-overlay {
+  position: fixed;
+
+  inset: 0;
+  background: var(--overlay-dark);
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 24px;
+  transition: opacity 0.2s ease;
+
+  z-index: 900;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+
+  pointer-events: auto;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  .admin-container {
+    grid-template-columns: 1fr;
+  }
+
+  aside {
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    height: 100vh;
+
+    width: min(78vw, 280px);
+
+    z-index: 1000;
+
+    transform: translateX(-100%);
+
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    border-left: none;
+    box-shadow: none;
+
+    overflow-y: auto;
+  }
+
+  aside.open {
+    transform: translateX(0);
+
+    box-shadow: var(--shadow-lg);
+  }
+
+  main {
+    padding: 24px 18px 40px;
+    margin-left: 0;
+  }
+}
+
+/* ============================================
+   Skeleton loading
+   ============================================
+   Reusable everywhere (admin + customer). Two ways to use it:
+
+   1) SELF-CONTAINED PLACEHOLDER — a fake block with no real content
+      behind it (e.g. a stat card number before the first fetch
+      resolves). Just add the shape classes:
+        <span class="skeleton skeleton-text" style="width:60px"></span>
+
+   2) SWAP WITH REAL CONTENT — put both the skeleton and the real
+      element in the DOM inside a common parent, mark the parent
+      [data-loading], and toggle it off in JS once data arrives:
+        <div class="stat-card" data-loading>
+          <span class="skeleton skeleton-text skel-only"></span>
+          <span class="real-only" id="allProducts">0</span>
+        </div>
+        // JS: cardEl.removeAttribute('data-loading')
+      [data-loading] hides .real-only and shows .skel-only; removing
+      the attribute flips it. See skeleton.js for small helpers
+      (renderSkeletonRows, clearLoading, etc.) used by page scripts.
+   ============================================ */
+
+header {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+}
+.skeleton {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--surface-muted);
+  border-radius: var(--radius-sm);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+.skeleton-text {
+  height: 12px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 18px;
+  width: 60%;
+  border-radius: 5px;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+.skeleton-block {
+  border-radius: var(--radius-md);
+}
+
+.skeleton-btn {
+  height: 38px;
+  border-radius: var(--radius-md);
+}
+
+/* data-loading swap pattern: wrap real content in .real-only and a
+   matching placeholder in .skel-only, put both inside an element
+   with the data-loading attribute. Remove the attribute in JS
+   (Skeleton.clear(...)) once real data has been written in. */
+[data-loading] .real-only {
+  display: none !important;
+}
+
+[data-loading] .skel-only {
+  display: block !important;
+}
+
+.skel-only {
+  display: none;
+}
+.toast {
+  min-width: 280px;
+  padding: 16px 20px;
+  border-radius: var(--adm-radius-md);
+  color: white;
+  font-size: 14.5px;
+  font-weight: 600;
+  box-shadow: var(--adm-shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideIn 0.3s var(--adm-ease);
+}
+
+.toast.success {
+  background: var(--adm-success);
+}
+.toast.error {
+  background: var(--adm-danger);
+}
+
+.toast.hide {
+  animation: slideOut 0.3s var(--adm-ease) forwards;
+}
+/* Masks an existing element's own text/content in place, without
+   changing its layout, size, or DOM structure - safe to drop onto
+   any element a page script already targets by id/selector (e.g.
+   `el.textContent = value`), since that update naturally removes the
+   need for the mask. Pair with Skeleton.autoReveal() in skeleton.js,
+   which removes this class automatically once it detects the
+   element's content actually changed (with a timed fallback so it
+   never gets stuck if that never happens). */
+.skeleton-inline {
+  color: transparent !important;
+  background: var(--surface-muted);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-inline::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-inline::after {
+    animation: none;
+  }
+}
+
+/* ============================================
+   Small screens
+   ============================================ */
+
+@media (max-width: 480px) {
+  .profile-info {
+    display: none;
+  }
+
+  .profile-box {
+    padding: 5px;
+
+    gap: 10px;
+  }
+}
+
+/* ============================================
+   Toast notifications
+   ============================================
+   Used by showToast() in shared.js — kept here (not a page-specific
+   CSS file) since the toast container/markup is shared across every
+   admin page that includes shared.js. */
+
+#toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+}
+
+.toast {
+  min-width: 280px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md, 12px);
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideIn 0.3s ease;
+}
+
+.toast.success {
+  background: var(--success);
+}
+
+.toast.error {
+  background: var(--danger);
+}
+
+.toast.hide {
+  animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  #toast-container {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  #toast-container .toast {
+    min-width: 0;
+    width: 100%;
+  }
+}

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>StockLink Login</title>
+
+    <link rel="stylesheet" href="login.css" />
+  </head>
+
+  <body>
+    <main class="login-page">
+      <div class="floating-card card-one">
+        <span>Products</span>
+        <strong>248</strong>
+      </div>
+
+      <div class="floating-card card-two">
+        <span>Inventory</span>
+        <strong>+12%</strong>
+      </div>
+
+      <div class="floating-card card-three">
+        <span>Orders</span>
+        <strong>56</strong>
+      </div>
+
+      <section class="login-card">
+        <div class="brand">
+          <div class="logo">SL</div>
+          <h1>StockLink</h1>
+          <p>Sign in to manage stock and orders quickly.</p>
+        </div>
+
+        <form class="login-form" id="login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="email@example.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-field">
+              <input id="password" type="password" placeholder="Enter your password" />
+              <button
+                type="button"
+                class="toggle-password"
+                id="toggle-password"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="remember-row">
+            <label class="remember">
+              <input type="checkbox" id="remember-me" />
+              <span>Remember me</span>
+            </label>
+          </div>
+
+          <button type="submit">Login</button>
+          <p class="error-message"></p>
+        </form>
+      </section>
+    </main>
+    <script src="config.js"></script>
+    <script src="login.js"></script>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+    (function () {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Store | Incompleted Products Informations View</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="shared.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
+    />
+
+    <link rel="stylesheet" href="missing-infos.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-container">
+      <header>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
+  <span class="theme-switch-track">
+    <span class="theme-switch-thumb">
+      <i class="fa-solid fa-sun sun-icon"></i>
+      <i class="fa-solid fa-moon moon-icon"></i>
+    </span>
+  </span>
+</button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main>
+        <div class="hero-products hidden">
+          <h1>Products Needing Attention!</h1>
+          <button id="save-all-btn">
+            Save All <i class="fa-solid fa-save"></i>
+          </button>
+        </div>
+        <div class="products-container"></div>
+      </main>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+
+        <div class="logout-actions">
+          <button class="cancel-logout">Cancel</button>
+
+          <button class="confirm-logout">Logout</button>
+        </div>
+      </div>
+    </div>
+    <div style="position: absolute; left: -9999px; opacity: 0">
+      <i class="fa-solid fa-box-open"></i>
+    </div>
+    <div class="image-modal-overlay hidden" id="image-modal">
+      <div class="image-modal">
+        <button class="close-modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 class="modal-product-name"></h3>
+
+        <div class="modal-images"></div>
+      </div>
+    </div>
+    <div class="upload-modal-overlay hidden">
+      <div class="upload-modal">
+        <!-- Header -->
+        <div class="upload-header">
+          <div>
+            <h3 class="upload-title">Uploading Images</h3>
+            <p class="upload-status">Preparing upload...</p>
+          </div>
+
+          <button class="upload-close hidden" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-section">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+
+          <div class="progress-info">
+            <span class="progress-percent">0%</span>
+            <span class="progress-files">0 / 0 images</span>
+          </div>
+        </div>
+
+        <!-- Current Upload -->
+        <div class="upload-current">
+          <span class="current-label">Current:</span>
+          <span class="current-file">Waiting...</span>
+        </div>
+
+        <!-- Footer -->
+        <div class="upload-footer">
+          <span class="upload-time">Calculating...</span>
+
+          <button class="upload-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="missing-infos.js"></script>
+  </body>
+</html>
