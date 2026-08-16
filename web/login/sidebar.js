@@ -42,16 +42,22 @@ function renderSideBar(){
 
   if(!sidebar) return;
 
-  const currentPage = window.location.pathname.split("/").pop();
+  // Compare base filenames without extension, since cleanUrls strips
+  // .html from the browsed URL and item.href now includes the /login/
+  // prefix — a full-path or full-string match would never succeed.
+  const currentPage = window.location.pathname.split("/").pop().replace(/\.html$/, "");
 
   sidebar.innerHTML = sidebarItems.map(
-    (item) => `
+    (item) => {
+      const itemPage = item.href.split("/").pop().replace(/\.html$/, "");
+      return `
         <a href="${item.href}" 
-           class="${currentPage === item.href ? "active" : ""}">
+           class="${currentPage === itemPage ? "active" : ""}">
           <i class="${item.icon}"></i>
           <span>${item.name}</span>
         </a>
-      `,
+      `;
+    },
     )
     .join("");
   
