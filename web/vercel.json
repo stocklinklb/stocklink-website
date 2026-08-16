@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/", "destination": "/home", "permanent": true },
+    { "source": "/index.html", "destination": "/home", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/login", "destination": "/login/login.html" }
+  ]
+}
