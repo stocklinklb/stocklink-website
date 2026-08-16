@@ -21,13 +21,9 @@ const savedTheme = localStorage.getItem("theme");
 applyTheme(savedTheme || "light");
 
 themeToggle?.addEventListener("click", () => {
-  const currentTheme =
-    document.documentElement.dataset.theme || "light";
+  const currentTheme = document.documentElement.dataset.theme || "light";
 
-  const newTheme =
-    currentTheme === "dark"
-      ? "light"
-      : "dark";
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
 
   applyTheme(newTheme);
 });
@@ -80,7 +76,7 @@ async function logout() {
     });
 
     if (response.ok) {
-      window.location.replace("/login/login.html");
+      window.location.replace("login.html");
     }
   } catch (error) {
     console.error("Logout error:", error);
@@ -184,6 +180,7 @@ async function ensureAdminAccess(retries = 2) {
 
       if (response.ok) {
         const user = await response.json();
+        window.currentUser = user;
         updateProfile(user);
         cacheProfile(user);
         return true;
@@ -200,11 +197,11 @@ async function ensureAdminAccess(retries = 2) {
     }
   }
 
-  if (window.location.pathname.endsWith("/login") || window.location.pathname.endsWith("login.html")) {
+  if (window.location.pathname.endsWith("login.html")) {
     return false;
   }
 
-  window.location.replace("/login/login.html");
+  window.location.replace("login.html");
   return false;
 }
 
@@ -314,7 +311,9 @@ function showToast(message, type) {
 // Page scripts that need to gate their own data loading on the result
 // (e.g. don't fetch products before we know the user is authenticated)
 // can `await window.adminAccessCheck` - it resolves to the same boolean
-// ensureAdminAccess() always returned.
+// ensureAdminAccess() always returned. Once it resolves true, the user
+// object from /auth/me is also cached at `window.currentUser` - read
+// that instead of re-fetching /auth/me for things like a username.
 setLogOutModal();
 window.adminAccessCheck = ensureAdminAccess();
 loadStoreLogo();

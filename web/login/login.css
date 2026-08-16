@@ -639,19 +639,69 @@ input:focus {
    ERROR
    ========================================================= */
 
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
 .error-message {
-  min-height: 18px;
+  display: none;
 
-  margin-top: -3px;
+  width: 100%;
+  margin-top: -2px;
+  padding: 10px 12px;
 
-  text-align: center;
+  border: 1px solid var(--danger-soft);
+  border-radius: var(--radius-md);
 
+  background: var(--danger-soft);
   color: var(--danger);
 
   font-size: 12px;
-  font-weight: 500;
-
+  font-weight: 600;
   line-height: 1.45;
+  text-align: left;
+
+  animation: error-in 0.18s var(--ease);
+}
+
+.error-message:not(:empty) {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* Small error indicator */
+.error-message:not(:empty)::before {
+  content: "!";
+  
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 18px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: var(--danger);
+  color: white;
+
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+@keyframes error-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* =========================================================

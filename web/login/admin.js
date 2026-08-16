@@ -69,7 +69,7 @@ const FALLBACK_PRODUCTS = [
   },
 ];
 document.getElementById("view-low-stock").addEventListener("click", () => {
-  window.location.href = "/login/products.html?filter=low-stock";
+  window.location.href = "products.html?filter=low-stock";
 });
 function flattenVariants(products) {
   if (!Array.isArray(products)) return [];
@@ -186,25 +186,21 @@ function renderInventoryOverview(rows) {
 }
 let currentUsername = "Admin";
 
-async function loadCurrentUser() {
-  try {
-    const response = await fetch(`${API_ROOT}/auth/me`, {
-      credentials: "include",
-    });
+// shared.js's ensureAdminAccess() already fetched /auth/me and cached the
+// result at window.currentUser by the time window.adminAccessCheck
+// resolves (see initAdminPage below) - read from there instead of firing
+// a second, identical request.
+function loadCurrentUser() {
+  const user = window.currentUser;
 
-    if (!response.ok) return;
+  if (!user) return;
 
-    const store = await response.json();
+  currentUsername = user.name;
 
-    currentUsername = store.name;
+  const usernameElement = document.getElementById("user-name");
 
-    const usernameElement = document.getElementById("user-name");
-
-    if (usernameElement) {
-      usernameElement.textContent = store.name;
-    }
-  } catch (error) {
-    console.error(error);
+  if (usernameElement) {
+    usernameElement.textContent = user.name;
   }
 }
 async function loadRecentActivity() {
@@ -287,7 +283,7 @@ async function initAdminPage() {
   //  excelImportInput.value = "";
   //   });
   // }
-  await loadCurrentUser();
+  loadCurrentUser();
   loadDashboard();
   loadRecentActivity();
 }
