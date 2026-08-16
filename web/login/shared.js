@@ -80,7 +80,7 @@ async function logout() {
     });
 
     if (response.ok) {
-      window.location.replace("login.html");
+      window.location.replace("/login/login.html");
     }
   } catch (error) {
     console.error("Logout error:", error);
@@ -200,11 +200,11 @@ async function ensureAdminAccess(retries = 2) {
     }
   }
 
-  if (window.location.pathname.endsWith("login.html")) {
+  if (window.location.pathname.endsWith("/login") || window.location.pathname.endsWith("login.html")) {
     return false;
   }
 
-  window.location.replace("login.html");
+  window.location.replace("/login/login.html");
   return false;
 }
 

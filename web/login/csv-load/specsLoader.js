@@ -1,7 +1,7 @@
 let phoneSpecs = [];
 
 async function loadCsv() {
-  const response = await fetch("csv-load/phones.csv");
+  const response = await fetch("/login/csv-load/phones.csv");
 
   const csvText = await response.text();
 

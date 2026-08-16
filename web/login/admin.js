@@ -69,7 +69,7 @@ const FALLBACK_PRODUCTS = [
   },
 ];
 document.getElementById("view-low-stock").addEventListener("click", () => {
-  window.location.href = "products.html?filter=low-stock";
+  window.location.href = "/login/products.html?filter=low-stock";
 });
 function flattenVariants(products) {
   if (!Array.isArray(products)) return [];

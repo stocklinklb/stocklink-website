@@ -2,37 +2,37 @@ const sidebarItems = [
   {
     name: "Home",
     icon: "fa-solid fa-house",
-    href: "index.html",
+    href: "/login/index.html",
   },
   {
     name:"Analytics",
     icon:"fa-solid fa-chart-pie",
-    href:"analytics.html",
+    href: "/login/analytics.html",
   },
   {
     name: "Products",
     icon: "fa-solid fa-boxes-stacked",
-    href: "products.html",
+    href: "/login/products.html",
   },
   {
     name: "Add Product",
     icon: "fa-solid fa-circle-plus",
-    href: "add-product.html",
+    href: "/login/add-product.html",
   },
   {
     name: "Excel Import",
     icon: "fa-solid fa-table",
-    href: "excel-import.html",
+    href: "/login/excel-import.html",
   },
   {
     name: "Incompleted Products",
     icon: "fa-solid fa-circle-exclamation",
-    href: "missing-infos.html",
+    href: "/login/missing-infos.html",
   },
   {
     name: "Settings",
     icon: "fa-solid fa-gear",
-    href: "settings.html",
+    href: "/login/settings.html",
   },
 ];
 
