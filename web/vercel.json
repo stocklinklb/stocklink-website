@@ -5,7 +5,6 @@
     { "source": "/index.html", "destination": "/home", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/login", "destination": "https://stocklink-demo-admin.vercel.app/" },
-    { "source": "/login/:path*", "destination": "https://stocklink-demo-admin.vercel.app/:path*" }
+    { "source": "/login", "destination": "/login/login.html" }
   ]
 }
