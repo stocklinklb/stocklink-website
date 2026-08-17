@@ -12,11 +12,10 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phone Store | Admin</title>
-    <link rel="stylesheet" href="/admin/shared.css" />
-    <link rel="stylesheet" href="/admin/analytics.css" />
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="analytics.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
       rel="stylesheet"
@@ -77,19 +76,24 @@
         </div>
 
         <!-- ===================== OVERVIEW ===================== -->
-        <section class="analytics-section">
-          <div class="section-label">Overview</div>
 
+        <section class="analytics-section">
           <div class="kpi-strip">
             <div class="kpi-card kpi-card--primary">
-              <span class="kpi-label">Total Visitors</span>
+              <span class="kpi-label">
+                <i class="fa-solid fa-users kpi-icon"></i>
+                Total Visitors
+              </span>
               <span class="kpi-value" id="total-visitors">
                 <span class="skeleton kpi-value-skeleton"></span>
               </span>
             </div>
 
             <div class="kpi-card">
-              <span class="kpi-label">Avg Session Time</span>
+              <span class="kpi-label">
+                <i class="fa-solid fa-clock kpi-icon"></i>
+                Avg Session Time
+              </span>
               <span class="kpi-value" id="avg-session-time">
                 <span class="skeleton kpi-value-skeleton"></span>
               </span>
@@ -266,10 +270,10 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-    <script src="/admin/config.js"></script>
-    <script src="/admin/shared.js"></script>
-    <script src="/admin/skeleton.js"></script>
-    <script src="/admin/sidebar.js"></script>
-    <script src="/admin/analytics.js"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="skeleton.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="analytics.js"></script>
   </body>
 </html>
