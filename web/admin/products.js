@@ -788,7 +788,7 @@ tbody.addEventListener("click", (event) => {
   if (!row) return;
 
   if (button.dataset.action === "edit") {
-    window.location.href = `/login/add-product.html?id=${row.productId}`;
+    window.location.href = `/admin/add-product.html?id=${row.productId}`;
     return;
   }
 
@@ -892,7 +892,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
 
 // ---------- Add product ----------
 addProductBtn.addEventListener("click", () => {
-  window.location.href = "/login/add-product.html";
+  window.location.href = "/admin/add-product.html";
 });
 
 // ensureAdminAccess() now runs automatically from shared.js as soon as it

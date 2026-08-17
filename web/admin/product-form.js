@@ -73,7 +73,7 @@ function resetProductForm() {
   editMode = false;
   productId = null;
 
-  history.replaceState(null, "", "/login/add-product.html");
+  history.replaceState(null, "", "/admin/add-product.html");
   saveProductButton.textContent = "Save Product";
   resetProductButton.textContent = "Reset Product";
   // clear normal inputs

@@ -151,7 +151,7 @@ resetProductButton.addEventListener("click", () => {
     // still has ?id=... on it - so it just re-fetches and re-fills the
     // same product's data instead of giving a blank form. Navigating to
     // the plain create URL is what actually clears everything.
-    window.location.href = "/login/add-product.html";
+    window.location.href = "/admin/add-product.html";
 
     return;
   }
@@ -2052,7 +2052,7 @@ async function saveProduct() {
   if (!editMode && data.id) {
     productId = data.id;
     editMode = true;
-    history.replaceState(null, "", `/login/add-product.html?id=${data.id}`);
+    history.replaceState(null, "", `/admin/add-product.html?id=${data.id}`);
   }
 }
 

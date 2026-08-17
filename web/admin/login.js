@@ -70,7 +70,7 @@ form.addEventListener("submit", async (event) => {
       }
 
       console.log("Login successful", data);
-      window.location.href = "/login/index.html";
+      window.location.href = "/admin/index.html";
     } else {
       
       errorMessage.textContent = data.message || "Invalid credentials";
