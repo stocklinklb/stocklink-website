@@ -36,16 +36,18 @@ const sidebarItems = [
   },
 ];
 
-
 function renderSideBar(){
   const sidebar = document.getElementById("sidebar-links");
 
   if(!sidebar) return;
 
-  // Compare base filenames without extension, since cleanUrls strips
-  // .html from the browsed URL and item.href now includes the /login/
-  // prefix — a full-path or full-string match would never succeed.
-  const currentPage = window.location.pathname.split("/").pop().replace(/\.html$/, "");
+  const rawSegment = window.location.pathname.split("/").pop();
+  // Homepage URLs (/admin or /admin/) have no filename segment at all,
+  // or it's empty after a trailing slash - treat both as "index" so
+  // they match the Home item's href (/admin/index.html).
+  const currentPage = rawSegment === "" || rawSegment === "admin"
+    ? "index"
+    : rawSegment.replace(/\.html$/, "");
 
   sidebar.innerHTML = sidebarItems.map(
     (item) => {
