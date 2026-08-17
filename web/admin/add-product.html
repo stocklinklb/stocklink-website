@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-    (function () {
-      var theme = localStorage.getItem("theme");
-      if (theme === "dark") {
-        document.documentElement.dataset.theme = "dark";
-      }
-    })();
-  </script>
+      (function () {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Phone Store | Product View</title>
@@ -20,7 +20,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
     />
-
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/admin/add-product.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -49,19 +49,23 @@
       </header>
       <div class="sidebar-overlay" id="sidebar-overlay"></div>
       <aside>
-       
         <h3 class="logo-text">
           <span class="logo-stock">Stock</span
           ><span class="logo-link">Link</span>
         </h3>
-           <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
-  <span class="theme-switch-track">
-    <span class="theme-switch-thumb">
-      <i class="fa-solid fa-sun sun-icon"></i>
-      <i class="fa-solid fa-moon moon-icon"></i>
-    </span>
-  </span>
-</button>
+        <button
+          id="themeToggle"
+          class="theme-switch"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <span class="theme-switch-track">
+            <span class="theme-switch-thumb">
+              <i class="fa-solid fa-sun sun-icon"></i>
+              <i class="fa-solid fa-moon moon-icon"></i>
+            </span>
+          </span>
+        </button>
         <div class="sidebar-links" id="sidebar-links"></div>
 
         <div class="profile-box sidebar-profile">
@@ -72,7 +76,6 @@
           </div>
           <button class="logout-btn">Log out</button>
         </div>
-       
       </aside>
 
       <main>
@@ -98,7 +101,6 @@
           wrapped so it can be toggled as one unit.
         -->
         <div id="product-form-content">
-          
           <section class="form-card">
             <div class="form-card-header">
               <h2>Product Information</h2>
