@@ -12,8 +12,8 @@
   </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phone Store | Admin</title>
-    <link rel="stylesheet" href="/login/shared.css" />
-    <link rel="stylesheet" href="/login/admin.css" />
+    <link rel="stylesheet" href="/admin/shared.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -104,11 +104,11 @@
         <div class="quick-actions quick">
           <h2>Quick Actions:</h2>
           <div class="cards">
-            <div class="quick-card" data-href="/login/add-product.html">
+            <div class="quick-card" data-href="/admin/add-product.html">
               <i class="fa-solid fa-circle-plus"></i> <span> Add Product</span>
             </div>
 
-            <div class="quick-card" data-href="/login/products.html">
+            <div class="quick-card" data-href="/admin/products.html">
               <i class="fa-solid fa-boxes-stacked"></i>
               <span>Manage Products</span>
             </div>
@@ -124,7 +124,7 @@
             </div>
             <div
               class="quick-card coming-soon"
-              data-href="/login/excel-import.html"
+              data-href="/admin/excel-import.html"
               id="excelImportBtn"
             >
               <span>⇪ Excel Import</span>
@@ -168,7 +168,7 @@
                 </div>
               </div>
               <div>
-                <a id="view-all-activity" href="/login/analytics.html"
+                <a id="view-all-activity" href="/admin/analytics.html"
                   >View all activity</a
                 >
               </div>
@@ -245,9 +245,9 @@
         </div>
       </div>
     </div>
-    <script src="/login/config.js"></script>
-    <script src="/login/shared.js"></script>
-    <script src="/login/skeleton.js"></script>
+    <script src="/admin/config.js"></script>
+    <script src="/admin/shared.js"></script>
+    <script src="/admin/skeleton.js"></script>
     <script>
       // Runs before admin.js, so these are the *first* paint the user
       // sees. Each call is self-clearing once admin.js writes real
@@ -271,8 +271,8 @@
         height: 36,
       });
     </script>
-    <script src="/login/admin.js"></script>
-    <script src="/login/sidebar.js"></script>
+    <script src="/admin/admin.js"></script>
+    <script src="/admin/sidebar.js"></script>
     <!--
       Integration notes for admin.js (not included in this upload, so
       wiring these two spots by hand):
