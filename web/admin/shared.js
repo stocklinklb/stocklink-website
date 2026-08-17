@@ -9,6 +9,29 @@
 //   <script src="shared.js"></script>
 
 // ---------- Mobile sidebar ----------
+// Prefetch all sidebar pages in the background so clicking between
+// them serves from cache instead of hitting the network again.
+// Doesn't skip render/parse time - just the download.
+(function prefetchAdminPages() {
+  const pages = [
+    "/admin/index.html",
+    "/admin/analytics.html",
+    "/admin/products.html",
+    "/admin/add-product.html",
+    "/admin/excel-import.html",
+    "/admin/missing-infos.html",
+    "/admin/settings.html",
+  ];
+
+  pages.forEach((href) => {
+    if (href === window.location.pathname) return; // skip current page
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = href;
+    document.head.appendChild(link);
+  });
+})();
+
 const themeToggle = document.getElementById("themeToggle");
 
 function applyTheme(theme) {
