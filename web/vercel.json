@@ -5,6 +5,6 @@
     { "source": "/index.html", "destination": "/home", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/login", "destination": "/login/login.html" }
+    { "source": "/admin", "destination": "/admin/login.html" }
   ]
 }
