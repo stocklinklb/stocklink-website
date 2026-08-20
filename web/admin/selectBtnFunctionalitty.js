@@ -273,7 +273,10 @@ confirmBlkBtn.addEventListener("click", async () => {
     confirmBlkBtn.textContent = "Update";
     if (selectionMode) selectBtn.click();
     tableRows = flattenVariants(allProducts);
-    applyFilters();
+    // The data changed, not the filters - use getFilteredRows() +
+    // renderResults() directly (not applyFilters()) so the current
+    // page number is preserved instead of being reset to 1.
+    renderResults(getFilteredRows());
     showToast(
       uniqueProductsToEdit.length === 1
         ? "Product updated successfully"
@@ -342,7 +345,6 @@ function updateProductsSummary() {
     selectAllCheckbox.checked = false;
   }
 }
-
 
 // Open the delete modal on click
 

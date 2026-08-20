@@ -10,38 +10,53 @@
 // color-picker.js (getColorHex), upload-progress.js (showUploadProgress,
 // updateUploadProgress, completeUploadProgress, errorUploadProgress).
 let draggedImageLocalId = null;
+let draggedCardElement = null;
+let startingX = null;
+let startingY = null;
+
 document.addEventListener("pointerdown", (e) => {
-  const draggedElement = e.target.closest(".image-card");
+  const draggedElement = e.target.closest(".drag-handle");
+
   if (!draggedElement) return;
-  draggedImageLocalId = draggedElement?.dataset.localId;
+
+  startingX = e.clientX;
+  startingY = e.clientY;
+
+  draggedCardElement = draggedElement.closest(".image-card");
+  const target = colorImages[draggedCardElement.dataset.color].find((image) => image.localId === draggedCardElement.dataset.localId);
+  if(target?.isCover === true){
+    return;
+  }
+  draggedImageLocalId = draggedCardElement.dataset.localId;
+
+  draggedCardElement.classList.add("dragging");
   draggedElement.setPointerCapture(e.pointerId);
 });
 document.addEventListener("pointermove", (e) => {
-  if(!draggedImageLocalId) return;
-
-  const cardUnderPointer = document.elementFromPoint(e.clientX, e.clientY)?.closest(".image-card");
-  if (!cardUnderPointer) return;
-  if(cardUnderPointer.dataset.localId === draggedImageLocalId) return;
+  if (!draggedImageLocalId) return;
+  let distanceX = e.clientX - startingX;
+  let distanceY = e.clientY - startingY;
+  draggedCardElement.style.transform = `translate(${distanceX}px , ${distanceY}px)`
 });
 
 document.addEventListener("pointerup", (e) => {
   if (!draggedImageLocalId) return;
-
+  
   const cardUnderPointer = document
     .elementFromPoint(e.clientX, e.clientY)
     ?.closest(".image-card");
 
   if (!cardUnderPointer) {
-    draggedImageLocalId = null;
+    endDrag()
     return;
   }
-
+  
   const color = cardUnderPointer.dataset.color;
   const cardLocalId = cardUnderPointer.dataset.localId;
 
   const images = colorImages[color];
   if (!images) {
-    draggedImageLocalId = null;
+    endDrag()
     return;
   }
 
@@ -50,16 +65,24 @@ document.addEventListener("pointerup", (e) => {
   );
   const dropIndex = images.findIndex((image) => image.localId === cardLocalId);
 
-  if (draggedIndex !== -1 && dropIndex !== -1) {
+  if (draggedIndex !== -1 && dropIndex !== -1 && dropIndex !== 0) {
     const [movedImage] = images.splice(draggedIndex, 1);
     images.splice(dropIndex, 0, movedImage);
     renderSelectedImages(color);
   }
-
-  draggedImageLocalId = null;
+  endDrag()
 });
-
-
+document.addEventListener("pointercancel" , (e) => {
+  endDrag();
+})
+function endDrag() {
+  if (draggedCardElement) {
+    draggedCardElement.style.transform = "";
+    draggedCardElement.classList.remove("dragging");
+  }
+  draggedImageLocalId = null;
+  draggedCardElement = null;
+}
 function saveImageOrder(color) {
   const colorImage = colorImages[color];
   colorImage.forEach((image, index) => {
@@ -385,11 +408,12 @@ function setCoverImage(color, localId) {
 
   const target = images.find((image) => image.localId === localId);
   if (!target) return;
-
+  const imageIndex = images.indexOf(target);
   images.forEach((image) => {
     image.isCover = image.localId === localId;
   });
-
+  const [movedItem] = images.splice(imageIndex,1);
+  images.unshift(movedItem)
   renderSelectedImages(color);
 
   if (target.existing) {

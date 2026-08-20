@@ -73,7 +73,7 @@ function resetProductForm() {
   editMode = false;
   productId = null;
 
-  history.replaceState(null, "", "/admin/add-product.html");
+  history.replaceState(null, "", "add-product.html");
   saveProductButton.textContent = "Save Product";
   resetProductButton.textContent = "Reset Product";
   // clear normal inputs
@@ -403,9 +403,31 @@ function fillProductInformation(product) {
       batteryHealth: variant.batteryHealth ?? null,
     };
   });
+  // BUG FIX: this used to call generateVariants() here, which re-runs the
+  // cartesian product across selectedOptions.storage/ram/size/colors/
+  // condition (see variants.js). Those lists were just flattened out of
+  // the real variants a few lines up by syncVariantOptions() - e.g. two
+  // saved variants {color: Black, condition: New} and {color: White,
+  // condition: Used} become selectedOptions.colors = [Black, White] and
+  // selectedOptions.condition = [New, Used], with no memory of which
+  // color went with which condition. generateVariants() then cartesian-
+  // multiplied those back together (2 colors x 2 conditions = 4 rows),
+  // inventing combinations - like Black+Used - that were never actually
+  // saved, and silently discarding the correct, already-built
+  // `generatedVariants` from directly above.
+  //
+  // generatedVariants is already exactly right at this point - it's a
+  // straight 1:1 map over product.variants, the real saved data. Loading
+  // a product for edit should show what's actually saved, not a
+  // regenerated matrix. syncVariantOptions() is still needed so the
+  // option-box UI (storage/RAM/size/condition boxes) highlights the
+  // right selections, and so a manual option change afterward has the
+  // right starting lists to cartesian-product from - it just shouldn't
+  // trigger a regeneration on its own.
   syncVariantOptions();
+  restoreSelectedOptionBoxes();
 
-  generateVariants();
+  renderVariantsTable(generatedVariants);
 }
 
 // =========================================================
@@ -520,8 +542,8 @@ async function saveProduct() {
     if (data.colors?.length) {
       await uploadColorImages(data.colors);
       data.colors.forEach((color) => {
-        saveImageOrder(color.name)
-      })
+        saveImageOrder(color.name);
+      });
     }
 
     // BUG FIX: colorImages entries were never marked existing:true (or
@@ -591,14 +613,14 @@ saveProductButton.addEventListener("click", async () => {
 
   try {
     await saveProduct();
+
+    // Only reset if the save actually succeeded.
+  } catch (error) {
+    console.error("SAVE ERROR:", error);
+    showToast("Failed to save product", "error");
   } finally {
     saveProductButton.disabled = false;
     saveProductButton.textContent = originalText;
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-    resetProductForm();
   }
 });
 

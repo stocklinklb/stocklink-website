@@ -327,7 +327,13 @@ if (stockMenu) {
 }
 
 // ---------- Filtering, sorting, pagination ----------
-function applyFilters() {
+
+// Just the filter+sort computation, with no side effects on pagination -
+// callers that only need a fresh filtered/sorted list (e.g. re-rendering
+// after a bulk edit changed the underlying data, not the filters) should
+// use this directly instead of applyFilters(), so they don't get bounced
+// back to page 1 as a side effect.
+function getFilteredRows() {
   let filtered = tableRows.filter((row) => {
     const brandMatch =
       filters.brands.length === 0 || filters.brands.includes(row.brand);
@@ -364,10 +370,15 @@ function applyFilters() {
     );
   });
 
-  filtered = sortRows(filtered, sortKey);
+  return sortRows(filtered, sortKey);
+}
 
+// Called whenever the user actually changes a filter/search/sort - a new
+// result set means page 1 is the only page guaranteed to make sense, so
+// this resets pagination as part of applying filters.
+function applyFilters() {
   pagination.page = 1;
-  renderResults(filtered);
+  renderResults(getFilteredRows());
 }
 
 function sortRows(rows, key) {
@@ -788,7 +799,7 @@ tbody.addEventListener("click", (event) => {
   if (!row) return;
 
   if (button.dataset.action === "edit") {
-    window.location.href = `/admin/add-product.html?id=${row.productId}`;
+    window.location.href = `add-product.html?id=${row.productId}`;
     return;
   }
 
@@ -892,7 +903,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
 
 // ---------- Add product ----------
 addProductBtn.addEventListener("click", () => {
-  window.location.href = "/admin/add-product.html";
+  window.location.href = "add-product.html";
 });
 
 // ensureAdminAccess() now runs automatically from shared.js as soon as it

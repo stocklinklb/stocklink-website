@@ -13,9 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stocklink | Excel Import</title>
 
-    <link rel="stylesheet" href="/admin/shared.css" />
-    <link rel="stylesheet" href="/admin/excel-import.css" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="excel-import.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
@@ -151,7 +150,7 @@
 
           <div class="template-section">
             <a
-              href="/admin/csv-load/stocklink-inventory-template.xlsx"
+              href="csv-load/stocklink-inventory-template.xlsx"
               download=""
               class="template-link"
               id="template-link"
@@ -246,14 +245,26 @@
       </main>
     </div>
     <div id="toast-container"></div>
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+
+        <div class="logout-actions">
+          <button class="cancel-logout">Cancel</button>
+
+          <button class="confirm-logout">Logout</button>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <script src="/admin/config.js"></script>
-    <script src="/admin/csv-load/specsLookUp.js"></script>
-    <script src="/admin/csv-load/specsLoader.js"></script>
-    <script src="/admin/csv-load/specsAutoFill.js"></script>
-    <script src="/admin/shared.js"></script>
-    <script src="/admin/sidebar.js"></script>
-    <script src="/admin/excel-import.js"></script>
+    <script src="config.js"></script>
+    <script src="csv-load/specsLookUp.js"></script>
+    <script src="csv-load/specsLoader.js"></script>
+    <script src="csv-load/specsAutoFill.js"></script>
+    <script src="shared.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="excel-import.js"></script>
   </body>
 </html>

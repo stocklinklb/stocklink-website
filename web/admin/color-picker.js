@@ -15,7 +15,6 @@
 // generateVariants() and renderColorImageUpload() are called here but
 // defined in variants.js / color-images.js - fine since they only run
 // later, at event time, once every script has loaded.
-
 const COLOR_LIST = [
   { name: "Black", hex: "#111827" },
   { name: "White", hex: "#e5e7eb" },
@@ -44,6 +43,123 @@ const COLOR_LIST = [
   { name: "Lavender", hex: "#c4b5fd" },
   { name: "Pink", hex: "#ec4899" },
   { name: "Cream", hex: "#fdf6e3" },
+
+  // --- Added from spreadsheet (Samsung/Tecno/Infinix/Honor/Xiaomi) ---
+  { name: "Amalfi Blue", hex: "#4a7fb5" },
+  { name: "Aurora Purple", hex: "#8b5fbf" },
+  { name: "Black Abyss", hex: "#0a0a0c" },
+  { name: "Bloom Pink", hex: "#f4a6c1" },
+  { name: "Charcoal", hex: "#36454f" },
+  { name: "Cloud White", hex: "#f5f5f0" },
+  { name: "Cloudline Blue", hex: "#a8c5e0" },
+  { name: "Cobalt Violet", hex: "#5b4b8a" },
+  { name: "Coral Green", hex: "#6fae8a" },
+  { name: "Cyan", hex: "#22d3ee" },
+  { name: "Cypress Green", hex: "#4a6b52" },
+  { name: "Deep Ocean Blue", hex: "#1c4966" },
+  { name: "Desert Gold", hex: "#c9a35d" },
+  { name: "Dive Blue", hex: "#1e5f8c" },
+  { name: "Dusk Purple", hex: "#6b5b7d" },
+  { name: "Dynamic Orange", hex: "#ff6b1a" },
+  { name: "Ethereal Blue", hex: "#a3c9e8" },
+  { name: "Fir Green", hex: "#2e4d3a" },
+  { name: "Fizz Blue", hex: "#5ec8e0" },
+  { name: "Forest Green", hex: "#228b22" },
+  { name: "Frost Silver", hex: "#d6d9dc" },
+  { name: "Frosted White", hex: "#eef0ee" },
+  { name: "Galaxy Blue", hex: "#2b3a67" },
+  { name: "Geek Black", hex: "#161616" },
+  { name: "Geek White", hex: "#eeeeee" },
+  { name: "Glacier Blue", hex: "#8fbcd4" },
+  { name: "Golden White", hex: "#f0e6c8" },
+  { name: "Gray", hex: "#808080" },
+  { name: "Graygreen", hex: "#7a8a76" },
+  { name: "Green Texture", hex: "#3f7d4f" },
+  { name: "Halo Blue", hex: "#3f7fc1" },
+  { name: "Icyblue", hex: "#bfe3f0" },
+  { name: "Ink Black", hex: "#151517" },
+  { name: "Iris Blue", hex: "#3a6ea5" },
+  { name: "Jetblack", hex: "#0d0d0d" },
+  { name: "Lavender Mist", hex: "#d8cdf0" },
+  { name: "Lavender Purple", hex: "#9b7fc7" },
+  { name: "Light Blue", hex: "#93c5fd" },
+  { name: "Light Gray", hex: "#d1d5db" },
+  { name: "Light Green", hex: "#86efac" },
+  { name: "Light Pink", hex: "#f9a8d4" },
+  { name: "Light Violet", hex: "#c9b8e8" },
+  { name: "Lilac", hex: "#c8a2c8" },
+  { name: "Lime", hex: "#84cc16" },
+  { name: "Luminous Orange", hex: "#ff8c3d" },
+  { name: "Lunar Titanium", hex: "#9a9a94" },
+  { name: "Malachite Green", hex: "#0bda51" },
+  { name: "Melting Silver", hex: "#c8cdd0" },
+  { name: "Meteor Silver", hex: "#b8bcc0" },
+  { name: "Midnight Black", hex: "#0e0e12" },
+  { name: "Midnight Blue", hex: "#191970" },
+  { name: "Mint Cream", hex: "#e6f5ec" },
+  { name: "Mint Green", hex: "#98ff98" },
+  { name: "Mist Blue", hex: "#a9c6d8" },
+  { name: "Mist Titanium", hex: "#9c9a92" },
+  { name: "Misty Purple", hex: "#a893c2" },
+  { name: "Mocha Brown", hex: "#6f4e37" },
+  { name: "Monza Red", hex: "#c8102e" },
+  { name: "Moonlight Black", hex: "#131316" },
+  { name: "Moonlight White", hex: "#eceff1" },
+  { name: "Moonshadow Black", hex: "#121214" },
+  { name: "Mystic Purple", hex: "#6a4c93" },
+  { name: "Nebula Titanium", hex: "#7d7d82" },
+  { name: "Night Pulse", hex: "#1a1a2e" },
+  { name: "Ocean Cyan", hex: "#2ea6b5" },
+  { name: "Olive", hex: "#6b6b1f" },
+  { name: "Palm Green", hex: "#3f8a52" },
+  { name: "Peach Pink", hex: "#ffb6a3" },
+  { name: "Playful Orange", hex: "#ff8a3d" },
+  { name: "Polaris Titanium", hex: "#8f9296" },
+  { name: "Quiet Violet", hex: "#8570a0" },
+  { name: "Red Blaze", hex: "#e0301e" },
+  { name: "Reddish Brown", hex: "#7a3b2e" },
+  { name: "Roma Silver", hex: "#cfd2d4" },
+  { name: "Sandy Purple", hex: "#a893a3" },
+  { name: "Shadow Black", hex: "#0f0f10" },
+  { name: "Silk Green", hex: "#5a8f6b" },
+  { name: "Silver Dancer", hex: "#c4c8cb" },
+  { name: "Silver Glacier", hex: "#d3dade" },
+  { name: "Sky Blue", hex: "#87ceeb" },
+  { name: "Sleek Black", hex: "#121214" },
+  { name: "Solar Orange", hex: "#ff7a1a" },
+  { name: "Starry Purple", hex: "#4b3f72" },
+  { name: "Stellar Blue", hex: "#3f6ea5" },
+  { name: "Storm Titanium", hex: "#75767b" },
+  { name: "Sunlike Orange", hex: "#ff9147" },
+  { name: "Sunrise Gold", hex: "#e8b84b" },
+  { name: "Sunset Orange", hex: "#ff6f3c" },
+  { name: "Titan Black", hex: "#161618" },
+  { name: "Titanium Black", hex: "#3a3a3c" },
+  { name: "Titanium Gray", hex: "#8e8e93" },
+  { name: "Titanium Grey", hex: "#8e8e93" },
+  { name: "Titanium Silver", hex: "#c6c8ca" },
+  { name: "Titanium Silverblue", hex: "#9fb4c4" },
+  { name: "Titanium Whitesilver", hex: "#d9dbdc" },
+  { name: "Torino Black", hex: "#141416" },
+  { name: "Twilight Gold", hex: "#c9a86a" },
+  { name: "Velvet Black", hex: "#141414" },
+  { name: "Velvet Gray", hex: "#5f6062" },
+
+  // --- Added: iPhone-specific color names (11 through 17 series) not already covered ---
+  { name: "Midnight Green", hex: "#4e5851" }, // iPhone 11 Pro
+  { name: "Pacific Blue", hex: "#3b5f77" }, // iPhone 12 Pro
+  { name: "Deep Purple", hex: "#4e3b5e" }, // iPhone 14 Pro
+  { name: "Space Black", hex: "#2b2b2c" }, // iPhone 14/15 Pro
+  { name: "Blue Titanium", hex: "#3f5e77" }, // iPhone 15 Pro
+  { name: "White Titanium", hex: "#e4e2dc" }, // iPhone 15 Pro
+  { name: "Ultramarine", hex: "#5e7ce2" }, // iPhone 16
+  // Note: iPhone 17-series names below are less certain — verify against Apple's current listing
+  { name: "Sage", hex: "#b7bfa8" }, // iPhone 17 (unverified)
+  { name: "Mist Blue", hex: "#a9c1d9" }, // iPhone 17 (unverified)
+  { name: "Cosmic Orange", hex: "#c9662e" }, // iPhone 17 Pro (unverified)
+  { name: "Deep Blue", hex: "#1f3a5f" },
+  { name: "Light Gold", hex: "#e6d2a8" }, // iPhone 17 Air
+  { name: "Space Black", hex: "#1a1a1c" }, // iPhone 17 Air          // iPhone 17 Pro (unverified)
 ];
 
 // Looks up a hex value for a color name (case-insensitive). Falls back to

@@ -413,6 +413,30 @@ function continueToImport() {
 }
 importBtn.addEventListener("click", importProducts);
 
+// Cycles the import button's label through a sequence of messages while
+// the import request is in flight, so it doesn't look frozen on long
+// imports. Cleared as soon as the fetch settles (success or failure).
+const IMPORTING_MESSAGES = [
+  "Importing...",
+  "Finishing things up...",
+  "Setting it up for you...",
+  "Almost there...",
+];
+
+function startImportingAnimation() {
+  let i = 0;
+  importBtn.disabled = true;
+  importBtn.style.backgroundColor = "";
+  importBtn.innerHTML = `${IMPORTING_MESSAGES[i]} <i class="fa-solid fa-spinner fa-spin"></i>`;
+
+  const intervalId = setInterval(() => {
+    i = (i + 1) % IMPORTING_MESSAGES.length;
+    importBtn.innerHTML = `${IMPORTING_MESSAGES[i]} <i class="fa-solid fa-spinner fa-spin"></i>`;
+  }, 1500);
+
+  return () => clearInterval(intervalId);
+}
+
 // Sends one flat object per valid row - the backend groups rows by
 // brand+model into a single Product (creating it fresh, or appending new
 // colors/variants/optionSchema entries to an existing one), so no
@@ -442,6 +466,8 @@ async function importProducts() {
     specifications: product.specifications,
   }));
 
+  const stopAnimation = startImportingAnimation();
+
   try {
     const response = await fetch(`${API_BASE}/import`, {
       method: "POST",
@@ -454,7 +480,11 @@ async function importProducts() {
 
     const data = await response.json();
 
+    stopAnimation();
+
     if (!response.ok) {
+      importBtn.disabled = false;
+      importBtn.innerHTML = `Import ${products.length} Products <i class="fa-solid fa-arrow-right"></i>`;
       showToast(data.error || "Import failed", "error");
       return;
     }
@@ -466,8 +496,13 @@ async function importProducts() {
       "success",
     );
 
+    importBtn.innerHTML = `Imported <i class="fa-solid fa-check"></i>`;
+
     markAllStepsCompleted();
   } catch (err) {
+    stopAnimation();
+    importBtn.disabled = false;
+    importBtn.innerHTML = `Import ${products.length} Products <i class="fa-solid fa-arrow-right"></i>`;
     console.error(err);
     showToast("Could not reach the server.", "error");
   }
