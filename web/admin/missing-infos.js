@@ -1,5 +1,5 @@
 const productImage = new Map();
-let currentProductId = null;
+let currentProductId = null; // NOTE: now actually holds a *variantKey*, not a raw product id
 const modifiedProducts = new Map();
 // Tracks every blob URL currently shown in the modal so we can
 // revoke them all when the modal is closed/re-rendered, instead of
@@ -10,7 +10,10 @@ const imageModal = document.querySelector("#image-modal");
 const closeModal = document.querySelector(".close-modal");
 const modalImages = document.querySelector(".modal-images");
 const modalProductName = document.querySelector(".modal-product-name");
-
+let draggedImageLocalId = null;
+let draggedCardElement = null;
+let startingX = null;
+let startingY = null;
 // Holds the in-flight bulk-upload xhr so the Cancel button can abort
 // it. Also tracks when the upload started (for the ETA display) and
 // the per-file byte manifest built in saveAllProducts, used to
@@ -20,25 +23,52 @@ let activeUploadXhr = null;
 let uploadStartTime = null;
 let uploadFileManifest = [];
 
-let draggedImageLocalId = null;
 function makeLocalId() {
   return crypto.randomUUID();
 }
+
 document.addEventListener("pointerdown", (e) => {
   const draggedElement = e.target.closest(".modal-image");
-
   if (!draggedElement) return;
 
-  // Don't start dragging when clicking the delete button
-  if (e.target.closest(".delete-image")) return;
+  // Don't start dragging when clicking the delete or cover-star button
+  if (e.target.closest(".delete-image") || e.target.closest(".cover-star-btn"))
+    return;
 
-  // Prevent the native HTML5 image drag from hijacking this gesture -
-  // without this, the browser starts dragging the <img> itself as soon
-  // as the pointer moves, which cancels our pointermove/pointerup
-  // sequence before the reorder logic below ever runs.
+  // The cover image's position (index 0) is only ever meant to change
+  // via the star button - letting it be dragged elsewhere would leave
+  // isCover pointing at an image that's no longer files[0], which is
+  // what displayImages actually uses as the thumbnail.
+  if (draggedElement.dataset.isCover === "true") return;
+
   e.preventDefault();
-
+  startingX = e.clientX;
+  startingY = e.clientY;
+  draggedCardElement = draggedElement;
   draggedImageLocalId = draggedElement.dataset.localId;
+
+  // Lock the grid's current height *before* pulling the card out of
+  // flow below. Once the card becomes position:fixed it stops
+  // occupying its grid cell, so if it was the only item on the last
+  // row (e.g. 3 on row 1, 1 on row 2), the grid would otherwise
+  // recompute to a single row and the modal would visibly shrink for
+  // the duration of the drag, then snap back on drop.
+  const modalImagesRect = modalImages.getBoundingClientRect();
+  modalImages.style.minHeight = `${modalImagesRect.height}px`;
+
+  // Pull the card out of flow so dragging it can't inflate the
+  // modal's scrollable area - a transformed element left in normal
+  // flow still contributes to an ancestor's scrollable overflow no
+  // matter how far the transform visually displaces it, which is
+  // what was causing the runaway scrollbar/growing modal.
+  const rect = draggedElement.getBoundingClientRect();
+  draggedElement.style.position = "fixed";
+  draggedElement.style.top = `${rect.top}px`;
+  draggedElement.style.left = `${rect.left}px`;
+  draggedElement.style.width = `${rect.width}px`;
+  draggedElement.style.height = `${rect.height}px`;
+  draggedElement.style.margin = "0";
+  draggedElement.style.zIndex = "1200";
 
   draggedElement.setPointerCapture?.(e.pointerId);
   draggedElement.classList.add("dragging");
@@ -46,6 +76,13 @@ document.addEventListener("pointerdown", (e) => {
 
 document.addEventListener("pointermove", (e) => {
   if (!draggedImageLocalId) return;
+
+  const distanceX = e.clientX - startingX;
+  const distanceY = e.clientY - startingY;
+
+  // Translates a fixed-position element - purely visual, viewport
+  // relative, and can never expand any ancestor's scroll area.
+  draggedCardElement.style.transform = `translate(${distanceX}px, ${distanceY}px)`;
 
   const cardUnderPointer = document
     .elementFromPoint(e.clientX, e.clientY)
@@ -57,11 +94,11 @@ document.addEventListener("pointermove", (e) => {
     .forEach((el) => el.classList.remove("drag-over"));
 
   if (!cardUnderPointer) return;
-
   if (cardUnderPointer.dataset.localId === draggedImageLocalId) return;
+  // Same rule as pointerdown: the cover image isn't a valid drop
+  // target, so don't hint that dropping here would do anything.
+  if (cardUnderPointer.dataset.isCover === "true") return;
 
-  // Simple visual feedback while dragging - highlight the card
-  // currently under the pointer as the prospective drop target.
   cardUnderPointer.classList.add("drag-over");
 });
 
@@ -72,7 +109,6 @@ document.addEventListener("pointerup", (e) => {
     `.modal-image[data-local-id="${draggedImageLocalId}"]`,
   );
 
-  draggedElement?.classList.remove("dragging");
   document
     .querySelectorAll(".modal-image.drag-over")
     .forEach((el) => el.classList.remove("drag-over"));
@@ -82,21 +118,29 @@ document.addEventListener("pointerup", (e) => {
     ?.closest(".modal-image");
 
   if (!draggedElement || !targetElement) {
-    draggedImageLocalId = null;
+    endDrag();
     return;
   }
 
   const targetLocalId = targetElement.dataset.localId;
 
   if (targetLocalId === draggedImageLocalId) {
-    draggedImageLocalId = null;
+    endDrag();
+    return;
+  }
+
+  // Reject drops onto the cover image - dragging can reorder the
+  // rest of the set, but only the star button is allowed to change
+  // which image sits at files[0].
+  if (targetElement.dataset.isCover === "true") {
+    endDrag();
     return;
   }
 
   const files = productImage.get(currentProductId);
 
   if (!files) {
-    draggedImageLocalId = null;
+    endDrag();
     return;
   }
 
@@ -107,7 +151,7 @@ document.addEventListener("pointerup", (e) => {
   const toIndex = files.findIndex((image) => image.localId === targetLocalId);
 
   if (fromIndex === -1 || toIndex === -1) {
-    draggedImageLocalId = null;
+    endDrag();
     return;
   }
 
@@ -128,12 +172,15 @@ document.addEventListener("pointerup", (e) => {
   // Save reordered array
   productImage.set(currentProductId, files);
 
-  // Mark product as modified
+  // Look up the card by variantKey, not productId - two variants of
+  // the same product now share the same data-product-id, so matching
+  // on that alone could grab the wrong card.
   const card = document.querySelector(
-    `.card[data-product-id="${currentProductId}"]`,
+    `.card[data-variant-key="${currentProductId}"]`,
   );
 
   modifiedProducts.set(currentProductId, {
+    productId: card.dataset.productId, // keep the real productId around for the save payload
     colorId: card.dataset.colorId,
     files,
   });
@@ -141,13 +188,48 @@ document.addEventListener("pointerup", (e) => {
   syncSaveAllBtn();
 
   // Re-render modal
-  openImageModal(currentProductId);
+  reorderModalDOM(files);
 
   // Re-render card preview
   displayImages(card, files);
 
-  draggedImageLocalId = null;
+  endDrag();
 });
+
+function reorderModalDOM(files) {
+  files.forEach((image) => {
+    const eachImage = modalImages.querySelector(
+      `[data-local-id="${image.localId}"]`,
+    );
+    modalImages.appendChild(eachImage);
+  });
+}
+
+function endDrag() {
+  if (draggedCardElement) {
+    draggedCardElement.classList.remove("dragging");
+    // Reset every inline style pointerdown set, so a dropped/cancelled
+    // card returns fully to normal document flow instead of staying
+    // stuck as position:fixed with a stale z-index.
+    draggedCardElement.style.transform = "";
+    draggedCardElement.style.position = "";
+    draggedCardElement.style.top = "";
+    draggedCardElement.style.left = "";
+    draggedCardElement.style.width = "";
+    draggedCardElement.style.height = "";
+    draggedCardElement.style.margin = "";
+    draggedCardElement.style.zIndex = "";
+  }
+
+  // Release the height lock from pointerdown - the item count hasn't
+  // changed (only reordered, or the drag was cancelled), so the grid's
+  // natural height is the same as before the drag started and it's
+  // safe to let it size itself again.
+  modalImages.style.minHeight = "";
+
+  draggedImageLocalId = null;
+  draggedCardElement = null;
+}
 
 function formatEta(seconds) {
   if (!isFinite(seconds) || seconds < 0) return "Calculating...";
@@ -294,10 +376,12 @@ closeModal.addEventListener("click", () => {
   imageModal.classList.add("hidden");
   revokeModalObjectUrls();
 });
-function markProductChanged(productId, data) {
-  modifiedProducts.set(productId, data);
+
+function markProductChanged(key, data) {
+  modifiedProducts.set(key, data);
   syncSaveAllBtn();
 }
+
 // Keeps the "Save All" button's disabled state in sync with whether
 // there's anything to save - single source of truth so we don't have
 // to remember to toggle it manually at every call site that mutates
@@ -305,6 +389,7 @@ function markProductChanged(productId, data) {
 function syncSaveAllBtn() {
   saveAllBtn.disabled = modifiedProducts.size === 0;
 }
+
 async function getMissingProducts() {
   try {
     const response = await fetch(`${API_BASE}/missing-images`, {
@@ -319,6 +404,7 @@ async function getMissingProducts() {
     console.error(error);
   }
 }
+
 // Shared by both the bulk "Save All" upload and a single card's "Save"
 // upload - drives the same progress modal either way. Relies on
 // uploadFileManifest being populated by the caller beforehand so
@@ -399,6 +485,7 @@ function buildFileManifest(files) {
   manifest.totalSize = runningSize;
   return manifest;
 }
+
 async function saveAllProducts() {
   if (modifiedProducts.size === 0) {
     showToast("No products to save", "error");
@@ -411,13 +498,32 @@ async function saveAllProducts() {
   // appended to formData below, so the manifest's byte boundaries line
   // up with what the browser actually reports uploading.
   const allFiles = [];
-  for (const [productId, product] of modifiedProducts) {
+
+  // Remember which variantKey each (productId, colorId) pair came
+  // from, so we can clear the right card/map-entries once the server
+  // tells us which ones saved successfully.
+  const keyByProductAndColor = new Map();
+
+  for (const [variantKey, product] of modifiedProducts) {
+    // Push the real productId/colorId stored on the entry, not the
+    // map key (which is now a composite variantKey).
     products.push({
-      productId,
+      productId: product.productId,
       colorId: product.colorId,
     });
+    keyByProductAndColor.set(
+      `${product.productId}__${product.colorId}`,
+      variantKey,
+    );
+
     product.files.forEach((image) => {
-      formData.append(`product_${productId}`, image.file);
+      // Form field must still be unique per *variant*, not just per
+      // product, otherwise two variants of the same product would
+      // overwrite each other's files under the same field name.
+      formData.append(
+        `product_${product.productId}_${product.colorId}`,
+        image.file,
+      );
       allFiles.push(image.file);
     });
   }
@@ -435,11 +541,20 @@ async function saveAllProducts() {
     // that failed (bad colorId, upload error, etc.) stays in
     // modifiedProducts and on screen so the admin can retry it,
     // instead of silently disappearing along with the successful ones.
-    (results || []).forEach(({ productId }) => {
-      productImage.delete(productId);
-      modifiedProducts.delete(productId);
+    //
+    // NOTE: this assumes the bulk endpoint's `results` entries include
+    // colorId alongside productId. If your backend only returns
+    // productId, ask it to also echo colorId - otherwise there's no
+    // way to tell which of two saved variants for the same product
+    // maps to which card.
+    (results || []).forEach(({ productId, colorId }) => {
+      const variantKey = keyByProductAndColor.get(`${productId}__${colorId}`);
+      if (!variantKey) return;
+
+      productImage.delete(variantKey);
+      modifiedProducts.delete(variantKey);
       const card = document.querySelector(
-        `.card[data-product-id="${productId}"]`,
+        `.card[data-variant-key="${variantKey}"]`,
       );
       removeCardAnimated(card);
     });
@@ -553,6 +668,11 @@ function resetCardPreview(card) {
 // the photo" after the first upload.
 function displayImages(card, files) {
   const preview = card.querySelector(".image-preview");
+
+  // Skip the update entirely if the first (cover) image hasn't changed -
+  // reordering images 2/3/etc. shouldn't touch this thumbnail at all.
+  if (files[0].localId === preview.dataset.localId) return;
+
   const badge = card.querySelector(".image-count-badge");
   const placeholder = card.querySelector(".upload-placeholder");
 
@@ -569,12 +689,8 @@ function displayImages(card, files) {
   preview.classList.remove("empty");
   preview.classList.add("has-image");
 
-  // Only ever remove the dashed placeholder once; on a later
-  // replace, it's already gone.
   placeholder?.remove();
 
-  // Swap out just the previous main-image, if replacing a photo,
-  // rather than any of the label's other children (badge, input).
   preview.querySelector(".main-image")?.remove();
 
   const mainImage = document.createElement("div");
@@ -588,12 +704,16 @@ function displayImages(card, files) {
   } else {
     badge.classList.add("hidden");
   }
+
+  // Remember what's currently shown, so the next call can skip all
+  // of the above if the cover image is unchanged.
+  preview.dataset.localId = files[0].localId;
 }
 
-function openImageModal(productId) {
-  currentProductId = productId;
+function openImageModal(variantKey) {
+  currentProductId = variantKey; // holds a variantKey now, name kept for minimal diff elsewhere
 
-  const files = productImage.get(productId);
+  const files = productImage.get(variantKey);
 
   if (!files || files.length === 0) {
     showToast("No images are selected", "error");
@@ -612,11 +732,23 @@ function openImageModal(productId) {
     const imageCard = document.createElement("div");
     imageCard.className = "modal-image";
     imageCard.dataset.localId = image.localId;
+    // Lets pointerdown/pointermove/pointerup check cover status without
+    // re-reading the files array on every event - dragging never
+    // changes isCover, so this stays accurate for the whole drag.
+    imageCard.dataset.isCover = image.isCover ? "true" : "false";
     imageCard.innerHTML = `
       <img src="${url}" alt="" draggable="false">
       <button class="delete-image" data-index="${index}">
           X
         </button>
+
+      <button
+      class="cover-star-btn ${image.isCover ? "is-cover" : ""}"
+      data-local-id ="${image.localId}"
+
+      >
+      ${image.isCover ? "★" : "☆"}
+      </button>
     `;
     modalImages.appendChild(imageCard);
   });
@@ -633,11 +765,10 @@ modalImages.addEventListener("click", (e) => {
 
   const files = productImage.get(currentProductId);
 
-  // BUGFIX: `card` must be looked up before it's used below (it was
-  // previously referenced in modifiedProducts.set(...) before its
-  // own declaration, which threw a ReferenceError on every delete).
+  // Look up the card by variantKey - data-product-id alone is no
+  // longer unique when a product has multiple missing-color variants.
   const card = document.querySelector(
-    `.card[data-product-id="${currentProductId}"]`,
+    `.card[data-variant-key="${currentProductId}"]`,
   );
 
   files.splice(index, 1);
@@ -649,14 +780,15 @@ modalImages.addEventListener("click", (e) => {
     revokeModalObjectUrls();
     resetCardPreview(card);
 
-    // BUGFIX: clear stale map entries so an emptied-out product
-    // doesn't get resubmitted with zero files via "Save All".
+    // Clear stale map entries so an emptied-out variant doesn't get
+    // resubmitted with zero files via "Save All".
     productImage.delete(currentProductId);
     modifiedProducts.delete(currentProductId);
     syncSaveAllBtn();
   } else {
     productImage.set(currentProductId, files);
     modifiedProducts.set(currentProductId, {
+      productId: card.dataset.productId,
       colorId: card.dataset.colorId,
       files,
     });
@@ -664,6 +796,37 @@ modalImages.addEventListener("click", (e) => {
     openImageModal(currentProductId);
     displayImages(card, files);
   }
+});
+
+modalImages.addEventListener("click", (e) => {
+  const card = document.querySelector(
+    `.card[data-variant-key="${currentProductId}"]`,
+  );
+  const starBtn = e.target.closest(".cover-star-btn");
+  if (!starBtn) return;
+
+  const localId = starBtn.dataset.localId;
+  const files = productImage.get(currentProductId);
+  if (!files) return;
+
+  const currentImage = files.findIndex((image) => image.localId === localId);
+  if (currentImage === -1) return;
+  files.forEach((image) => {
+    image.isCover = image.localId === localId;
+  });
+
+  const [movedImage] = files.splice(currentImage, 1);
+  files.unshift(movedImage);
+
+  productImage.set(currentProductId, files);
+  modifiedProducts.set(currentProductId, {
+    productId: card.dataset.productId,
+    colorId: card.dataset.colorId,
+    files,
+  });
+  syncSaveAllBtn();
+  openImageModal(currentProductId);
+  displayImages(card, files);
 });
 
 function renderMissingProducts(products) {
@@ -691,135 +854,154 @@ function renderMissingProducts(products) {
   heroSection?.classList.remove("hidden");
 
   products.forEach((product) => {
-    const card = document.createElement("div");
+    // One card per missing-color variant instead of one per product.
+    // The old code only ever read product.colors[0], so a product
+    // with 2 missing colors silently dropped the second one.
+    const colors =
+      product.colors && product.colors.length ? product.colors : [null];
 
-    card.className = "card";
-    card.dataset.productId = product.id;
-    card.dataset.colorId = product.colors[0]?.id ?? "";
+    colors.forEach((color) => {
+      const card = document.createElement("div");
 
-    card.innerHTML = `
-      <div class="simple-info-high">
-        <div class="typed-info">
-          <h3 class="high-title">${product.name}</h3>
-          <p class="variant">
-           ${product.brand} • ${product.colors[0]?.name || "No color"}
-          </p>
+      // Composite key so two variants of the same product don't
+      // collide in productImage / modifiedProducts, and so DOM
+      // lookups (data-variant-key) can tell them apart.
+      const variantKey = `${product.id}__${color?.id ?? "none"}`;
+
+      card.className = "card";
+      card.dataset.productId = product.id;
+      card.dataset.variantKey = variantKey;
+      card.dataset.colorId = color?.id ?? "";
+
+      card.innerHTML = `
+        <div class="simple-info-high">
+          <div class="typed-info">
+            <h3 class="high-title">${product.name}</h3>
+            <p class="variant">
+             ${product.brand} • ${color?.name || "No color"}
+            </p>
+          </div>
+
+          <div class="button">
+            <button class="update-btn">
+              Add Images
+            </button>
+          </div>
         </div>
 
-        <div class="button">
-          <button class="update-btn">
-            Add Images
-          </button>
+        <label class="image-preview empty">
+          <div class="upload-placeholder">
+            <i class="fa-solid fa-camera"></i>
+            <span>Add photo</span>
+          </div>
+          <span class="image-count-badge hidden"></span>
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            multiple
+            hidden
+          />
+        </label>
+        <div class = "card-button-actions">
+          <button class="view">View Images</button>
+          <button class="save">Save</button>
         </div>
-      </div>
+      `;
 
-      <label class="image-preview empty">
-        <div class="upload-placeholder">
-          <i class="fa-solid fa-camera"></i>
-          <span>Add photo</span>
-        </div>
-        <span class="image-count-badge hidden"></span>
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          multiple
-          hidden
-        />
-      </label>
-      <div class = "card-button-actions">
-        <button class="view">View Images</button>
-        <button class="save">Save</button>
-      </div>
-    `;
+      const input = card.querySelector("input[type='file']");
+      const addImagesBtn = card.querySelector(".update-btn");
+      addImagesBtn.addEventListener("click", () => {
+        input.click();
+      });
+      input.addEventListener("change", (event) => {
+        const key = card.dataset.variantKey;
+        const existingFiles = productImage.get(key) || [];
+        const newFiles = Array.from(event.target.files).map((file, index) => ({
+          localId: makeLocalId(),
+          file,
+          isCover: existingFiles.length === 0 && index === 0,
+        }));
+        if (newFiles.length === 0) return;
 
-    const input = card.querySelector("input[type='file']");
-    const addImagesBtn = card.querySelector(".update-btn");
-    addImagesBtn.addEventListener("click", () => {
-      input.click();
-    });
-    input.addEventListener("change", (event) => {
-      const newFiles = Array.from(event.target.files).map((file) => ({
-        localId: makeLocalId(),
-        file,
-      }));
-      if (newFiles.length === 0) return;
+        // Key by variantKey, not productId
+        const allFiles = [...existingFiles, ...newFiles];
 
-      const productId = card.dataset.productId;
+        productImage.set(key, allFiles);
+        markProductChanged(key, {
+          productId: card.dataset.productId,
+          colorId: card.dataset.colorId,
+          files: allFiles,
+        });
 
-      const existingFiles = productImage.get(productId) || [];
-      const allFiles = [...existingFiles, ...newFiles];
+        displayImages(card, allFiles);
 
-      productImage.set(productId, allFiles);
-      markProductChanged(productId, {
-        colorId: card.dataset.colorId,
-        files: allFiles,
+        input.value = "";
+      });
+      const viewBtn = card.querySelector(".view");
+      const saveBtn = card.querySelector(".save");
+
+      viewBtn.addEventListener("click", () => {
+        // Open modal by variantKey, not productId
+        openImageModal(card.dataset.variantKey);
       });
 
-      displayImages(card, allFiles);
-
-      input.value = "";
-    });
-    const viewBtn = card.querySelector(".view");
-    const saveBtn = card.querySelector(".save");
-
-    viewBtn.addEventListener("click", () => {
-      const productId = card.dataset.productId;
-      openImageModal(productId);
-      console.log("Viewing product:", productId);
-    });
-
-    saveBtn.addEventListener("click", async () => {
-      const productId = card.dataset.productId;
-      const colorId = card.dataset.colorId;
-      const files = productImage.get(productId);
-      if (!files || files.length === 0) {
-        showToast("please select one file or more", "error");
-        return;
-      }
-      const formData = new FormData();
-
-      formData.append("productId", productId);
-
-      files.forEach((image) => {
-        formData.append("images", image.file);
-      });
-
-      // Same progress modal + manifest the bulk "Save All" upload uses -
-      // uploadImagesXhr's progress handler reads uploadFileManifest
-      // regardless of which endpoint it's posting to.
-      uploadFileManifest = buildFileManifest(files.map((image) => image.file));
-      saveBtn.disabled = true;
-
-      try {
-        UploadManager.open();
-        await uploadImagesXhr(
-          `${API_ROOT}/upload/product-images/${colorId}`,
-          formData,
-        );
-        UploadManager.complete();
-
-        showToast("Images Uploaded succesfully", "success");
-        productImage.delete(productId);
-        // BUGFIX: also drop it from modifiedProducts, otherwise a
-        // later "Save All" click resubmits this already-saved product.
-        modifiedProducts.delete(productId);
-        syncSaveAllBtn();
-        removeCardAnimated(card);
-      } catch (err) {
-        if (err.message === "Upload cancelled") {
-          UploadManager.cancelled();
-          showToast("Upload cancelled", "error");
-        } else {
-          UploadManager.error();
-          showToast("Something went wrong", "error");
+      saveBtn.addEventListener("click", async () => {
+        const variantKey = card.dataset.variantKey;
+        const productId = card.dataset.productId;
+        const colorId = card.dataset.colorId;
+        const files = productImage.get(variantKey);
+        if (!files || files.length === 0) {
+          showToast("please select one file or more", "error");
+          return;
         }
-      } finally {
-        uploadFileManifest = [];
-        saveBtn.disabled = false;
-      }
-    });
+        const formData = new FormData();
 
-    container.appendChild(card);
+        formData.append("productId", productId);
+
+        files.forEach((image) => {
+          formData.append("images", image.file);
+        });
+
+        // Same progress modal + manifest the bulk "Save All" upload uses -
+        // uploadImagesXhr's progress handler reads uploadFileManifest
+        // regardless of which endpoint it's posting to.
+        uploadFileManifest = buildFileManifest(
+          files.map((image) => image.file),
+        );
+        saveBtn.disabled = true;
+
+        try {
+          UploadManager.open();
+          await uploadImagesXhr(
+            `${API_ROOT}/upload/product-images/${colorId}`,
+            formData,
+          );
+          UploadManager.complete();
+
+          showToast("Images Uploaded succesfully", "success");
+          // Clear by variantKey, not productId - otherwise saving one
+          // variant would also wipe out unsaved changes for a sibling
+          // variant of the same product.
+          productImage.delete(variantKey);
+          modifiedProducts.delete(variantKey);
+          syncSaveAllBtn();
+          removeCardAnimated(card);
+        } catch (err) {
+          if (err.message === "Upload cancelled") {
+            UploadManager.cancelled();
+            showToast("Upload cancelled", "error");
+          } else {
+            UploadManager.error();
+            showToast("Something went wrong", "error");
+          }
+        } finally {
+          uploadFileManifest = [];
+          saveBtn.disabled = false;
+        }
+      });
+
+      container.appendChild(card);
+    });
   });
 }

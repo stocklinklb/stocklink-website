@@ -6,7 +6,7 @@ const API = API_BASE;
 
 // Thresholds that decide a variant's stock status.
 // Mirrors the status pills used on the Products page.
-const LOW_STOCK_MAX = 5;
+const LOW_STOCK_MAX = 9;
 const username = document.getElementById("user-name");
 const CATEGORY_ICONS = {
   Phone: "fa-solid fa-mobile-screen-button",
@@ -132,7 +132,7 @@ function renderLowStock(rows) {
   const lowItems = rows
     .filter((row) => row.stock > 0 && row.stock <= LOW_STOCK_MAX)
     .sort((a, b) => a.stock - b.stock)
-    .slice(0, 5);
+    .slice(0, 9);
 
   if (lowItems.length === 0) {
     list.innerHTML = `<p class="empty-note">Nothing running low right now.</p>`;
@@ -186,21 +186,25 @@ function renderInventoryOverview(rows) {
 }
 let currentUsername = "Admin";
 
-// shared.js's ensureAdminAccess() already fetched /auth/me and cached the
-// result at window.currentUser by the time window.adminAccessCheck
-// resolves (see initAdminPage below) - read from there instead of firing
-// a second, identical request.
-function loadCurrentUser() {
-  const user = window.currentUser;
+async function loadCurrentUser() {
+  try {
+    const response = await fetch(`${API_ROOT}/auth/me`, {
+      credentials: "include",
+    });
 
-  if (!user) return;
+    if (!response.ok) return;
 
-  currentUsername = user.name;
+    const store = await response.json();
 
-  const usernameElement = document.getElementById("user-name");
+    currentUsername = store.name;
 
-  if (usernameElement) {
-    usernameElement.textContent = user.name;
+    const usernameElement = document.getElementById("user-name");
+
+    if (usernameElement) {
+      usernameElement.textContent = store.name;
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 async function loadRecentActivity() {
@@ -283,7 +287,7 @@ async function initAdminPage() {
   //  excelImportInput.value = "";
   //   });
   // }
-  loadCurrentUser();
+  await loadCurrentUser();
   loadDashboard();
   loadRecentActivity();
 }
