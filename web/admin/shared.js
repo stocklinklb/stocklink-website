@@ -9,31 +9,9 @@
 //   <script src="shared.js"></script>
 
 // ---------- Mobile sidebar ----------
-// Prefetch all sidebar pages in the background so clicking between
-// them serves from cache instead of hitting the network again.
-// Doesn't skip render/parse time - just the download.
-(function prefetchAdminPages() {
-  const pages = [
-    "/admin/index.html",
-    "/admin/analytics.html",
-    "/admin/products.html",
-    "/admin/add-product.html",
-    "/admin/excel-import.html",
-    "/admin/missing-infos.html",
-    "/admin/settings.html",
-  ];
-
-  pages.forEach((href) => {
-    if (href === window.location.pathname) return; // skip current page
-    const link = document.createElement("link");
-    link.rel = "prefetch";
-    link.href = href;
-    document.head.appendChild(link);
-  });
-})();
-
 const themeToggle = document.getElementById("themeToggle");
-
+const markAllRead = document.getElementById("notif-mark-all-read");
+const notificationsButton = document.getElementById("notif-bell-btn");
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("theme", theme);
@@ -90,6 +68,113 @@ themeToggle?.addEventListener("click", () => {
   });
 })();
 
+// ----------- Notifications ------------------
+
+async function loadNotifications() {
+  let notifications = [];
+  try {
+    const response = await fetch(`${API_ROOT}/notifications`, {
+      credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch products");
+    const result = await response.json();
+    notifications = result.data;
+    renderNotifications(notifications);
+    console.log(notifications);
+  } catch (error) {
+    console.error("Failed to load notifications", error);
+  }
+}
+
+notificationsButton.addEventListener("click", () => {
+  const notificationsDropDown = document.querySelector(".notif-dropdown");
+  notificationsDropDown.classList.toggle("active");
+});
+const notificationsList = document.getElementById("notif-list");
+const notificationsBadge = document.getElementById("notif-badge");
+const notifEmpty = document.getElementById("notif-empty");
+
+function renderNotifications(notifications) {
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  notificationsBadge.textContent = unreadCount;
+  notificationsBadge.hidden = unreadCount === 0;
+
+  if (notifications.length === 0) {
+    notificationsList.innerHTML = "";
+    notificationsList.hidden = true;
+    notifEmpty.hidden = false;
+    return;
+  }
+
+  notifEmpty.hidden = true;
+  notificationsList.hidden = false;
+
+  notificationsList.innerHTML = notifications
+    .map((notification) => {
+      return `
+    <div class = "notif-item ${notification.isRead ? "" : "unread"}" data-id = ${notification.id}>
+      <p class = "notif-item-title">${notification.title}: ${notification.content.productName} (${notification.content.stock} left)</p>
+      <span class = "notif-item-time">${timeAgo(notification.createdAt)}</span>
+    </div>
+    `;
+    })
+    .join("");
+}
+function timeAgo(dateString) {
+  const minsAgo = Math.max(
+    1,
+    Math.round((Date.now() - new Date(dateString)) / 60000),
+  );
+
+  if (minsAgo < 60) {
+    return `${minsAgo} minute${minsAgo === 1 ? "" : "s"} ago`;
+  }
+
+  const hoursAgo = Math.round(minsAgo / 60);
+  return `${hoursAgo} hour${hoursAgo === 1 ? "" : "s"} ago`;
+}
+notificationsList.addEventListener("click", async (e) => {
+  const item = e.target.closest(".notif-item");
+  if (!item) return;
+  if (!item.classList.contains("unread")) return;
+  const itemId = item.dataset.id;
+  try {
+    const response = await fetch(`${API_ROOT}/notifications/${itemId}/read`, {
+      method: "PUT",
+      credentials: "include",
+    });
+    if (!response.ok)
+      throw new Error("Failed to mark the notification as read");
+    loadNotifications();
+  } catch (error) {
+    console.error("Failed to mark notification as read:", error);
+    showToast("Failed to mark notification as read:", "error");
+  }
+});
+markAllRead.addEventListener("click", async () => {
+  try {
+    const response = await fetch(`${API_ROOT}/notifications/read-all`, {
+      method: "PUT",
+      credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to mark all as read");
+    showToast("All notifications marked as read", "success");
+    loadNotifications();
+  } catch (error) {
+    console.error("Failed to mark all notifications as read:", error);
+    showToast("Failed to mark all notifications as read:", "error");
+  }
+});
+document.addEventListener("click", (e) => {
+  const notificationsDropDown = document.querySelector(".notif-dropdown");
+
+  const clickedInsideDropdown = notificationsDropDown.contains(e.target);
+  const clickedBell = notificationsButton.contains(e.target);
+
+  if (!clickedInsideDropdown && !clickedBell) {
+    notificationsDropDown.classList.remove("active");
+  }
+});
 // ---------- Logout ----------
 async function logout() {
   try {
@@ -203,7 +288,6 @@ async function ensureAdminAccess(retries = 2) {
 
       if (response.ok) {
         const user = await response.json();
-        window.currentUser = user;
         updateProfile(user);
         cacheProfile(user);
         return true;
@@ -334,9 +418,8 @@ function showToast(message, type) {
 // Page scripts that need to gate their own data loading on the result
 // (e.g. don't fetch products before we know the user is authenticated)
 // can `await window.adminAccessCheck` - it resolves to the same boolean
-// ensureAdminAccess() always returned. Once it resolves true, the user
-// object from /auth/me is also cached at `window.currentUser` - read
-// that instead of re-fetching /auth/me for things like a username.
+// ensureAdminAccess() always returned.
 setLogOutModal();
 window.adminAccessCheck = ensureAdminAccess();
 loadStoreLogo();
+loadNotifications();

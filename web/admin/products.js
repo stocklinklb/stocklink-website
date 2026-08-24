@@ -334,31 +334,25 @@ if (stockMenu) {
 // use this directly instead of applyFilters(), so they don't get bounced
 // back to page 1 as a side effect.
 function getFilteredRows() {
+  const search = filters.search.trim();
+
   let filtered = tableRows.filter((row) => {
     const brandMatch =
       filters.brands.length === 0 || filters.brands.includes(row.brand);
-
     const categoryMatch =
       filters.categories.length === 0 ||
       filters.categories.includes(row.category);
     const stockMatches =
       filters.stock.length === 0 ||
       filters.stock.some((status) => {
-        if (status === "in-stock") {
-          return row.stock > LOW_STOCK_MAX;
-        }
-        if (status === "low-stock") {
+        if (status === "in-stock") return row.stock > LOW_STOCK_MAX;
+        if (status === "low-stock")
           return row.stock > 0 && row.stock <= LOW_STOCK_MAX;
-        }
-        if (status === "out-stock") {
-          return row.stock <= 0;
-        }
+        if (status === "out-stock") return row.stock <= 0;
         return false;
       });
     const priceMatch =
       row.price >= filters.price.min && row.price <= filters.price.max;
-
-    const search = filters.search.trim();
     const searchMatch =
       search === "" ||
       row.name.toLowerCase().includes(search) ||
@@ -370,9 +364,64 @@ function getFilteredRows() {
     );
   });
 
-  return sortRows(filtered, sortKey);
+  if (search === "") {
+    return sortRows(filtered, sortKey);
+  }
+
+  // Rank by relevance first, then apply the chosen sort only within
+  // rows that are equally relevant.
+  const groups = new Map();
+  filtered.forEach((row) => {
+    const score = relevanceScore(row.name.toLowerCase(), search);
+    if (!groups.has(score)) groups.set(score, []);
+    groups.get(score).push(row);
+  });
+
+  return [...groups.keys()]
+    .sort((a, b) => a - b)
+    .flatMap((score) => sortRows(groups.get(score), sortKey));
 }
 
+function relevanceScore(name, search) {
+  if (name === search) return 0;
+  if (name.startsWith(search)) return 1;
+  if (new RegExp(`\\b${escapeRegExp(search)}`).test(name)) return 2;
+  return 3;
+}
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Lower score = more relevant. Exact match wins, then "starts with",
+// then the search term appearing as a whole word, then any substring
+// match at all (the old behaviour, now the lowest-priority bucket).
+function relevanceScore(name, search) {
+  if (name === search) return 0;
+  if (name.startsWith(search)) return 1;
+  const wordBoundaryRegex = new RegExp(`\\b${escapeRegExp(search)}`);
+  if (wordBoundaryRegex.test(name)) return 2;
+  return 3;
+}
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Groups already-relevance-sorted rows by score, then applies the
+// user's chosen sort within each group as a tiebreaker only - so
+// "Price: Low to High" still governs order among equally-relevant
+// results, without letting it override relevance itself.
+function preserveRelevanceOrder(scored, sortKey) {
+  const groups = new Map();
+  scored.forEach(({ row, score }) => {
+    if (!groups.has(score)) groups.set(score, []);
+    groups.get(score).push(row);
+  });
+
+  const orderedScores = [...groups.keys()].sort((a, b) => a - b);
+  return orderedScores.flatMap((score) => sortRows(groups.get(score), sortKey));
+}
 // Called whenever the user actually changes a filter/search/sort - a new
 // result set means page 1 is the only page guaranteed to make sense, so
 // this resets pagination as part of applying filters.

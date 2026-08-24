@@ -112,7 +112,6 @@ async function loadDashboard() {
   renderLowStock(rows);
   renderInventoryOverview(rows);
 }
-
 function renderStatCards(rows) {
   const counts = { all: rows.length, in: 0, low: 0, out: 0 };
 
@@ -209,7 +208,7 @@ async function loadCurrentUser() {
 }
 async function loadRecentActivity() {
   try {
-    const res = await fetch(`${API}/activity-log?limit=5`, {
+    const res = await fetch(`${API}/activity-log?limit=6`, {
       credentials: "include",
     });
     if (!res.ok) throw new Error("Failed to fetch activity log");
@@ -289,6 +288,7 @@ async function initAdminPage() {
   // }
   await loadCurrentUser();
   loadDashboard();
+  loadNotifications();
   loadRecentActivity();
 }
 

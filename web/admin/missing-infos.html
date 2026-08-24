@@ -3,28 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-    (function () {
-      var theme = localStorage.getItem("theme");
-      if (theme === "dark") {
-        document.documentElement.dataset.theme = "dark";
-      }
-    })();
-  </script>
+      (function () {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <title>Phone Store | Incompleted Products Informations View</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
-    <link rel="stylesheet" href="/admin/shared.css" />
+    <link rel="stylesheet" href="shared.css" />
 
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
     />
 
-    <link rel="stylesheet" href="/admin/missing-infos.css" />
+    <link rel="stylesheet" href="missing-infos.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -35,13 +34,35 @@
   <body>
     <div class="admin-container">
       <header>
-        <h3 class="logo-text">
-          <span class="logo-stock">Stock</span
-          ><span class="logo-link">Link</span>
-        </h3>
         <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
           <span></span><span></span><span></span>
         </button>
+
+        <div class="header-actions">
+          <div class="notif-bell-wrapper">
+            <button
+              class="notif-bell"
+              id="notif-bell-btn"
+              aria-label="Notifications"
+            >
+              <i class="fa-solid fa-bell"></i>
+              <span class="notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+
+            <div class="notif-dropdown" id="notif-dropdown" hidden>
+              <div class="notif-dropdown-header">
+                <h4>Notifications</h4>
+                <button id="notif-mark-all-read">Mark all as read</button>
+              </div>
+              <div class="notif-list" id="notif-list"></div>
+             <div class="notif-empty" id="notif-empty" hidden>
+              <i class="fa-regular fa-bell-slash"></i>
+              <p>No notifications yet</p>
+              <span>You're all caught up</span>
+            </div>
+            </div>
+          </div>
+        </div>
       </header>
       <div class="sidebar-overlay" id="sidebar-overlay"></div>
       <aside>
@@ -49,14 +70,19 @@
           <span class="logo-stock">Stock</span
           ><span class="logo-link">Link</span>
         </h3>
-        <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
-  <span class="theme-switch-track">
-    <span class="theme-switch-thumb">
-      <i class="fa-solid fa-sun sun-icon"></i>
-      <i class="fa-solid fa-moon moon-icon"></i>
-    </span>
-  </span>
-</button>
+        <button
+          id="themeToggle"
+          class="theme-switch"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <span class="theme-switch-track">
+            <span class="theme-switch-thumb">
+              <i class="fa-solid fa-sun sun-icon"></i>
+              <i class="fa-solid fa-moon moon-icon"></i>
+            </span>
+          </span>
+        </button>
         <div class="sidebar-links" id="sidebar-links"></div>
 
         <div class="profile-box sidebar-profile">
@@ -148,9 +174,9 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
-    <script src="/admin/config.js"></script>
-    <script src="/admin/shared.js"></script>
-    <script src="/admin/sidebar.js"></script>
-    <script src="/admin/missing-infos.js"></script>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="missing-infos.js"></script>
   </body>
 </html>

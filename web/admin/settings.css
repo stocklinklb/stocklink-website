@@ -152,7 +152,7 @@
 .save-btn {
   margin-top: 10px;
   background: var(--surface-muted);
-  color: var(--accent-contrast);
+  color: var(--ink);
   border: none;
   padding: 12px 28px;
   border-radius: 10px;

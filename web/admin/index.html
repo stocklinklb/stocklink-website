@@ -3,18 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-    (function () {
-      var theme = localStorage.getItem("theme");
-      if (theme === "dark") {
-        document.documentElement.dataset.theme = "dark";
-      }
-    })();
-  </script>
+      (function () {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phone Store | Admin</title>
-    <link rel="stylesheet" href="/admin/shared.css" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="stylesheet" href="/admin/admin.css" />
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="admin.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,27 +29,54 @@
     <div class="admin-container">
       <div class="sidebar-overlay" id="sidebar-overlay"></div>
       <header>
-        <h3 class="logo-text">
-          <span class="logo-stock">Stock</span
-          ><span class="logo-link">Link</span>
-        </h3>
         <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
           <span></span><span></span><span></span>
         </button>
+
+        <div class="header-actions">
+          <div class="notif-bell-wrapper">
+            <button
+              class="notif-bell"
+              id="notif-bell-btn"
+              aria-label="Notifications"
+            >
+              <i class="fa-solid fa-bell"></i>
+              <span class="notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+
+            <div class="notif-dropdown" id="notif-dropdown" hidden>
+              <div class="notif-dropdown-header">
+                <h4>Notifications</h4>
+                <button id="notif-mark-all-read">Mark all as read</button>
+              </div>
+              <div class="notif-list" id="notif-list"></div>
+              <div class="notif-empty" id="notif-empty" hidden>
+              <i class="fa-regular fa-bell-slash"></i>
+              <p>No notifications yet</p>
+              <span>You're all caught up</span>
+            </div>
+            </div>
+          </div>
+        </div>
       </header>
       <aside>
         <h3 class="logo-text">
           <span class="logo-stock">Stock</span
           ><span class="logo-link">Link</span>
         </h3>
-        <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
-  <span class="theme-switch-track">
-    <span class="theme-switch-thumb">
-      <i class="fa-solid fa-sun sun-icon"></i>
-      <i class="fa-solid fa-moon moon-icon"></i>
-    </span>
-  </span>
-</button>
+        <button
+          id="themeToggle"
+          class="theme-switch"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <span class="theme-switch-track">
+            <span class="theme-switch-thumb">
+              <i class="fa-solid fa-sun sun-icon"></i>
+              <i class="fa-solid fa-moon moon-icon"></i>
+            </span>
+          </span>
+        </button>
         <div class="sidebar-links" id="sidebar-links"></div>
 
         <div class="profile-box sidebar-profile">
@@ -69,14 +95,18 @@
           <h2>Quick Stock Overview:</h2>
           <div class="cards">
             <div class="card" data-tone="all">
-              <div class="card-icon"><i class="fa-solid fa-box-open"></i></div>
+              <div class="card-icon all-products">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
               <div>
                 <span id="allProducts">0</span>
                 <span>All Products</span>
               </div>
             </div>
             <div class="card" data-tone="in">
-              <div class="card-icon"><i class="fa-solid fa-check"></i></div>
+              <div class="card-icon in-stock">
+                <i class="fa-solid fa-check-circle"></i>
+              </div>
 
               <div>
                 <span id="inStock">0</span>
@@ -84,7 +114,7 @@
               </div>
             </div>
             <div class="card" data-tone="low">
-              <div class="card-icon">
+              <div class="card-icon low-stock">
                 <i class="fa-solid fa-circle-exclamation"></i>
               </div>
               <div>
@@ -93,7 +123,9 @@
               </div>
             </div>
             <div class="card" data-tone="out">
-              <div class="card-icon"><i class="fa-solid fa-xmark"></i></div>
+              <div class="card-icon out-of-stock">
+                <i class="fa-solid fa-xmark-circle"></i>
+              </div>
               <div>
                 <span id="outOfStock">0</span>
                 <span>Out Of Stock</span>
@@ -105,12 +137,12 @@
         <div class="quick-actions quick">
           <h2>Quick Actions:</h2>
           <div class="cards">
-            <div class="quick-card" data-href="/admin/add-product.html">
+            <div class="quick-card add-product" data-href="add-product.html">
               <i class="fa-solid fa-circle-plus"></i> <span> Add Product</span>
             </div>
 
-            <div class="quick-card" data-href="/admin/products.html">
-              <i class="fa-solid fa-boxes-stacked"></i>
+            <div class="quick-card manage-products" data-href="products.html">
+              <i class="fa-solid fa-boxes"></i>
               <span>Manage Products</span>
             </div>
             <div
@@ -124,11 +156,12 @@
               ><span>View Store</span>
             </div>
             <div
-              class="quick-card coming-soon"
-              data-href="/admin/excel-import.html"
+              class="quick-card excel-import-card"
+              data-href="excel-import.html"
               id="excelImportBtn"
             >
-              <span>⇪ Excel Import</span>
+              <i class="fa-solid fa-file-excel"></i>
+              <span>Excel Import</span>
             </div>
           </div>
           <input
@@ -168,8 +201,8 @@
                   </div>
                 </div>
               </div>
-              <div>
-                <a id="view-all-activity" href="/admin/analytics.html"
+              <div class="activity-footer">
+                <a id="view-all-activity" href="analytics.html"
                   >View all activity</a
                 >
               </div>
@@ -178,7 +211,7 @@
             <section class="low-stock-box">
               <div class="low-stock-box-title">
                 <h2>Low Stock</h2>
-                <button id="view-low-stock">View All Products ↗</button>
+                <button id="view-low-stock">View All Products</button>
               </div>
 
               <div id="lowStockList">
@@ -246,9 +279,10 @@
         </div>
       </div>
     </div>
-    <script src="/admin/config.js"></script>
-    <script src="/admin/shared.js"></script>
-    <script src="/admin/skeleton.js"></script>
+    <div id="toast-container"></div>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="skeleton.js"></script>
     <script>
       // Runs before admin.js, so these are the *first* paint the user
       // sees. Each call is self-clearing once admin.js writes real
@@ -272,8 +306,8 @@
         height: 36,
       });
     </script>
-    <script src="/admin/admin.js"></script>
-    <script src="/admin/sidebar.js"></script>
+    <script src="admin.js"></script>
+    <script src="sidebar.js"></script>
     <!--
       Integration notes for admin.js (not included in this upload, so
       wiring these two spots by hand):
