@@ -16,6 +16,24 @@ function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("theme", theme);
 }
+// Get show toast error messages
+async function getErrorMessage(response, fallback) {
+  let message = fallback;
+  try {
+    const data = await response.json();
+    if (data.message) message = data.message;
+  } catch (err) {}
+
+  return message;
+}
+
+function checkPermission(name, isOwner, permissions) {
+  if (isOwner) {
+    return true;
+  }
+  return permissions[name] === true;
+
+}
 
 const savedTheme = localStorage.getItem("theme");
 
@@ -80,7 +98,7 @@ async function loadNotifications() {
     const result = await response.json();
     notifications = result.data;
     renderNotifications(notifications);
-    console.log(notifications);
+    //console.log(notifications);
   } catch (error) {
     console.error("Failed to load notifications", error);
   }
@@ -184,7 +202,9 @@ async function logout() {
     });
 
     if (response.ok) {
+      sessionStorage.removeItem("staffMe")
       window.location.replace("login.html");
+      
     }
   } catch (error) {
     console.error("Logout error:", error);

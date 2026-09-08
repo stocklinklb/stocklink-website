@@ -3,79 +3,231 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>StockLink Login</title>
 
-    <link rel="stylesheet" href="/admin/login.css" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="login.css" />
   </head>
 
   <body>
     <main class="login-page">
-      <div class="floating-card card-one">
+      <div class="floating-card card-one" aria-hidden="true">
         <span>Products</span>
         <strong>248</strong>
       </div>
 
-      <div class="floating-card card-two">
+      <div class="floating-card card-two" aria-hidden="true">
         <span>Inventory</span>
         <strong>+12%</strong>
       </div>
 
-      <div class="floating-card card-three">
+      <div class="floating-card card-three" aria-hidden="true">
         <span>Orders</span>
         <strong>56</strong>
       </div>
 
       <section class="login-card">
+        <!-- Tab toggle: top of the card, sliding line indicator -->
+        <div
+          class="login-tabs"
+          role="tablist"
+          aria-label="Login type"
+          data-active="owner"
+        >
+          <button
+            type="button"
+            class="login-tab"
+            id="tab-owner"
+            role="tab"
+            aria-selected="true"
+            aria-controls="owner-login-form"
+            data-target="owner-login-form"
+          >
+            Store Owner
+          </button>
+          <button
+            type="button"
+            class="login-tab"
+            id="tab-staff"
+            role="tab"
+            aria-selected="false"
+            aria-controls="staff-login-form"
+            data-target="staff-login-form"
+          >
+            Staff
+          </button>
+          <span class="login-tab-indicator" aria-hidden="true"></span>
+        </div>
+
         <div class="brand">
-          <div class="logo"><img src="favicon.png" alt="StockLink"></div>
+          <div class="logo">SL</div>
           <h1>StockLink</h1>
           <p>Sign in to manage stock and orders quickly.</p>
         </div>
 
-        <form class="login-form" id="login-form">
+        <!-- Store Owner form (unchanged) -->
+        <form
+          class="login-form"
+          id="owner-login-form"
+          role="tabpanel"
+          aria-labelledby="tab-owner"
+        >
           <div class="form-group">
-            <label for="email">Email</label>
-            <input id="email" type="email" placeholder="email@example.com" />
+            <label for="owner-email">Email</label>
+            <input
+              id="owner-email"
+              name="email"
+              type="email"
+              placeholder="email@example.com"
+              autocomplete="username"
+              required
+            />
           </div>
 
           <div class="form-group">
-            <label for="password">Password</label>
+            <label for="owner-password">Password</label>
             <div class="password-field">
-              <input id="password" type="password" placeholder="Enter your password" />
+              <input
+                id="owner-password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
               <button
                 type="button"
                 class="toggle-password"
-                id="toggle-password"
+                data-target-input="owner-password"
                 aria-label="Show password"
                 aria-pressed="false"
               >
-                <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  class="eye-icon eye-open"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
-                <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <svg
+                  class="eye-icon eye-closed"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                  ></path>
                   <line x1="1" y1="1" x2="23" y2="23"></line>
                 </svg>
               </button>
             </div>
           </div>
 
-          <div class="remember-row">
-            <label class="remember">
-              <input type="checkbox" id="remember-me" />
-              <span>Remember me</span>
-            </label>
+          <button type="submit">Log in as Owner</button>
+
+          <p class="error-message" id="owner-error" role="alert"></p>
+        </form>
+
+        <!-- Staff form -->
+        <form
+          class="login-form is-hidden"
+          id="staff-login-form"
+          role="tabpanel"
+          aria-labelledby="tab-staff"
+        >
+          <div class="form-group">
+            <label for="staff-username">Username</label>
+            <input
+              id="staff-username"
+              name="username"
+              type="text"
+              placeholder="Enter your username"
+              autocomplete="username"
+              required
+            />
           </div>
 
-          <button type="submit">Login</button>
-          <p class="error-message"></p>
+          <div class="form-group">
+            <label for="staff-password">Password</label>
+            <div class="password-field">
+              <input
+                id="staff-password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                minlength="8"
+                required
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                data-target-input="staff-password"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <svg
+                  class="eye-icon eye-open"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg
+                  class="eye-icon eye-closed"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                  ></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="form-hint">
+            Ask your store owner if you don't have staff login details.
+          </p>
+
+          <button type="submit">Log in as Staff</button>
+
+          <p class="error-message" id="staff-error" role="alert"></p>
         </form>
       </section>
     </main>
-    <script src="/admin/config.js"></script>
-    <script src="/admin/login.js"></script>
+
+    <script src="config.js"></script>
+    <script src="login.js"></script>
   </body>
 </html>

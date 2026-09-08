@@ -206,10 +206,6 @@ body {
 
   min-height: 100vh;
   overflow-x: hidden;
-
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
 }
 .theme-switch {
   width: 52px;
@@ -542,7 +538,32 @@ html[data-theme="dark"] .moon-icon {
 .sidebar-links {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
   gap: 2px;
+}
+
+.sidebar-section-label {
+  display: block;
+
+  padding: 0 12px 6px;
+
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  color: var(--ink-faint);
+}
+
+.sidebar-section:not(:first-child) {
+  padding-top: 12px;
+  border-top: 1px solid var(--sidebar-border);
 }
 
 aside > h2 {
@@ -662,7 +683,16 @@ input:focus-visible {
 
 .admin-container {
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0, 1fr) instead of a bare 1fr: a bare 1fr track defaults to
+     minmax(auto, 1fr), so it will never shrink below the min-content
+     width of whatever's inside main (e.g. orders.css's
+     .orders-table{min-width:760px}). That forced the whole grid — and
+     with it the page — wider than the viewport at in-between widths,
+     and since html/body use overflow-x:hidden the excess just got
+     clipped instead of scrolling. minmax(0, 1fr) lets the track shrink
+     freely; descendants that need their own horizontal scroll (like
+     .orders-table-wrapper) still get it via their own overflow-x:auto. */
+  grid-template-columns: minmax(0, 1fr);
 }
 
 /* ============================================
@@ -826,6 +856,7 @@ aside a.active i {
 main {
   padding: 32px 36px 48px;
   margin-left: 240px;
+  min-width: 0;
 
   background: var(--bg);
 }

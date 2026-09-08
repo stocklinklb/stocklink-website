@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function () {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Store | Admin</title>
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="staff.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="admin-container">
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <header>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+
+        <div class="header-actions">
+          <div class="notif-bell-wrapper">
+            <button
+              class="notif-bell"
+              id="notif-bell-btn"
+              aria-label="Notifications"
+            >
+              <i class="fa-solid fa-bell"></i>
+              <span class="notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+
+            <div class="notif-dropdown" id="notif-dropdown" hidden>
+              <div class="notif-dropdown-header">
+                <h4>Notifications</h4>
+                <button id="notif-mark-all-read">Mark all as read</button>
+              </div>
+              <div class="notif-list" id="notif-list"></div>
+              <div class="notif-empty" id="notif-empty" hidden>
+                <i class="fa-regular fa-bell-slash"></i>
+                <p>No notifications yet</p>
+                <span>You're all caught up</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button
+          id="themeToggle"
+          class="theme-switch"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <span class="theme-switch-track">
+            <span class="theme-switch-thumb">
+              <i class="fa-solid fa-sun sun-icon"></i>
+              <i class="fa-solid fa-moon moon-icon"></i>
+            </span>
+          </span>
+        </button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main>
+        <div class="staff-header">
+          <h1 class="staff-title">Manage your staff's accounts</h1>
+          <button class="create-staff-btn">Add a new staff member</button>
+        </div>
+        <div class="staff-list"></div>
+        <!-- Create Staff Modal -->
+        <div class="create-staff-modal-overlay" id="createStaffModal">
+          <div
+            class="create-staff-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-staff-title"
+          >
+            <div class="create-staff-modal-head">
+              <div>
+                <span class="create-staff-eyebrow"> Staff management </span>
+
+                <h2 id="create-staff-title">Create staff account</h2>
+
+                <p>
+                  Give this employee their own login and choose what they can
+                  access.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                class="create-staff-close"
+                id="create-staff-close"
+                aria-label="Close"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <form id="create-staff-form">
+              <div class="create-staff-fields">
+                <div class="create-staff-field">
+                  <label for="create-staff-username"> Username </label>
+
+                  <input
+                    type="text"
+                    id="create-staff-username"
+                    name="username"
+                    placeholder="e.g. jsmith"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+
+                <div class="create-staff-field">
+                  <label for="create-staff-password">Password</label>
+
+                  <div class="password-input-wrapper">
+                    <input
+                      type="password"
+                      id="create-staff-password"
+                      name="password"
+                      placeholder="Create a password"
+                      autocomplete="new-password"
+                      minlength="8"
+                      required
+                    />
+
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      id="password-toggle"
+                      aria-label="Show password"
+                    >
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+
+                  <span class="create-staff-hint">
+                    At least 8 characters.
+                  </span>
+                </div>
+              </div>
+
+              <div class="create-staff-section-head">
+                <div>
+                  <h3>Permissions</h3>
+                  <p>Choose what this staff member can access.</p>
+                </div>
+              </div>
+
+              <div class="create-staff-permissions">
+                <label class="create-staff-permission">
+                  <span class="create-staff-permission-copy">
+                    <strong>View analytics</strong>
+                    <small>canViewAnalytics</small>
+                  </span>
+
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canViewAnalytics" checked />
+
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="create-staff-permission">
+                  <span class="create-staff-permission-copy">
+                    <strong>Modify products</strong>
+                    <small>canModifyProducts</small>
+                  </span>
+
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canModifyProducts" checked />
+
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                
+
+                <label class="create-staff-permission">
+                  <span class="create-staff-permission-copy">
+                    <strong>Upload missing products photos</strong>
+                    <small>canFillMissingProducts</small>
+                  </span>
+
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canFillMissingProducts" />
+
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="create-staff-permission">
+                  <span class="create-staff-permission-copy">
+                    <strong>Bulk edit</strong>
+                    <small>canBulkEdit</small>
+                  </span>
+
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canBulkEdit" />
+
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="create-staff-permission">
+                  <span class="create-staff-permission-copy">
+                    <strong>Bulk import</strong>
+                    <small>canBulkImport</small>
+                  </span>
+
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canBulkImport" />
+
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="create-staff-permission">
+                  <span class="create-staff-permission-copy">
+                    <strong>Modify store settings</strong>
+                    <small>canModifySettings</small>
+                  </span>
+
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canModifySettings" />
+
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="create-staff-permission">
+                  <span class="create-staff-permission-copy">
+                    <strong>Manage staff</strong>
+                    <small>canManageStaff</small>
+                  </span>
+
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canManageStaff" />
+
+                    <span class="track"></span>
+                  </span>
+                </label>
+              </div>
+
+              <div class="create-staff-modal-actions">
+                <button
+                  type="button"
+                  class="create-staff-cancel"
+                  id="create-staff-cancel"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  id="create-staff-submit"
+                  class="create-staff-submit"
+                >
+                  Create account
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Edit Staff Modal -->
+        <div class="edit-staff-modal-overlay" id="editStaffModal">
+          <div
+            class="edit-staff-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-staff-title"
+          >
+            <div class="edit-staff-modal-head">
+              <div>
+                <span class="edit-staff-eyebrow">Staff management</span>
+                <h2 id="edit-staff-title">Edit staff account</h2>
+                <p>Update this employee's login or what they can access.</p>
+              </div>
+
+              <button
+                type="button"
+                class="edit-staff-close"
+                id="edit-staff-close"
+                aria-label="Close"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <form id="edit-staff-form">
+              <input type="hidden" id="edit-staff-id" />
+
+              <div class="edit-staff-fields">
+                <div class="edit-staff-field">
+                  <label for="edit-staff-username">Username</label>
+                  <input
+                    type="text"
+                    id="edit-staff-username"
+                    name="username"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+
+                <div class="edit-staff-field">
+                  <label for="edit-staff-password">
+                    New password <span>(leave blank to keep current)</span>
+                  </label>
+
+                  <div class="password-input-wrapper">
+                    <input
+                      type="password"
+                      id="edit-staff-password"
+                      name="password"
+                      placeholder="Leave blank to keep current"
+                      autocomplete="new-password"
+                      minlength="8"
+                    />
+
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      id="edit-password-toggle"
+                      aria-label="Show password"
+                    >
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+
+                  <span class="edit-staff-hint">
+                    At least 8 characters, only if changing it.
+                  </span>
+                </div>
+              </div>
+
+              <div class="edit-staff-section-head">
+                <div>
+                  <h3>Permissions</h3>
+                  <p>Choose what this staff member can access.</p>
+                </div>
+              </div>
+
+              <div class="edit-staff-permissions">
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>View analytics</strong>
+                    <small>canViewAnalytics</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canViewAnalytics" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>Modify products</strong>
+                    <small>canModifyProducts</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canModifyProducts" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                
+
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>Upload missing products photos</strong>
+                    <small>canFillMissingProducts</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canFillMissingProducts" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>Bulk edit</strong>
+                    <small>canBulkEdit</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canBulkEdit" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>Orders</strong>
+                    <small>canManageOrders</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canManageOrders" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>Bulk import</strong>
+                    <small>canBulkImport</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canBulkImport" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>Modify store settings</strong>
+                    <small>canModifySettings</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canModifySettings" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+
+                <label class="edit-staff-permission">
+                  <span class="edit-staff-permission-copy">
+                    <strong>Manage staff</strong>
+                    <small>canManageStaff</small>
+                  </span>
+                  <span class="mini-switch">
+                    <input type="checkbox" name="canManageStaff" />
+                    <span class="track"></span>
+                  </span>
+                </label>
+              </div>
+
+              <div class="edit-staff-modal-actions">
+                <button
+                  type="button"
+                  class="edit-staff-cancel"
+                  id="edit-staff-cancel"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  id="edit-staff-submit"
+                  class="edit-staff-submit"
+                >
+                  Save changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="delete-modal-overlay" id="delete-modal">
+          <div class="delete-modal">
+            <h3 id="modal-title">Delete Staff Account</h3>
+
+            <p>
+              Are you sure you want to delete
+              <span> <strong id="delete-staff-name"></strong> Account? </span>
+            </p>
+
+            <div class="delete-modal-actions">
+              <button id="cancel-delete-btn">Cancel</button>
+              <button id="confirm-delete-btn">Delete</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+
+        <div class="logout-actions">
+          <button class="cancel-logout">Cancel</button>
+
+          <button class="confirm-logout">Logout</button>
+        </div>
+      </div>
+    </div>
+    <div id="toast-container"></div>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="skeleton.js"></script>
+
+    <script src="staff.js"></script>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

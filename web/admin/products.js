@@ -111,7 +111,7 @@ const LOW_STOCK_MAX = 5;
 let allProducts = [];
 let tableRows = []; // flattened, one entry per variant
 let selectedProducts = new Set();
-
+const modalP = document.getElementById("modal-p");
 let filters = {
   brands: [],
   categories: [],
@@ -187,6 +187,7 @@ let toastTimer;
 
 let productToDelete = null;
 let productsToDelete = [];
+let productToArchive = null;
 // ---------- Skeleton loading state ----------
 // Shown immediately (doesn't wait on auth or the fetch) so the page never
 // flashes an empty table/menus. createBrandFilter()/createCategoryFilter()/
@@ -288,6 +289,7 @@ function flattenVariants(products) {
       stock: variant.stock ?? 0,
       options: describeVariantOptions(variant),
       missingSpecs: hasMissingSpecs(product.specifications),
+      status: product.status,
     })),
   );
 }
@@ -498,6 +500,36 @@ function renderResults(filtered) {
 }
 
 function renderTable(rows) {
+  // The store having zero products at all is a different situation from
+  // the filters/search just not matching anything - branch on
+  // allProducts (the whole unfiltered catalog) rather than rows (the
+  // filtered result set) so each case gets its own message and CTA.
+  if (allProducts.length === 0) {
+    tbody.innerHTML = `
+<tr class="empty-row">
+  <td colspan="8">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fa-solid fa-box-open"></i>
+      </div>
+
+      <h3>No products yet</h3>
+
+      <p>
+        Your store doesn't have any products yet. Add your first product to get started.
+      </p>
+
+      <button class="reset-filters-btn empty-add-product-btn" type="button">
+            <i class="fa-solid fa-plus"></i>
+            Add Product
+          </button>
+    </div>
+  </td>
+</tr>
+`;
+    return;
+  }
+
   if (rows.length === 0) {
     tbody.innerHTML = `
 <tr class="empty-row">
@@ -537,6 +569,7 @@ function renderTable(rows) {
 
   tbody.innerHTML = rows
     .map((row) => {
+      const isArchived = row.status === "ARCHIVED";
       const status = statusOf(row.stock);
       return `
         <tr data-row-id="${row.rowId}" class="${row.missingSpecs ? "row-missing-specs" : ""}">
@@ -552,10 +585,15 @@ function renderTable(rows) {
           <td data-label="Category">${row.category || "—"}</td>
           <td data-label="Price">$${row.price}</td>
           <td data-label="Stock">${row.stock}</td>
-          <td data-label="Status"><span class="status ${status.cls}">${status.label}</span></td>
+          <td data-label="Status">${
+            isArchived
+              ? `<span class="status archived">Archived</span>`
+              : `<span class="status ${status.cls}">${status.label}</span>`
+          }</td>
           <td data-label="Actions" class="actions-cell">
-            <button class="action-btn" data-action="edit" data-row-id="${row.rowId}">Edit</button>
-            <button class="delete-btn" data-action="delete" data-row-id="${row.rowId}">Delete</button>
+            <button class="action-btn" data-action="edit" data-row-id="${row.rowId}"><i class="fa-solid fa-pen"></i></button>
+            <button class="action-btn" data-action="archive" data-row-id="${row.rowId}" title="${isArchived ? "Unarchive" : "Archive"}"><i class="fa-solid fa-box${isArchived ? "-open" : ""}"></i></button>
+            <button class="delete-btn" data-action="delete" data-row-id="${row.rowId}"><i class="fa-solid fa-trash-can"></i></button>
           </td>
         </tr>`;
     })
@@ -746,6 +784,17 @@ function createPriceSlider() {
   });
 }
 
+// ---------- Empty state: Add Product (zero products in store) ----------
+// Delegated because this button only exists inside dynamically-injected
+// empty-state markup - a listener bound once at load time to a specific
+// element would never reach it.
+document.addEventListener("click", (e) => {
+  const button = e.target.closest(".empty-add-product-btn");
+  if (!button) return;
+
+  window.location.href = "add-product.html";
+});
+
 // ---------- Reset filters ----------
 document.addEventListener("click", (e) => {
   // Search
@@ -836,9 +885,10 @@ paginationControls.addEventListener("click", (event) => {
 });
 
 // ---------- Row actions ----------
-// Single click listener on tbody handles both edit (navigate) and delete
-// (open the confirmation modal). The actual delete request happens once
-// the user confirms, in confirmDeleteBtn's handler below.
+// Single click listener on tbody handles edit (navigate), archive/unarchive
+// (open the confirmation modal in archive mode), and delete (open the
+// confirmation modal in delete mode). The actual request happens once the
+// user confirms, in confirmDeleteBtn's handler below.
 tbody.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
@@ -852,10 +902,29 @@ tbody.addEventListener("click", (event) => {
     return;
   }
 
+  if (button.dataset.action === "archive") {
+    productToArchive = row;
+    productToDelete = null;
+    productsToDelete = [];
+    const willUnarchive = row.status === "ARCHIVED";
+    modalTitle.textContent = willUnarchive
+      ? "Unarchive Product"
+      : "Archive Product";
+    confirmDeleteBtn.textContent = willUnarchive ? "Unarchive" : "Archive";
+    confirmDeleteBtn.style.background = "#3b3b3b";
+    confirmDeleteBtn.style.color = "#fff";
+    deleteProductName.textContent = row.name;
+    deleteModal.classList.add("active");
+    return;
+  }
+
   if (button.dataset.action === "delete") {
     productToDelete = row;
     productsToDelete = [];
+    productToArchive = null;
     modalTitle.textContent = "Delete Product";
+    confirmDeleteBtn.textContent = "Delete";
+    confirmDeleteBtn.style.background = "";
     deleteProductName.textContent = row.name;
     deleteModal.classList.add("active");
   }
@@ -865,9 +934,69 @@ cancelDeleteBtn.addEventListener("click", () => {
   deleteModal.classList.remove("active");
   productToDelete = null;
   productsToDelete = [];
+  productToArchive = null;
 });
 
 confirmDeleteBtn.addEventListener("click", async () => {
+  // Archive/unarchive path: productToArchive is set by the row-click
+  // handler's "archive" branch above. Checked first, before the delete
+  // paths, since a single product can only be in one of these states at
+  // a time and this is the cheapest check to make.
+  if (productToArchive) {
+    const willUnarchive = productToArchive.status === "ARCHIVED";
+    try {
+      const response = await fetch(
+        `${API}/${productToArchive.productId}/archive`,
+        {
+          method: "PATCH",
+          credentials: "include",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update product status");
+      }
+
+      const { product: updatedProduct } = await response.json();
+
+      // Archiving doesn't remove the product - flip status in place on
+      // every row/product that shares this productId, instead of
+      // filtering anything out of allProducts/tableRows the way delete
+      // does.
+      allProducts = allProducts.map((product) =>
+        product.id === productToArchive.productId
+          ? { ...product, status: updatedProduct.status }
+          : product,
+      );
+      tableRows = tableRows.map((row) =>
+        row.productId === productToArchive.productId
+          ? { ...row, status: updatedProduct.status }
+          : row,
+      );
+
+      applyFilters();
+
+      deleteModal.classList.remove("active");
+      productToArchive = null;
+
+      showToast(
+        willUnarchive
+          ? "Product unarchived successfully"
+          : "Product archived successfully",
+        "success",
+      );
+    } catch (error) {
+      console.error(error);
+      showToast(
+        willUnarchive
+          ? "Could not unarchive product"
+          : "Could not archive product",
+        "error",
+      );
+    }
+    return;
+  }
+
   // Bulk path: productsToDelete is populated by the "Delete Selected"
   // button in selectBtnFunctionalitty.js. Handle it first and return,
   // since it needs a different request shape than the single-product path.

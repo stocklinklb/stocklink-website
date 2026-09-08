@@ -1,0 +1,1910 @@
+/* Page-specific styles for the orders page.
+   Shared shell (header, sidebar, layout, tokens) lives in shared.css */
+
+/* ============================================
+   Page head
+   ============================================ */
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding-bottom: 15px;
+  border-bottom: 1.2px solid var(--border);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  color: var(--ink-soft);
+  font-size: 13.5px;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn i {
+  font-size: 12.5px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: var(--shadow-accent-sm);
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-accent-md);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  filter: brightness(0.95);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border-color: transparent;
+}
+
+.btn-ghost:hover {
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.btn-sm {
+  padding: 7px 13px;
+  font-size: 12.5px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   Stat cards (order overview)
+   ============================================ */
+.order-stats {
+  margin-bottom: 28px;
+}
+
+.order-stats .cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.order-stats .card {
+  background: linear-gradient(
+    145deg,
+    var(--surface) 0%,
+    var(--surface-soft) 100%
+  );
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.order-stats .card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+}
+
+.order-stats .card-icon {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  font-size: 20px;
+}
+
+.order-stats .card-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  display: block;
+}
+
+.order-stats .card-label {
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  display: block;
+  margin-top: 4px;
+}
+
+.order-stats .card[data-tone="all"] {
+  border-left: 2px solid var(--border-strong);
+}
+.order-stats .card[data-tone="pending"] {
+  border-left: 2px solid var(--warning);
+}
+.order-stats .card[data-tone="sold"] {
+  border-left: 2px solid var(--success);
+}
+.order-stats .card[data-tone="revenue"] {
+  border-left: 2px solid var(--accent);
+}
+
+.icon-all-orders {
+  color: var(--accent);
+}
+.icon-pending-orders {
+  color: var(--warning);
+}
+.icon-sold-orders {
+  color: var(--success);
+}
+.icon-revenue {
+  color: var(--accent);
+}
+
+/* ============================================
+   Sales overview chart
+   ============================================ */
+.sales-chart-panel {
+  padding: 22px 24px 20px;
+  margin-bottom: 24px;
+}
+
+.sales-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.sales-chart-header h3 {
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.sales-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chart-toggle-group {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.chart-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.chart-toggle-btn:hover {
+  color: var(--ink);
+}
+
+.chart-toggle-btn.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.sales-chart-canvas-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* ============================================
+   Toolbar — search + status filter
+   ============================================ */
+.orders-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.orders-search {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  max-width: 360px;
+}
+
+.orders-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-faint);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.orders-search input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-family: var(--font-body);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.orders-search input::placeholder {
+  color: var(--ink-faint);
+}
+
+.orders-search input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.status-filter {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.status-pill {
+  border: none;
+  background: transparent;
+  padding: 7px 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.status-pill:hover {
+  color: var(--ink);
+}
+
+.status-pill.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   Orders table
+   ============================================ */
+.orders-panel {
+  background: linear-gradient(
+    145deg,
+    var(--surface) 0%,
+    var(--surface-soft) 100%
+  );
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+}
+
+.orders-table-wrapper {
+  overflow-x: auto;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.orders-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.orders-table td {
+  padding: 16px 20px;
+  font-size: 13.5px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--surface-muted);
+  vertical-align: middle;
+}
+
+.orders-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.orders-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.orders-table tbody tr:hover {
+  background: var(--surface-muted);
+}
+
+.order-number {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.order-buyer-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.order-buyer-phone {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+.source-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.order-item-count {
+  color: var(--ink-soft);
+}
+
+.order-total {
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-display);
+}
+
+.order-date {
+  color: var(--ink-soft);
+  font-size: 12.5px;
+}
+
+/* status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.status-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-badge.pending {
+  color: var(--warning);
+  background: var(--warning-soft);
+}
+.status-badge.pending::before {
+  background: var(--warning);
+}
+
+.status-badge.sold {
+  color: var(--success);
+  background: var(--success-soft);
+}
+.status-badge.sold::before {
+  background: var(--success);
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 12.5px;
+  flex-shrink: 0;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.icon-btn.success:hover {
+  background: var(--success-soft);
+  color: var(--success);
+  border-color: transparent;
+}
+
+.icon-btn.danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: #fecaca;
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* empty state */
+.orders-empty {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 64px 20px;
+  text-align: center;
+  color: var(--ink-faint);
+}
+.orders-empty.active {
+  display: flex;
+}
+.orders-empty i {
+  font-size: 28px;
+  margin-bottom: 6px;
+  color: var(--ink-faint);
+}
+
+.orders-empty p {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.orders-empty span {
+  font-size: 12.5px;
+  max-width: 320px;
+}
+
+/* pagination */
+.orders-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pagination-info {
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-soft);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-current {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 16px;
+  text-align: center;
+}
+
+/* skeleton row helper (table-specific — shared.css's .skeleton classes work as-is) */
+.orders-table .skeleton-row td {
+  padding: 14px 20px;
+}
+.order-item-row.stock-exceeded,
+.detail-items-table tr.stock-exceeded {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+/* ============================================
+   Modals (order form, order detail, confirm)
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1100;
+}
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none; /* also blocks hover states, tooltips still show via title */
+}
+.modal-overlay.active {
+  display: flex;
+}
+/* Item row inputs */
+.order-item-row input {
+  width: 100%;
+  height: 40px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Search input */
+.order-item-row .variant-search-input {
+  width: 100%;
+}
+
+/* Quantity input */
+.order-item-row .item-qty-input {
+  width: 100%;
+  text-align: center;
+}
+
+/* Focus */
+.order-item-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+/* Placeholder */
+.order-item-row input::placeholder {
+  color: var(--ink-faint);
+}
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 440px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-lg {
+  max-width: 660px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.modal-header p {
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--ink-faint);
+  font-size: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.modal-close:hover {
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* order-detail modal: Close sits alone on the left,
+   the rest of the actions stay grouped on the right */
+#orderDetailCloseBtn2 {
+  margin-right: auto;
+}
+
+/* confirm modal (delete / mark as sold) */
+.confirm-modal .modal-body {
+  text-align: center;
+  padding: 28px 24px 8px;
+}
+
+.confirm-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.confirm-icon.danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.confirm-icon.success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.confirm-modal h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.confirm-modal p {
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* ============================================
+   Order form
+   ============================================ */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.form-group .optional {
+  font-weight: 400;
+  color: var(--ink-faint);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-family: var(--font-body);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--ink-faint);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 64px;
+}
+
+.form-error {
+  font-size: 12px;
+  color: var(--danger);
+  display: none;
+}
+
+.form-group.invalid input,
+.form-group.invalid select,
+.form-group.invalid textarea {
+  border-color: var(--danger);
+}
+
+.form-group.invalid .form-error {
+  display: block;
+}
+
+.form-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 22px 0;
+}
+
+/* items builder */
+.order-items-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.order-items-header h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.order-items-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-item-row {
+  display: grid;
+  grid-template-columns: 1fr 84px 100px 32px;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 3px;
+  border-bottom: 1px solid var(--surface-muted);
+}
+
+.order-item-row:last-child {
+  border-bottom: none;
+}
+
+.variant-search {
+  position: relative;
+}
+
+.variant-search input {
+  width: 100%;
+}
+
+.variant-search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+
+.variant-search-results.active {
+  display: block;
+}
+
+.variant-result {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--surface-muted);
+}
+
+.variant-result:last-child {
+  border-bottom: none;
+}
+
+.variant-result:hover {
+  background: var(--surface-muted);
+}
+
+.variant-result .variant-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.variant-result .variant-meta {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+.item-qty-input {
+  text-align: center;
+}
+
+.item-line-total {
+  padding: 10px 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: right;
+}
+
+.remove-item-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-faint);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.remove-item-btn:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: #fecaca;
+}
+
+.add-item-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-strong);
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.add-item-btn:hover {
+  background: var(--accent-soft);
+}
+
+.items-empty-note {
+  color: var(--ink-faint);
+  font-size: 13px;
+  padding: 16px 0;
+  text-align: center;
+}
+
+/* order summary */
+.order-summary {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.summary-row.discount-row input {
+  width: 100px;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: right;
+}
+
+.summary-row.discount-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.summary-row.total {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  padding-top: 10px;
+  margin-top: 2px;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================
+   Order detail modal
+   ============================================ */
+.detail-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.detail-order-number {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.detail-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+  margin-bottom: 22px;
+}
+
+.detail-field label {
+  display: block;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.detail-field span {
+  font-size: 13.5px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.detail-items-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.detail-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.detail-items-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-items-table td {
+  padding: 10px 0;
+  font-size: 13px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--surface-muted);
+}
+
+.detail-items-table td:last-child,
+.detail-items-table th:last-child {
+  text-align: right;
+}
+
+.detail-items-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.detail-item-name {
+  font-weight: 600;
+}
+
+.detail-item-options {
+  display: block;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1100px) {
+  .order-stats .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .page-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-head .btn-primary {
+    justify-content: center;
+  }
+
+  .order-stats .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .sales-chart-panel {
+    padding: 18px 16px 16px;
+  }
+
+  .sales-chart-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sales-chart-controls {
+    justify-content: space-between;
+  }
+
+  .chart-toggle-group {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .sales-chart-canvas-wrapper {
+    height: 220px;
+  }
+
+  .orders-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orders-search {
+    max-width: none;
+  }
+
+  .status-filter {
+    justify-content: center;
+  }
+
+  .status-pill {
+    flex: 1;
+    text-align: center;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .order-item-row {
+    grid-template-columns: 1fr 60px 80px 32px;
+  }
+
+  .modal {
+    max-height: 92vh;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* larger tap targets on touch screens */
+  .icon-btn,
+  .page-btn,
+  .remove-item-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .modal-close {
+    width: 38px;
+    height: 38px;
+  }
+
+  .row-actions {
+    gap: 8px;
+  }
+
+  /* footer actions wrap into a tidy grid instead of
+     overflowing or squeezing on narrow screens */
+  .modal-footer {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .modal-footer .btn {
+    flex: 1 1 auto;
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  #orderDetailCloseBtn2 {
+    margin-right: 0;
+    flex-basis: 100%;
+    order: 10;
+  }
+
+  #detailMarkSoldBtn {
+    flex-basis: 100%;
+    order: 9;
+  }
+}
+
+/* ============================================
+   Orders table -> stacked cards on phones
+   ============================================ */
+@media (max-width: 640px) {
+  .orders-table-wrapper {
+    overflow-x: visible;
+  }
+
+  .orders-table {
+    min-width: 0;
+  }
+
+  .orders-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .orders-table,
+  .orders-table tbody,
+  .orders-table tr,
+  .orders-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .orders-table tbody tr {
+    margin: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .orders-table tbody tr:hover {
+    background: none;
+  }
+
+  .orders-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--surface-muted);
+    text-align: right;
+  }
+
+  .orders-table tbody tr:last-child,
+  .orders-table td:last-child {
+    border-bottom: none;
+  }
+
+  .orders-table td[data-label]:not([data-label=""])::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .orders-table td.col-actions {
+    justify-content: center;
+    background: var(--surface-soft);
+    padding: 10px 8px;
+  }
+
+  .orders-table .row-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .order-buyer-name,
+  .order-buyer-phone {
+    text-align: right;
+  }
+}
+
+@media (max-width: 480px) {
+  .orders-pagination {
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* stack the item-row into two lines: search + remove
+     on top, qty + line total underneath — the 4-across
+     grid gets too cramped to use accurately by touch */
+  .order-item-row {
+    grid-template-columns: 1fr 38px;
+    grid-template-areas:
+      "search remove"
+      "qty total";
+    row-gap: 8px;
+  }
+
+  .variant-search {
+    grid-area: search;
+  }
+
+  .remove-item-btn {
+    grid-area: remove;
+    justify-self: end;
+  }
+
+  .item-qty-input {
+    grid-area: qty;
+  }
+
+  .item-line-total {
+    grid-area: total;
+    padding: 10px 0;
+  }
+}
+
+/* ============================================
+   Receipt (screen styling — hidden by [hidden]
+   until printReceiptBtn fills + reveals it;
+   actual print layout is in the @media print
+   block below)
+
+   Design notes: a torn thermal-paper ticket, set in
+   a monospace "receipt printer" face, dashed rules
+   between sections, and a jagged torn edge + barcode
+   at the bottom. On screen it follows the dashboard's
+   light/dark theme (light mode = classic cream paper,
+   dark mode = the dashboard's own dark surface/ink),
+   but printing and downloading always force the
+   classic light paper palette — a printed or exported
+   receipt shouldn't come out with a dark background.
+   ============================================ */
+.receipt-print-area {
+  --receipt-paper: #fdfbf3;
+  --receipt-ink: #2a2621;
+  --receipt-ink-soft: #6b6459;
+  --receipt-ink-faint: #a39c8d;
+  --receipt-rule: #d8d1c0;
+  --receipt-texture: rgba(0, 0, 0, 0.015);
+
+  position: relative;
+  max-width: 360px;
+  margin: 40px auto 60px;
+  font-family: "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--receipt-ink);
+  background: var(--receipt-paper);
+  padding-bottom: 34px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 100%,
+    93.75% calc(100% - 9px),
+    87.5% 100%,
+    81.25% calc(100% - 9px),
+    75% 100%,
+    68.75% calc(100% - 9px),
+    62.5% 100%,
+    56.25% calc(100% - 9px),
+    50% 100%,
+    43.75% calc(100% - 9px),
+    37.5% 100%,
+    31.25% calc(100% - 9px),
+    25% 100%,
+    18.75% calc(100% - 9px),
+    12.5% 100%,
+    6.25% calc(100% - 9px),
+    0% 100%,
+    0% calc(100% - 9px)
+  );
+}
+
+/* dark mode: swap the fixed paper palette for the
+   dashboard's own dark surface/ink tokens so the ticket
+   doesn't sit as a bright white card in a dark UI */
+[data-theme="dark"] .receipt-print-area {
+  --receipt-paper: var(--surface);
+  --receipt-ink: var(--ink);
+  --receipt-ink-soft: var(--ink-soft);
+  --receipt-ink-faint: var(--ink-faint);
+  --receipt-rule: var(--border);
+  --receipt-texture: rgba(255, 255, 255, 0.04);
+}
+
+/* colored top edge, like a printer-ink stripe */
+.receipt-print-area::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    var(--accent-dark, var(--accent)) 100%
+  );
+}
+
+/* faint vertical paper-fiber texture */
+.receipt-print-area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--receipt-texture) 0px,
+    var(--receipt-texture) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.receipt-header {
+  position: relative;
+  text-align: center;
+  padding: 26px 26px 16px;
+}
+
+.receipt-header h2 {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-dark, var(--accent));
+  margin-bottom: 4px;
+}
+
+.receipt-tagline {
+  font-size: 9.5px;
+  color: var(--receipt-ink-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.receipt-stars {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  opacity: 0.6;
+  margin: 4px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.receipt-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--receipt-ink);
+  letter-spacing: 0.03em;
+  margin-top: 8px;
+}
+
+.receipt-meta-row span:first-child {
+  color: var(--accent-dark, var(--accent));
+}
+
+.receipt-meta-row span:last-child {
+  font-weight: 400;
+  color: var(--receipt-ink-soft);
+}
+
+.receipt-status-pill {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 12px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.receipt-status-pill.is-pending {
+  color: var(--warning);
+  background: var(--warning-soft);
+  border: 1px dashed var(--warning);
+}
+
+.receipt-status-pill.is-sold {
+  color: #fff;
+  background: var(--success);
+  transform: rotate(-2deg);
+}
+
+/* dashed rules between sections, drawn as a bottom border
+   so they survive both html2canvas capture and print */
+.receipt-header::after,
+.receipt-buyer::after {
+  content: "";
+  display: block;
+  margin-top: 18px;
+  border-bottom: 1px dashed var(--receipt-rule);
+}
+
+.receipt-buyer {
+  position: relative;
+  padding: 16px 26px 2px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.receipt-buyer p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--receipt-ink);
+}
+
+.receipt-buyer p strong {
+  font-weight: 700;
+  color: var(--accent-dark, var(--accent));
+  text-transform: uppercase;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.receipt-buyer p span {
+  text-align: right;
+}
+
+.receipt-items-table {
+  position: relative;
+  width: calc(100% - 52px);
+  margin: 18px 26px 0;
+  border-collapse: collapse;
+}
+
+.receipt-items-table th {
+  text-align: left;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-dark, var(--accent));
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--accent);
+}
+
+.receipt-items-table td {
+  padding: 7px 0;
+  font-size: 11.5px;
+  color: var(--receipt-ink);
+  vertical-align: top;
+}
+
+/* faint alternating tint so the item list doesn't read
+   as a flat block of text */
+.receipt-items-table tbody tr:nth-child(even) td {
+  background: var(--accent-ring, rgba(0, 0, 0, 0.03));
+}
+
+.receipt-items-table td small {
+  display: block;
+  font-size: 9.5px;
+  color: var(--receipt-ink-faint);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.receipt-note-row {
+  margin: 10px 26px 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--receipt-rule);
+  font-size: 10.5px;
+  color: var(--receipt-ink-soft);
+}
+
+.receipt-note-row strong {
+  display: block;
+  font-weight: 700;
+  color: var(--receipt-ink-faint);
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+
+.receipt-note-row span {
+  color: var(--receipt-ink);
+}
+
+.receipt-items-table th:nth-child(2),
+.receipt-items-table td:nth-child(2) {
+  width: 24px;
+  text-align: center;
+  color: var(--receipt-ink-soft);
+}
+
+.receipt-items-table th:nth-child(3),
+.receipt-items-table td:nth-child(3) {
+  width: 54px;
+  text-align: right;
+  color: var(--receipt-ink-soft);
+  white-space: nowrap;
+}
+
+.receipt-items-table th:last-child,
+.receipt-items-table td:last-child {
+  width: 60px;
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.receipt-summary {
+  position: relative;
+  margin: 6px 26px 0;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--receipt-rule);
+}
+
+.receipt-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  color: var(--receipt-ink-soft);
+}
+
+.receipt-summary-row span:last-child {
+  font-weight: 700;
+  color: var(--receipt-ink);
+}
+
+#receiptItemCount {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-dark, var(--accent));
+  font-weight: 700;
+}
+
+#receiptDiscount {
+  color: var(--danger);
+}
+
+/* the total — a solid accent bar, like ink stamped
+   across the bottom of the ticket */
+.receipt-summary-row.receipt-total {
+  margin: 10px -26px -12px;
+  padding: 12px 26px;
+  background: var(--accent);
+  border-top: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-contrast, #fff);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.receipt-summary-row.receipt-total span:last-child {
+  font-size: 16px;
+  color: inherit;
+}
+
+.receipt-footer {
+  text-align: center;
+  font-size: 10.5px;
+  color: var(--receipt-ink-soft);
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  padding: 22px 26px 4px;
+}
+
+/* faux barcode — pure CSS, survives print + canvas capture */
+.receipt-barcode {
+  height: 34px;
+  margin: 14px 26px 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--accent-dark, var(--accent)) 0px,
+    var(--accent-dark, var(--accent)) 2px,
+    transparent 2px,
+    transparent 3px,
+    var(--accent-dark, var(--accent)) 3px,
+    var(--accent-dark, var(--accent)) 4px,
+    transparent 4px,
+    transparent 7px,
+    var(--accent-dark, var(--accent)) 7px,
+    var(--accent-dark, var(--accent)) 9px,
+    transparent 9px,
+    transparent 11px
+  );
+}
+
+.receipt-barcode-label {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--accent-dark, var(--accent));
+  margin: 0 26px 20px;
+}
+
+/* ============================================
+   Print mode — when printReceiptBtn triggers
+   window.print(), hide everything on the page
+   except the receipt itself.
+   ============================================ */
+@media print {
+  @page {
+    size: auto;
+    margin: 14mm;
+  }
+
+  .admin-container,
+  .modal-overlay,
+  #toast-container {
+    display: none !important;
+  }
+
+  .receipt-print-area {
+    display: block !important;
+    position: static;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    box-shadow: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+
+    /* always print on the classic light paper, even if
+       the dashboard is currently in dark mode — printing
+       a dark background wastes ink and won't read as a
+       normal receipt */
+    --receipt-paper: #fdfbf3 !important;
+    --receipt-ink: #2a2621 !important;
+    --receipt-ink-soft: #6b6459 !important;
+    --receipt-ink-faint: #a39c8d !important;
+    --receipt-rule: #d8d1c0 !important;
+    --receipt-texture: rgba(0, 0, 0, 0.015) !important;
+  }
+}
+
+/* ============================================
+   Download Receipt button — sits next to Print
+   Receipt in the order-detail modal footer.
+   ============================================ */
+.btn-download-receipt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-download-receipt.is-loading i {
+  animation: receipt-spin 0.8s linear infinite;
+}
+
+/* forced onto #receiptPrintArea by orders.js just for the
+   html2canvas snapshot, so the downloaded PDF always comes
+   out on classic light paper — same reasoning as @media print */
+.receipt-print-area.receipt-force-light {
+  --receipt-paper: #fdfbf3 !important;
+  --receipt-ink: #2a2621 !important;
+  --receipt-ink-soft: #6b6459 !important;
+  --receipt-ink-faint: #a39c8d !important;
+  --receipt-rule: #d8d1c0 !important;
+  --receipt-texture: rgba(0, 0, 0, 0.015) !important;
+}
+
+@keyframes receipt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

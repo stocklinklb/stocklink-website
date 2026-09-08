@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Prevents the 404 by providing an empty icon -->
+    <link rel="icon" href="data:," />
+    <meta charset="UTF-8" />
+    <script>
+      (function () {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orders | Phone Store Admin</title>
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="orders.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <!-- Used only by #downloadReceiptBtn in orders.js to turn
+         #receiptPrintArea into a downloadable PDF. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="admin-container">
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+      <header>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+
+        <div class="header-actions">
+          <div class="notif-bell-wrapper">
+            <button
+              class="notif-bell"
+              id="notif-bell-btn"
+              aria-label="Notifications"
+            >
+              <i class="fa-solid fa-bell"></i>
+              <span class="notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+
+            <div class="notif-dropdown" id="notif-dropdown" hidden>
+              <div class="notif-dropdown-header">
+                <h4>Notifications</h4>
+                <button id="notif-mark-all-read">Mark all as read</button>
+              </div>
+              <div class="notif-list" id="notif-list"></div>
+              <div class="notif-empty" id="notif-empty" hidden>
+                <i class="fa-regular fa-bell-slash"></i>
+                <p>No notifications yet</p>
+                <span>You're all caught up</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <aside>
+        <h3 class="logo-text">
+          <span class="logo-stock">Stock</span
+          ><span class="logo-link">Link</span>
+        </h3>
+        <button
+          id="themeToggle"
+          class="theme-switch"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <span class="theme-switch-track">
+            <span class="theme-switch-thumb">
+              <i class="fa-solid fa-sun sun-icon"></i>
+              <i class="fa-solid fa-moon moon-icon"></i>
+            </span>
+          </span>
+        </button>
+        <div class="sidebar-links" id="sidebar-links"></div>
+
+        <div class="profile-box sidebar-profile">
+          <img src="/phone-photos/user.png" alt="" />
+          <div class="profile-info">
+            <h4></h4>
+            <span></span>
+          </div>
+          <button class="logout-btn">Log out</button>
+        </div>
+      </aside>
+      <main>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Orders</h1>
+            <p class="page-subtitle">
+              Track and manage every sale, from pending to sold.
+            </p>
+          </div>
+          <button class="btn btn-primary" id="newOrderBtn">
+            <i class="fa-solid fa-circle-plus"></i>
+            <span>New Order</span>
+          </button>
+        </div>
+
+        <div class="order-stats quick">
+          <div class="cards">
+            <div class="card" data-tone="all">
+              <div class="card-icon icon-all-orders">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div>
+                <span class="card-value" id="totalOrders">0</span>
+                <span class="card-label">All Orders</span>
+              </div>
+            </div>
+            <div class="card" data-tone="pending">
+              <div class="card-icon icon-pending-orders">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
+              <div>
+                <span class="card-value" id="pendingOrders">0</span>
+                <span class="card-label">Pending</span>
+              </div>
+            </div>
+            <div class="card" data-tone="sold">
+              <div class="card-icon icon-sold-orders">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div>
+                <span class="card-value" id="soldOrders">0</span>
+                <span class="card-label">Sold</span>
+              </div>
+            </div>
+            <div class="card" data-tone="revenue">
+              <div class="card-icon icon-revenue">
+                <i class="fa-solid fa-sack-dollar"></i>
+              </div>
+              <div>
+                <span class="card-value" id="totalRevenue">$0.00</span>
+                <span class="card-label">Revenue (Sold)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="orders-panel sales-chart-panel">
+          <div class="sales-chart-header">
+            <h3>Sales Overview</h3>
+            <div class="sales-chart-controls">
+              <div
+                class="chart-toggle-group"
+                id="salesMetricToggle"
+                role="tablist"
+              >
+                <button
+                  class="chart-toggle-btn active"
+                  data-metric="revenue"
+                  aria-selected="true"
+                >
+                  Revenue
+                </button>
+                <button
+                  class="chart-toggle-btn"
+                  data-metric="count"
+                  aria-selected=""
+                >
+                  Orders
+                </button>
+                <button
+                  class="chart-toggle-btn"
+                  data-metric="both"
+                  aria-selected=""
+                >
+                  Both
+                </button>
+              </div>
+              <div
+                class="chart-toggle-group"
+                id="salesPeriodToggle"
+                role="tablist"
+              >
+                <button class="chart-toggle-btn active" data-period="day">
+                  Day
+                </button>
+                <button class="chart-toggle-btn" data-period="week">
+                  Week
+                </button>
+              </div>
+              <div
+                class="chart-toggle-group"
+                id="salesTypeToggle"
+                role="tablist"
+              >
+                <button class="chart-toggle-btn active" data-type="line">
+                  Line
+                </button>
+                <button class="chart-toggle-btn" data-type="bar">Bar</button>
+              </div>
+            </div>
+          </div>
+          <div class="sales-chart-canvas-wrapper">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+        <div class="orders-toolbar">
+          <div class="orders-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              id="orderSearch"
+              placeholder="Search by buyer or order number…"
+            />
+          </div>
+          <div class="status-filter" id="statusFilter" role="tablist">
+            <button
+              class="status-pill active"
+              data-status=""
+              role="tab"
+              aria-selected="true"
+            >
+              All
+            </button>
+            <button class="status-pill" data-status="pending" role="tab">
+              Pending
+            </button>
+            <button class="status-pill" data-status="sold" role="tab">
+              Sold
+            </button>
+          </div>
+        </div>
+
+        <div class="orders-panel">
+          <div class="orders-table-wrapper">
+            <table class="orders-table" id="ordersTable">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Buyer</th>
+                  <th>Source</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th class="col-actions"></th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <!-- orders.js replaces this with real <tr> rows once
+                     GET /orders resolves. Skeleton rows shown below
+                     as the initial paint; see Skeleton.listItems /
+                     a per-row skeleton pattern used elsewhere in the
+                     dashboard. Example of the expected row shape:
+                -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="orders-empty" id="ordersEmpty" hidden>
+            <i class="fa-regular fa-folder-open"></i>
+            <p>No orders yet</p>
+            <span
+              >Orders placed through WhatsApp, Instagram, or your storefront
+              will show up here.</span
+            >
+          </div>
+
+          <div class="orders-pagination" id="ordersPagination">
+            <span class="pagination-info" id="paginationInfo"
+              >Showing 3 of 3 orders</span
+            >
+            <div class="pagination-controls">
+              <button class="page-btn" id="prevPage" disabled>
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <span class="page-current" id="pageCurrent">1</span>
+              <button class="page-btn" id="nextPage" disabled>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ============================================
+         Order form modal — used for both "New Order"
+         (POST /) and "Edit Order" (PATCH /order/:id).
+         orders.js should set #orderFormTitle /
+         #orderFormSubmitBtn text and stash the editing
+         order id (e.g. as a data-order-id attribute on
+         #orderForm) to switch between the two.
+         ============================================ -->
+    <div class="modal-overlay" id="orderFormModal">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <div>
+            <h3 id="orderFormTitle">New Order</h3>
+            <p>Fill in the buyer's details and the items they're buying.</p>
+          </div>
+          <button class="modal-close" id="orderFormCloseBtn" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="orderForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="buyerName">Buyer name</label>
+                <input
+                  type="text"
+                  id="buyerName"
+                  name="buyerName"
+                  placeholder="Jane Doe"
+                  required
+                />
+                <span class="form-error">Buyer name is required.</span>
+              </div>
+              <div class="form-group">
+                <label for="source">Source</label>
+                <select id="source" name="source">
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="storefront">Storefront</option>
+                  <option value="walk-in">Walk-in</option>
+                  <option value="phone">Phone</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="buyerPhone"
+                  >Phone <span class="optional">(optional)</span></label
+                >
+                <input
+                  type="tel"
+                  id="buyerPhone"
+                  name="buyerPhone"
+                  placeholder="+961 71 234 567"
+                />
+              </div>
+              <div class="form-group">
+                <label for="buyerAddress"
+                  >Address <span class="optional">(optional)</span></label
+                >
+                <input
+                  type="text"
+                  id="buyerAddress"
+                  name="buyerAddress"
+                  placeholder="Street, building, city"
+                />
+              </div>
+              <div class="form-group full">
+                <label for="buyerNote"
+                  >Note <span class="optional">(optional)</span></label
+                >
+                <textarea
+                  id="buyerNote"
+                  name="buyerNote"
+                  placeholder="Anything else worth noting about this order…"
+                ></textarea>
+              </div>
+            </div>
+
+            <hr class="form-divider" />
+
+            <div class="order-items-section">
+              <div class="order-items-header">
+                <h4>Items</h4>
+              </div>
+
+              <div class="order-items-list" id="orderItemsList">
+                <!-- orders.js clones #orderItemRowTemplate into here
+                     for each item. Row shape:
+
+                <div class="order-item-row" data-variant-id="">
+                  <div class="variant-search">
+                    <input type="text" class="variant-search-input" placeholder="Search product or SKU…" />
+                    <div class="variant-search-results"></div>
+                  </div>
+                  <input type="number" class="item-qty-input" min="1" value="1" />
+                  <div class="item-line-total">$0.00</div>
+                  <button type="button" class="remove-item-btn" aria-label="Remove item">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div> -->
+                <p class="items-empty-note" id="itemsEmptyNote">
+                  No items added yet.
+                </p>
+              </div>
+
+              <button type="button" class="add-item-btn" id="addItemBtn">
+                <i class="fa-solid fa-plus"></i> Add item
+              </button>
+            </div>
+
+            <div class="order-summary">
+              <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="summarySubtotal">$0.00</span>
+              </div>
+              <div class="summary-row discount-row">
+                <label for="discount">Discount</label>
+                $<input
+                  type="number"
+                  id="discount"
+                  name="discount"
+                  min="0"
+                  step="1"
+                  value="0"
+                />
+              </div>
+              <div class="summary-row total">
+                <span>Total</span>
+                <span id="summaryTotal">$0.00</span>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="orderFormCancelBtn"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="orderForm"
+            class="btn btn-primary"
+            id="orderFormSubmitBtn"
+          >
+            Create Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         Order detail modal — populated on "view" click
+         from GET /order/:id
+         ============================================ -->
+    <div class="modal-overlay" id="orderDetailModal">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <div>
+            <h3>Order Details</h3>
+            <p id="detailOrderMeta">&nbsp;</p>
+          </div>
+          <button
+            class="modal-close"
+            id="orderDetailCloseBtn"
+            aria-label="Close"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-status-row">
+            <span class="detail-order-number" id="detailOrderNumber"
+              >ORD-0000</span
+            >
+            <span class="status-badge pending" id="detailStatusBadge"
+              >Pending</span
+            >
+          </div>
+
+          <div class="detail-meta">
+            <div class="detail-field">
+              <label>Buyer</label>
+              <span id="detailBuyerName">—</span>
+            </div>
+            <div class="detail-field">
+              <label>Phone</label>
+              <span id="detailBuyerPhone">—</span>
+            </div>
+            <div class="detail-field">
+              <label>Address</label>
+              <span id="detailBuyerAddress">—</span>
+            </div>
+            <div class="detail-field">
+              <label>Source</label>
+              <span id="detailSource">—</span>
+            </div>
+            <div class="detail-field">
+              <label>Placed on</label>
+              <span id="detailStartDate">—</span>
+            </div>
+            <div class="detail-field">
+              <label>Completed on</label>
+              <span id="detailCompletedDate">—</span>
+            </div>
+            <div class="detail-field full" style="grid-column: 1 / -1">
+              <label>Note</label>
+              <span id="detailNote">—</span>
+            </div>
+          </div>
+
+          <div class="detail-items-title">Items</div>
+          <table class="detail-items-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody id="detailItemsBody">
+              <!-- orders.js fills per item:
+              <tr>
+                <td>
+                  <span class="detail-item-name">iPhone 15 Pro</span>
+                  <span class="detail-item-options">256GB · Titanium Blue</span>
+                </td>
+                <td>2</td>
+                <td>$1,998.00</td>
+              </tr> -->
+            </tbody>
+          </table>
+
+          <div class="order-summary">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="detailSubtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Discount</span>
+              <span id="detailDiscount">$0.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span id="detailTotal">$0.00</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="orderDetailCloseBtn2"
+          >
+            Close
+          </button>
+          <button type="button" class="btn btn-secondary" id="printReceiptBtn">
+            <i class="fa-solid fa-print"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary btn-download-receipt"
+            id="downloadReceiptBtn"
+          >
+            <i class="fa-solid fa-download"></i>
+          </button>
+          <button type="button" class="btn btn-secondary" id="detailEditBtn">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button type="button" class="btn btn-primary" id="detailMarkSoldBtn">
+            <i class="fa-solid fa-check"></i> Mark as Sold
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         Generic confirm modal — reused for both
+         "mark as sold" (PUT /order/:id/sold) and
+         "delete" (DELETE /order/:id). orders.js toggles
+         the icon/copy/button label based on which
+         action triggered it, and stashes the target
+         order id (e.g. data-order-id on the overlay).
+         ============================================ -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal confirm-modal">
+        <div class="modal-body">
+          <div class="confirm-icon danger" id="confirmIcon">
+            <i class="fa-solid fa-trash" id="confirmIconGlyph"></i>
+          </div>
+          <h3 id="confirmTitle">Delete this order?</h3>
+          <p id="confirmMessage">
+            This can't be undone. The order will be permanently removed.
+          </p>
+        </div>
+        <div class="modal-footer" style="justify-content: center">
+          <button type="button" class="btn btn-secondary" id="confirmCancelBtn">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-danger" id="confirmActionBtn">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         Receipt print area — hidden on screen, filled by
+         orders.js's printReceiptBtn handler, shown only
+         via @media print in orders.css.
+         ============================================ -->
+    <div id="receiptPrintArea" class="receipt-print-area" hidden>
+      <div class="receipt-header">
+        <h2 id="receiptStoreName">StockLink Store</h2>
+        <p class="receipt-tagline">Phones · Accessories · Trade-ins</p>
+        <div class="receipt-stars">★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★</div>
+        <div class="receipt-meta-row">
+          <span id="receiptOrderNumber">ORD-0000</span>
+          <span id="receiptDate">—</span>
+        </div>
+        <span class="receipt-status-pill" id="receiptStatus">Pending</span>
+      </div>
+
+      <div class="receipt-buyer">
+        <p><strong>Buyer</strong> <span id="receiptBuyerName">—</span></p>
+        <p><strong>Phone</strong> <span id="receiptBuyerPhone">—</span></p>
+        <p><strong>Address</strong> <span id="receiptBuyerAddress">—</span></p>
+        <p><strong>Source</strong> <span id="receiptSource">—</span></p>
+      </div>
+
+      <table class="receipt-items-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="receiptItemsBody"></tbody>
+      </table>
+
+      <div class="receipt-note-row" id="receiptNoteRow" hidden>
+        <strong>Note</strong>
+        <span id="receiptNote">—</span>
+      </div>
+
+      <div class="receipt-summary">
+        <div class="receipt-summary-row">
+          <span id="receiptItemCount">Items (0)</span>
+          <span></span>
+        </div>
+        <div class="receipt-summary-row">
+          <span>Subtotal</span>
+          <span id="receiptSubtotal">$0.00</span>
+        </div>
+        <div class="receipt-summary-row">
+          <span>Discount</span>
+          <span id="receiptDiscount">-$0.00</span>
+        </div>
+        <div class="receipt-summary-row receipt-total">
+          <span>Total</span>
+          <span id="receiptTotal">$0.00</span>
+        </div>
+      </div>
+
+      <p class="receipt-footer">
+        Thank you for shopping with us!<br />
+        Please keep this receipt as proof of purchase.
+      </p>
+
+      <div class="receipt-barcode"></div>
+      <p class="receipt-barcode-label" id="receiptBarcodeLabel">
+        0000 0000 0000
+      </p>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="config.js"></script>
+    <script src="shared.js"></script>
+    <script src="orders.js"></script>
+    <script src="sidebar.js"></script>
+    <!--
+      Integration notes for orders.js (not included in this upload):
+
+      1) Stat cards: nothing to do beyond setting textContent on
+         #totalOrders / #pendingOrders / #soldOrders / #totalRevenue —
+         Skeleton.autoReveal() above handles unmasking, same as the
+         home page.
+
+      2) Table body: replace #ordersTableBody's innerHTML with real
+         <tr> rows built from GET /orders (see the commented example
+         row inside the table markup for the expected shape/classes).
+         Sold rows should omit the mark-sold and edit icon buttons —
+         the API rejects both once status is "sold".
+
+      3) Pagination: wire #prevPage/#nextPage to the API's page param,
+         update #paginationInfo and #pageCurrent, and toggle disabled
+         on the buttons at the first/last page.
+
+      4) Status filter (#statusFilter) and search (#orderSearch):
+         toggle .active on the clicked .status-pill, debounce the
+         search input, and re-fetch GET /orders with the matching
+         `status` / query params.
+
+      5) New Order / Edit Order (#orderFormModal): #addItemBtn clones
+         a row into #orderItemsList (see the commented template markup
+         inside it) with a variant-search input that should call your
+         product/variant search endpoint and populate
+         .variant-search-results. Recalculate #summarySubtotal /
+         #summaryTotal on every qty/discount/item change. Submitting
+         posts to POST / for a new order or PATCH /order/:id when
+         editing (track the id on #orderForm's dataset, and swap
+         #orderFormTitle/#orderFormSubmitBtn copy between "New Order"/
+         "Create Order" and "Edit Order"/"Save Changes").
+
+      6) Order Detail (#orderDetailModal): populate from GET
+         /order/:id on a row's view click. Hide #detailEditBtn and
+         #detailMarkSoldBtn when status is "sold".
+
+      7) Confirm modal (#confirmModal): reused for delete and mark-
+         sold. Set #confirmIcon's tone class (danger/success),
+         #confirmIconGlyph's icon, #confirmTitle/#confirmMessage copy,
+         and #confirmActionBtn's label + click handler (DELETE
+         /order/:id vs PUT /order/:id/sold) before opening it.
+    -->
+  </body>
+</html>

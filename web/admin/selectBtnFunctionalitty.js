@@ -7,6 +7,7 @@ const modalTitle = document.getElementById("modal-title");
 const selectAllCheckbox = document.getElementById("selectAllCheckbox");
 
 const blkEdit = document.getElementById("blkEdit");
+const blkArchive = document.getElementById("blkArchive");
 const editOverlay = document.getElementById("bulkedit-modal");
 const cancelBlkBtn = document.getElementById("cancel-bulkedit-btn");
 const confirmBlkBtn = document.getElementById("confirm-bulkedit-btn");
@@ -101,6 +102,20 @@ selectBtn.addEventListener("click", () => {
 blkEdit.addEventListener("click", () => {
   blkEditModal.classList.toggle("active");
 });
+
+blkArchive.addEventListener("click", () => {
+  deleteModal.classList.toggle("active");
+  if (selectedProducts.size === 1) {
+    modalTitle.textContent = `Archive ${selectedProducts.size} product`;
+  } else {
+    modalTitle.textContent = `Archive ${selectedProducts.size} products`;
+  }
+  confirmDeleteBtn.textContent = "Archive";
+  confirmDeleteBtn.style.background = "#3b3b3b";
+  confirmDeleteBtn.style.color = "#fff";
+  modalP.textContent = `Are you sure you want to archive?`
+});
+
 cancelBlkBtn.addEventListener("click", () => {
   blkEditModal.classList.remove("active");
   resetBulkEditModal();
@@ -327,6 +342,8 @@ function updateProductsSummary() {
     bulkDelete.style.display =
       selectedProducts.size > 0 ? "inline-flex" : "none";
     blkEdit.style.display = selectedProducts.size > 0 ? "inline-flex" : "none";
+    blkArchive.style.display =
+      selectedProducts.size > 0 ? "inline-flex" : "none";
     blkEdit.innerHTML =
       selectedProducts.size > 1
         ? '<i class="fa-solid fa-pen-to-square"></i> Bulk Edit'

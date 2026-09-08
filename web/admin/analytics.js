@@ -22,8 +22,6 @@ const activityIcons = {
 const limitList = document.getElementById("limit-list");
 let currentLimit = 20;
 
-
-
 limitList.addEventListener("change", () => {
   currentLimit = Number(limitList.value);
   loadActivityLogs(1);
@@ -202,7 +200,8 @@ function renderLogsTable(logs) {
     const details = document.createElement("div");
     details.classList.add("activity-log-details");
 
-    summary.innerHTML = `<p>${currentUsername}</p> ${log.summary}`;
+    const restOfSummary = log.summary.slice(log.actorName.length);
+    summary.innerHTML = `<strong>${log.actorName}</strong>${restOfSummary}`;
     time.textContent = formatTimeAgo(log.createdAt);
 
     const iconElement = document.createElement("i");
@@ -389,8 +388,8 @@ async function loadAnalytics() {
     if (thisRequest !== summaryRequestId) return;
 
     if (!response.ok) {
-      showToast(analytics.error || "Loading failed", "error");
-      console.log(analytics);
+      const message = analytics.message || "Analytics Loading Failed";
+      showToast(message, "error");
       return;
     }
 
@@ -441,8 +440,12 @@ async function loadAnalytics() {
       setActivePeriodButton(currentPeriod);
     }
   } catch (error) {
-    showToast("Couldn't Load Analytics", "error");
-    console.error(error);
+    const message = await getErrorMessage(
+      response,
+      "Could not Load Analtyitcs",
+    );
+    showToast("Could not load analytics", "error");
+    return;
   }
 }
 

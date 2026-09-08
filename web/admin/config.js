@@ -25,4 +25,4 @@ const API_ROOT = "https://stocklink-demo-production.up.railway.app";
 const API_BASE = `${API_ROOT}/products`;
 
 const ANALYTICS_API = `${API_ROOT}/admin-analytics`;   
-
+const ORDERS_API = `${API_ROOT}/orders`;
