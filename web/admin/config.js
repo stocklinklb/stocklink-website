@@ -13,8 +13,11 @@
 // between environments (local/staging/production).
 //http://127.0.0.1:3000
 //https://stocklink-demo-production.up.railway.app
-const API_ROOT = "https://stocklink-demo-production.up.railway.app";
-
+const API_ROOT =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:3000"
+    : "https://stocklink-demo-production.up.railway.app";
 // Products resource base. Product list/detail/create/update/delete
 // and product-image upload all hang off this.
 //   GET    API_BASE                -> list products
@@ -25,5 +28,5 @@ const API_ROOT = "https://stocklink-demo-production.up.railway.app";
 //   POST   API_BASE/upload/product-images/:colorId
 const API_BASE = `${API_ROOT}/products`;
 
-const ANALYTICS_API = `${API_ROOT}/admin-analytics`;   
+const ANALYTICS_API = `${API_ROOT}/admin-analytics`;
 const ORDERS_API = `${API_ROOT}/orders`;

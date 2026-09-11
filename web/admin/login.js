@@ -101,7 +101,7 @@ async function handleLogin({ form, endpoint, payload, fieldsToFlag, errorEl }) {
 
     if (response.ok) {
       console.log("Login successful", data);
-      window.location.href = "index.html";
+      window.location.href = "/admin/index.html";
       return;
     }
 
