@@ -13,7 +13,7 @@
 // between environments (local/staging/production).
 //http://127.0.0.1:3000
 //https://stocklink-demo-production.up.railway.app
-const API_ROOT = "http://127.0.0.1:3000";
+const API_ROOT = "https://stocklink-demo-production.up.railway.app";
 
 // Products resource base. Product list/detail/create/update/delete
 // and product-image upload all hang off this.
