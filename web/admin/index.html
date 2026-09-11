@@ -12,12 +12,12 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stocklink | Home View</title>
-    <link rel="preload" as="script" href="config.js" />
-    <link rel="preload" as="script" href="shared.js" />
-    <link rel="preload" as="script" href="skeleton.js" />
-    <link rel="preload" as="script" href="sidebar.js" />
-    <link rel="stylesheet" href="shared.css" />
-    <link rel="stylesheet" href="admin.css" />
+    <link rel="preload" as="script" href="/admin/config.js" />
+    <link rel="preload" as="script" href="/admin/shared.js" />
+    <link rel="preload" as="script" href="/admin/skeleton.js" />
+    <link rel="preload" as="script" href="/admin/sidebar.js" />
+    <link rel="stylesheet" href="/admin/shared.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -92,10 +92,10 @@
           <button class="logout-btn">Log out</button>
         </div>
       </aside>
-      <script src="config.js"></script>
-      <script src="shared.js"></script>
-      <script src="skeleton.js"></script>
-      <script src="sidebar.js"></script>
+      <script src="/admin/config.js"></script>
+      <script src="/admin/shared.js"></script>
+      <script src="/admin/skeleton.js"></script>
+      <script src="/admin/sidebar.js"></script>
       <main>
         <h1 class="home-title">Home</h1>
 
@@ -145,11 +145,11 @@
         <div class="quick-actions quick">
           <h2>Quick Actions:</h2>
           <div class="cards">
-            <div class="quick-card add-product" data-href="add-product.html">
+            <div class="quick-card add-product" data-href="/admin/add-product.html">
               <i class="fa-solid fa-circle-plus"></i> <span> Add Product</span>
             </div>
 
-            <div class="quick-card manage-products" data-href="products.html">
+            <div class="quick-card manage-products" data-href="/admin/products.html">
               <i class="fa-solid fa-boxes"></i>
               <span>Manage Products</span>
             </div>
@@ -165,7 +165,7 @@
             </div>
             <div
               class="quick-card excel-import-card"
-              data-href="excel-import.html"
+              data-href="/admin/excel-import.html"
               id="excelImportBtn"
             >
               <i class="fa-solid fa-file-excel"></i>
@@ -210,7 +210,7 @@
                 </div>
               </div>
               <div class="activity-footer">
-                <a id="view-all-activity" href="analytics.html"
+                <a id="view-all-activity" href="/admin/analytics.html"
                   >View all activity</a
                 >
               </div>
@@ -311,7 +311,7 @@
         height: 36,
       });
     </script>
-    <script src="admin.js"></script>
+    <script src="/admin/admin.js"></script>
     <!--
       Integration notes for admin.js (not included in this upload, so
       wiring these two spots by hand):

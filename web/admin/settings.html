@@ -11,12 +11,12 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preload" as="script" href="config.js">
-<link rel="preload" as="script" href="shared.js">
-<link rel="preload" as="script" href="skeleton.js">
-<link rel="preload" as="script" href="sidebar.js">
-  <link rel="stylesheet" href="shared.css">
-  <link rel="stylesheet" href="settings.css">
+  <link rel="preload" as="script" href="/admin/config.js">
+<link rel="preload" as="script" href="/admin/shared.js">
+<link rel="preload" as="script" href="/admin/skeleton.js">
+<link rel="preload" as="script" href="/admin/sidebar.js">
+  <link rel="stylesheet" href="/admin/shared.css">
+  <link rel="stylesheet" href="/admin/settings.css">
   <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -79,10 +79,10 @@
           <button class="logout-btn">Log out</button>
         </div>
       </aside>
-      <script src="config.js"></script>
-    <script src="shared.js"></script>
-    <script src="skeleton.js"></script>
-    <script src="sidebar.js"></script>
+      <script src="/admin/config.js"></script>
+    <script src="/admin/shared.js"></script>
+    <script src="/admin/skeleton.js"></script>
+    <script src="/admin/sidebar.js"></script>
       <main class="settings-container">
         
     <div class="settings-card" data-loading>
@@ -195,7 +195,7 @@
         // fires a no-op (Skeleton.clear is safe to call twice).
         setTimeout(() => Skeleton.clear(".settings-card"), 1200);
       </script>
-      <script src="settings.js"></script>
+      <script src="/admin/settings.js"></script>
       <!--
         Integration note for settings.js (not included in this
         upload): for the skeleton to clear exactly when data is ready
