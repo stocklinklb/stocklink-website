@@ -158,6 +158,8 @@ main {
 }
 
 .upload-card {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   max-width: 520px;
   min-height: 300px;
@@ -172,17 +174,76 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
+  opacity: 1;
   margin: 20px auto 32px;
   padding: 36px 28px;
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .upload-card:hover {
   border-color: var(--accent);
   box-shadow: var(--shadow-md);
+}
+
+/* ---- Drag states ----
+   .drag-active: a file is hovering over the drop zone right now.
+   .drag-invalid: same, but it's not a .xlsx/.xls file - shown briefly
+   on an invalid drop so the person knows *why* nothing happened.
+   .drop-success: a valid file just landed - a quick confirming flash
+   before the card swaps to the "selected file" view.
+
+   Kept deliberately simple: one eased transition on border/background/
+   shadow/scale, no looping keyframe animations. Border-style is never
+   switched between dashed/solid (that property can't transition, so
+   doing so made the state change look instant rather than eased). */
+.upload-card.drag-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  transform: scale(1.01);
+}
+
+.upload-card.drag-active .upload-icon {
+  background: var(--accent);
+  color: #fff;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.upload-card.drag-invalid {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.upload-card.drag-invalid .upload-icon {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.upload-card.drop-success::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  background: var(--success-soft);
+  animation: drop-pulse 0.4s ease-out;
+  pointer-events: none;
+}
+
+@keyframes drop-pulse {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
 }
 
 .upload-empty-state {
@@ -221,11 +282,21 @@ main {
 
   font-size: 14px;
   font-weight: 600;
-
   cursor: pointer;
   transition:
     background 0.2s ease,
     transform 0.1s ease;
+}
+.upload-btn::before {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 22px;
+
+  padding: 8px 16px;
+
+  color: white;
 }
 
 .upload-btn:hover {
@@ -510,6 +581,8 @@ main {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 960px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -595,7 +668,9 @@ tbody td {
   color: var(--text-primary);
   vertical-align: middle;
 }
-
+tbody tr {
+  height: 48px;
+}
 tbody tr:last-child td {
   border-bottom: none;
 }

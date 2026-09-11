@@ -66,6 +66,29 @@ let currentPage = 1;
 let currentDetailOrder = null; // full order object for whichever order is open in #orderDetailModal, used by printReceiptBtn
 let salesChart = null;
 
+// ============================================
+// Shared body-scroll lock for modals.
+// Uses a counter (not a plain boolean) so that if two modals were ever
+// open at once, closing one wouldn't prematurely re-enable scrolling
+// while the other is still up.
+// ============================================
+let openModalCount = 0;
+const scrollableMain = document.querySelector("main");
+function lockBodyScroll() {
+  openModalCount += 1;
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+  if (scrollableMain) scrollableMain.style.overflow = "hidden";
+}
+function unlockBodyScroll() {
+  openModalCount = Math.max(0, openModalCount - 1);
+  if (openModalCount === 0) {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+    if (scrollableMain) scrollableMain.style.overflow = "";
+  }
+}
+
 function buildOrdersUrl() {
   const params = new URLSearchParams();
   params.set("page", currentPage);
@@ -105,9 +128,11 @@ function formatOptions(options) {
 // ============================================
 function openModal() {
   modalOverlay.classList.add("active");
+  lockBodyScroll();
 }
 function closeModal_() {
   modalOverlay.classList.remove("active");
+  unlockBodyScroll();
 }
 
 function resetOrderForm() {
@@ -125,8 +150,36 @@ newOrder.addEventListener("click", () => {
   resetOrderForm(); // always start a fresh "New Order" form, even after a cancelled edit
   openModal();
 });
+function openOrderDetailModal() {
+  orderDetailModal.classList.add("active");
+  lockBodyScroll();
+}
+
+function closeOrderDetailModal() {
+  orderDetailModal.classList.remove("active");
+  unlockBodyScroll();
+  currentDetailOrder = null;
+}
 closeModal.addEventListener("click", closeModal_);
 cancelModal.addEventListener("click", closeModal_);
+
+// Click outside the modal card closes it — same behavior the detail
+// modal already had, added here for the order form and confirm-delete
+// modals too. Guarded on e.target === overlay so clicks inside the card
+// itself (which bubble up to the overlay) don't close it.
+modalOverlay.addEventListener("click", (e) => {
+  if (e.target === modalOverlay) {
+    closeModal_();
+  }
+});
+
+confirmDeleteModal.addEventListener("click", (e) => {
+  if (e.target === confirmDeleteModal) {
+    confirmDeleteModal.classList.remove("active");
+    unlockBodyScroll();
+    delete confirmDeleteBtn.dataset.orderId;
+  }
+});
 
 // ============================================
 // Create / Edit submit (single handler, branches on dataset.orderId)
@@ -239,83 +292,159 @@ async function fetchSalesData(period) {
     return [];
   }
 }
-
 async function loadSalesChart(
   period = "day",
   metric = "revenue",
   type = "line",
 ) {
   const buckets = await fetchSalesData(period);
-  const chartData = formatChartData(buckets, metric);
+  const chartData = formatChartData(buckets, metric, type);
 
-  const ctx = document.getElementById("salesChart").getContext("2d");
+  const canvas = document.getElementById("salesChart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
   if (salesChart) {
     salesChart.destroy();
   }
 
   salesChart = new Chart(ctx, {
     type: type,
+
     data: chartData,
+
     options: {
+      responsive: true,
       maintainAspectRatio: false,
+
       scales: {
-        "y-revenue": {
-          position: "right",
+        y: {
           beginAtZero: true,
-          ticks: { precision: 0 },
-        },
-        "y-count": {
-          position: "left",
-          beginAtZero: true,
-          ticks: { precision: 0 },
+          ticks: {
+            precision: 0,
+          },
         },
       },
     },
   });
 }
-loadSalesChart();
-function formatChartData(buckets, metric) {
-  const rootStyles = getComputedStyle(document.documentElement);
-  const revenueColor = rootStyles.getPropertyValue("--accent").trim();
-  const countColor = "#fa8b8b"; // muted teal — distinct from accent + status colors
 
-  if (metric === "revenue" || metric === "count") {
-    const labels = buckets.map((bucket) => bucket.date);
-    const data = buckets.map((bucket) => bucket[metric]);
-    const color = metric === "revenue" ? revenueColor : countColor;
+loadSalesChart();
+
+function formatChartData(buckets, metric, type) {
+  const isBar = type === "bar";
+  const rootStyles = getComputedStyle(document.documentElement);
+
+  // Original orders-chart colors
+  const countColor = "#fa8b8b";
+  const revenueColor = rootStyles.getPropertyValue("--accent").trim();
+  const revenueBackground = isBar ? revenueColor : "rgba(39, 147, 236, 0.10)";
+
+  const countBackground = isBar ? countColor : "rgba(250, 139, 139, 0.10)";
+
+  const labels = buckets.map((bucket) => bucket.date);
+
+  // ------------------------------------------
+  // Revenue
+  // ------------------------------------------
+
+  if (metric === "revenue") {
     return {
       labels,
-      datasets: [
-        {
-          label: metric === "revenue" ? "Revenue" : "Orders",
-          data,
-          borderColor: color,
-          backgroundColor: color,
-        },
-      ],
-    };
-  } else if (metric === "both") {
-    const labels = buckets.map((bucket) => bucket.date);
-    return {
-      labels,
+
       datasets: [
         {
           label: "Revenue",
+
           data: buckets.map((bucket) => bucket.revenue),
-          yAxisID: "y-revenue",
+
           borderColor: revenueColor,
-          backgroundColor: revenueColor,
-        },
-        {
-          label: "Orders",
-          data: buckets.map((bucket) => bucket.count),
-          yAxisID: "y-count",
-          borderColor: countColor,
-          backgroundColor: countColor,
+
+          backgroundColor: revenueBackground,
+
+          fill: true,
+
+          tension: 0.3,
         },
       ],
     };
   }
+
+  // ------------------------------------------
+  // Orders
+  // ------------------------------------------
+
+  if (metric === "count") {
+    return {
+      labels,
+
+      datasets: [
+        {
+          label: "Orders",
+
+          data: buckets.map((bucket) => bucket.count),
+
+          borderColor: countColor,
+
+          backgroundColor: countBackground,
+
+          fill: true,
+
+          tension: 0.3,
+        },
+      ],
+    };
+  }
+
+  // ------------------------------------------
+  // Both
+  // ------------------------------------------
+
+  if (metric === "both") {
+    return {
+      labels,
+
+      datasets: [
+        {
+          label: "Revenue",
+
+          data: buckets.map((bucket) => bucket.revenue),
+
+          borderColor: revenueColor,
+
+          backgroundColor: revenueBackground,
+
+          fill: true,
+
+          tension: 0.3,
+
+          yAxisID: "y-revenue",
+        },
+
+        {
+          label: "Orders",
+
+          data: buckets.map((bucket) => bucket.count),
+
+          borderColor: countColor,
+
+          backgroundColor: countBackground,
+
+          fill: true,
+
+          tension: 0.3,
+
+          yAxisID: "y-count",
+        },
+      ],
+    };
+  }
+
+  return {
+    labels: [],
+    datasets: [],
+  };
 }
 // formatChartData(Array , string {"revenue " , "count", "both"})
 function checkRowStock(itemRow) {
@@ -502,14 +631,12 @@ nextPageBtn.addEventListener("click", () => {
 // Order detail modal
 // ============================================
 orderDetailCloseBtn.addEventListener("click", () => {
-  orderDetailModal.classList.remove("active");
-  currentDetailOrder = null;
-});
-orderDetailCloseBtn2.addEventListener("click", () => {
-  orderDetailModal.classList.remove("active");
-  currentDetailOrder = null;
+  closeOrderDetailModal();
 });
 
+orderDetailCloseBtn2.addEventListener("click", () => {
+  closeOrderDetailModal();
+});
 async function openOrderDetail(orderId) {
   try {
     const response = await fetch(`${ORDERS_API}/${orderId}`, {
@@ -573,7 +700,7 @@ async function openOrderDetail(orderId) {
     detailMarkSoldBtn.style.display = isSold ? "none" : "";
 
     currentDetailOrder = order;
-    orderDetailModal.classList.add("active");
+    openOrderDetailModal();
   } catch (error) {
     showToast("Failed to load order details", "error");
   }
@@ -583,16 +710,20 @@ detailMarkSoldBtn.addEventListener("click", async () => {
   const orderId = orderDetailModal.dataset.orderId;
   if (!orderId) return;
   await markOrderSold(orderId, detailMarkSoldBtn);
-  orderDetailModal.classList.remove("active");
+  closeOrderDetailModal();
 });
 
 detailEditBtn.addEventListener("click", async () => {
   const orderId = orderDetailModal.dataset.orderId;
   if (!orderId) return;
-  orderDetailModal.classList.remove("active");
+  closeOrderDetailModal();
   await openOrderForEdit(orderId);
 });
-
+orderDetailModal.addEventListener("click", (e) => {
+  if (e.target === orderDetailModal) {
+    closeOrderDetailModal();
+  }
+});
 // ============================================
 // Print receipt — fills #receiptPrintArea from
 // currentDetailOrder, reveals it, prints, then
@@ -722,11 +853,11 @@ downloadReceiptBtn.addEventListener("click", async () => {
 
     const canvas = await html2canvas(receiptPrintArea, {
       backgroundColor: "#fdfbf3",
-      scale: 3, // crisp output for a small, text-heavy ticket
+      scale: 1.5, // crisp output for a small, text-heavy ticket
       useCORS: true,
     });
 
-    const imgData = canvas.toDataURL("image/png");
+    const imgData = canvas.toDataURL("image/jpeg", 0.75);
     const { jsPDF } = window.jspdf;
 
     // Convert the captured pixel size to PDF points (72pt/in
@@ -743,7 +874,7 @@ downloadReceiptBtn.addEventListener("click", async () => {
       format: [pdfWidth, pdfHeight],
     });
 
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
     pdf.save(`receipt-${currentDetailOrder.orderNumber || "order"}.pdf`);
   } catch (err) {
     console.error("Receipt download failed:", err);
@@ -881,6 +1012,7 @@ ordersTable.addEventListener("click", async (e) => {
     const orderId = deleteBtn.closest("tr").dataset.orderId;
     confirmDeleteBtn.dataset.orderId = orderId;
     confirmDeleteModal.classList.add("active");
+    lockBodyScroll();
     return;
   }
   if (soldBtn) {
@@ -908,6 +1040,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
 
     showToast("Order deleted", "success");
     confirmDeleteModal.classList.remove("active");
+    unlockBodyScroll();
     loadOrders();
     loadQuickStats();
   } catch (error) {
@@ -920,6 +1053,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
 
 cancelDeleteBtn?.addEventListener("click", () => {
   confirmDeleteModal.classList.remove("active");
+  unlockBodyScroll();
   delete confirmDeleteBtn.dataset.orderId;
 });
 

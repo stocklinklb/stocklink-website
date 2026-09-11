@@ -11,7 +11,11 @@
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phone Store | Product View</title>
+    <title>Stocklink | Product View</title>
+    <link rel="preload" as="script" href="config.js" />
+    <link rel="preload" as="script" href="shared.js" />
+    <link rel="preload" as="script" href="skeleton.js" />
+    <link rel="preload" as="script" href="sidebar.js" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -94,6 +98,10 @@
           <button class="logout-btn">Log out</button>
         </div>
       </aside>
+      <script src="config.js"></script>
+      <script src="shared.js"></script>
+      <script src="skeleton.js"></script>
+      <script src="sidebar.js"></script>
       <main>
         <div class="title-row">
           <div>
@@ -396,8 +404,16 @@
         <h3 id="modal-title">Delete Product</h3>
 
         <p id="modal-p">
-          Are you sure you want to delete
-          <strong id="delete-product-name"></strong>
+          Are you sure you want to
+          <span id="modal-action">delete</span>
+          <strong id="delete-product-name"></strong>?
+        </p>
+        <p
+          id="modal-warning"
+          style="color: #dc2626; font-size: 0.875rem; margin-top: -8px"
+          hidden
+        >
+          This action cannot be undone.
         </p>
 
         <div class="delete-modal-actions">
@@ -425,10 +441,6 @@
       <i class="fa-solid fa-box-open"></i>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
-    <script src="config.js"></script>
-    <script src="shared.js"></script>
-    <script src="skeleton.js"></script>
-    <script src="sidebar.js"></script>
     <script src="selectBtnFunctionalitty.js"></script>
     <script src="products.js"></script>
   </body>

@@ -11,7 +11,11 @@
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phone Store | Admin</title>
+    <title>Stocklink | Staff View</title>
+    <link rel="preload" as="script" href="config.js" />
+    <link rel="preload" as="script" href="shared.js" />
+    <link rel="preload" as="script" href="skeleton.js" />
+    <link rel="preload" as="script" href="sidebar.js" />
     <link rel="stylesheet" href="shared.css" />
     <link rel="stylesheet" href="staff.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -88,6 +92,10 @@
           <button class="logout-btn">Log out</button>
         </div>
       </aside>
+      <script src="config.js"></script>
+      <script src="shared.js"></script>
+      <script src="skeleton.js"></script>
+      <script src="sidebar.js"></script>
       <main>
         <div class="staff-header">
           <h1 class="staff-title">Manage your staff's accounts</h1>
@@ -202,8 +210,6 @@
                     <span class="track"></span>
                   </span>
                 </label>
-
-                
 
                 <label class="create-staff-permission">
                   <span class="create-staff-permission-copy">
@@ -392,8 +398,6 @@
                   </span>
                 </label>
 
-                
-
                 <label class="edit-staff-permission">
                   <span class="edit-staff-permission-copy">
                     <strong>Upload missing products photos</strong>
@@ -510,11 +514,6 @@
       </div>
     </div>
     <div id="toast-container"></div>
-    <script src="config.js"></script>
-    <script src="shared.js"></script>
-    <script src="skeleton.js"></script>
-
     <script src="staff.js"></script>
-    <script src="sidebar.js"></script>
   </body>
 </html>

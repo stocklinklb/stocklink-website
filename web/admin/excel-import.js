@@ -11,15 +11,19 @@ const fileSize = document.getElementById("file-size");
 const totalCount = document.querySelector(".total-count");
 const validCount = document.querySelector(".valid-count");
 const invalidCount = document.querySelector(".invalid-count");
-
+const uploadBtn = document.querySelector(".upload-btn");
 const continueBtn = document.getElementById("continue-btn");
 const removeFileBtn = document.getElementById("remove-file");
 const backBtn = document.getElementById("back-btn");
 const importBtn = document.getElementById("import-btn");
 const parsingLoader = document.getElementById("parsing-loader");
+const uploadCard = document.querySelector(".upload-card");
 const steps = document.querySelectorAll(".step");
 let excelHeaders = [];
 let importedProducts = [];
+const ROW_HEIGHT = 48;
+const BUFFER = 5;
+const scrollContainer = document.querySelector(".review-card");
 excelFile.addEventListener("change", handleFileSelect);
 
 continueBtn.addEventListener("click", readExcelFile);
@@ -67,18 +71,9 @@ const COLUMN_ALIASES = {
   condition: ["condition", "state"],
   price: ["price", "selling price", "cost"],
   stock: ["stock", "qty", "quantity"],
-  // NEW: lets a sheet supply its own category when there's no specs-CSV
-  // match (accessories, non-phone items). Not in REQUIRED_FIELDS - it's
-  // optional on the sheet because evaluateRow() falls back to
-  // DEFAULT_CATEGORY when nobody provides one.
   category: ["category", "type", "product category"],
 };
 
-// Used whenever a row has no specs-CSV match (findPhoneSpecs returns
-// undefined) AND the sheet didn't supply its own Category column.
-// Keeps `category` from ever reaching the backend as undefined, which
-// Prisma's `product.create()` rejects with "Argument `category` is
-// missing."
 const DEFAULT_CATEGORY = "Accessory";
 
 function readExcelFile() {
@@ -113,7 +108,6 @@ function readExcelFile() {
     continueToImport();
     reviewActionsBar.style.display = "flex";
     setActiveSteps(2);
-    // next step: render `results` into your pass/fail table
   };
 
   reader.onerror = function () {
@@ -126,6 +120,79 @@ function readExcelFile() {
 
   reader.readAsArrayBuffer(file);
 }
+
+const VALID_EXCEL_EXTENSIONS = [".xlsx", ".xls"];
+
+function isValidExcelFile(file) {
+  if (!file) return false;
+  const name = file.name.toLowerCase();
+  return VALID_EXCEL_EXTENSIONS.some((ext) => name.endsWith(ext));
+}
+
+// dragenter/dragleave fire on every child element the pointer crosses
+// (the icon, the instructions text, the button...), not just on
+// uploadCard itself. Listening for those directly meant "leaving" a
+// child briefly cleared the active state and made the animation
+// flicker on and off while a file was still hovering the card. A
+// counter fixes it: increment on enter, decrement on leave, only
+// clear the state once the count returns to zero.
+let dragCounter = 0;
+
+uploadCard.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "copy";
+});
+
+uploadCard.addEventListener("dragenter", (e) => {
+  e.preventDefault();
+  dragCounter++;
+  uploadCard.classList.remove("drag-invalid");
+  uploadCard.classList.add("drag-active");
+});
+
+uploadCard.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  dragCounter = Math.max(0, dragCounter - 1);
+  if (dragCounter === 0) {
+    uploadCard.classList.remove("drag-active");
+  }
+});
+
+uploadCard.addEventListener("drop", (e) => {
+  e.preventDefault();
+
+  // The previous version never cleared this class here, so if a
+  // person actually dropped a file (rather than dragging away) the
+  // card was left permanently mid-animation.
+  dragCounter = 0;
+  uploadCard.classList.remove("drag-active");
+
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+
+  if (!isValidExcelFile(file)) {
+    uploadCard.classList.add("drag-invalid");
+    showToast("Please drop a .xlsx or .xls file", "error");
+    setTimeout(() => uploadCard.classList.remove("drag-invalid"), 450);
+    return;
+  }
+
+  const dataTransfer = new DataTransfer();
+  dataTransfer.items.add(file);
+  excelFile.files = dataTransfer.files;
+
+  uploadCard.classList.add("drop-success");
+  setTimeout(() => uploadCard.classList.remove("drop-success"), 500);
+
+  handleFileSelect();
+});
+
+// Safety net: if the file is dragged off the browser window entirely
+// (or the OS cancels the drag), no dragleave ever reaches the card
+// and it would otherwise stay stuck mid-animation.
+window.addEventListener("dragend", () => {
+  dragCounter = 0;
+  uploadCard.classList.remove("drag-active");
+});
 function updateCount() {
   totalCount.textContent = `${importedProducts.length}`;
   const validCountLen = importedProducts.filter((p) => p.valid).length;
@@ -147,7 +214,6 @@ function normalizeHeader(header) {
   return header.toLowerCase().trim().replace(/[_-]/g, " ");
 }
 
-// fixed: was using undefined `headers`, now uses the actual parameter
 function generateMapping(headers) {
   const mapping = {};
 
@@ -192,31 +258,8 @@ function validateRow(data) {
   return errors;
 }
 
-// Runs both checks a row needs: field validation (required fields,
-// price/stock format) AND the specs lookup against the master specs CSV.
-// These are kept SEPARATE on purpose:
-//   - `errors` are blocking - brand/model/storage/color/condition/price/
-//     stock are things the row literally cannot be imported without.
-//   - `warnings` are non-blocking - missing specs means the product will
-//     just import with empty `specifications` (fillable later, same idea
-//     as the missing-photos workflow) instead of being silently dropped
-//     from the import entirely.
-// `valid` is based on `errors` only, so a product with no specs match
-// still shows up as importable.
 function evaluateRow(data) {
-  // findPhoneSpecs() returns the raw CSV row (or undefined) - it uses
-  // CSV column names like `cpu`, `screen_size`, etc. That's not the
-  // shape the backend/product object expects. getSpecifications()
-  // (from specsAutoFill.js) runs that raw row through SPEC_FIELD_MAPS
-  // to produce the proper {processor, ram, screenSize, ...} shape,
-  // the same field names the Manual Add Product page uses. Falls back
-  // to {} rather than undefined so downstream code can always safely
-  // spread/access it.
   const rawSpecRow = findPhoneSpecs(data.brand, data.model);
-  // Priority: specs-CSV match > sheet's own Category column > default.
-  // Previously this was just `rawSpecRow?.category`, which left
-  // `category` undefined for any product not found in the phone specs
-  // CSV - Prisma then rejects the create() call outright.
   const category =
     rawSpecRow?.category || data.category?.trim() || DEFAULT_CATEGORY;
   const specifications = getSpecifications(rawSpecRow, category) || {};
@@ -257,8 +300,6 @@ function processExcelRows(jsonData, mapping) {
   });
 }
 
-// Fields a given error message points at, so the exact input can be
-// flagged instead of just the row
 function fieldsWithIssues(errors) {
   const flagged = new Set();
   errors.forEach((err) => {
@@ -317,14 +358,11 @@ function issuesHtml(errors, warnings = []) {
   return `<span class="none"><i class="fa-solid fa-check"></i>No issues</span>`;
 }
 
-function renderResultsTable(results) {
-  validationBody.innerHTML = "";
-
-  results.forEach((product, index) => {
-    const tr = document.createElement("tr");
-    tr.classList.toggle("row-invalid", !product.valid);
-
-    tr.innerHTML = `
+function buildRowElement(product, index) {
+  const tr = document.createElement("tr");
+  tr.dataset.index = `${index}`;
+  tr.classList.toggle("row-invalid", !product.valid);
+  tr.innerHTML = `
       <td>${statusBadgeHtml(product.valid)}</td>
       ${fieldCell(product, index, "brand")}
       ${fieldCell(product, index, "model")}
@@ -335,18 +373,81 @@ function renderResultsTable(results) {
       ${fieldCell(product, index, "stock", { numeric: true })}
       <td class="issues-cell">${issuesHtml(product.errors, product.warnings)}</td>
     `;
+  return tr;
+}
 
-    validationBody.appendChild(tr);
+// Builds a single spacer <tr> that stands in for `rowCount` rows
+// that aren't being rendered. colspan=9 matches your real columns
+// so it doesn't distort table layout; height is rowCount * ROW_HEIGHT.
+function buildSpacerRow(rowCount) {
+  const tr = document.createElement("tr");
+  tr.className = "spacer-row";
+  const td = document.createElement("td");
+  td.colSpan = 9;
+  td.style.height = `${rowCount * ROW_HEIGHT}px`;
+  td.style.padding = "0";
+  td.style.border = "none";
+  tr.appendChild(td);
+  return tr;
+}
+
+// Renders only the rows visible in the scroll window (+ buffer),
+// with two spacer rows standing in for everything above/below so
+// the scrollbar's size/position stays correct.
+function renderVisibleRows(startIndex) {
+  const visibleRow = Math.ceil(scrollContainer.clientHeight / ROW_HEIGHT);
+
+  const renderStart = Math.max(startIndex - BUFFER, 0);
+  const renderEnd = Math.min(
+    startIndex + visibleRow + BUFFER,
+    importedProducts.length,
+  );
+
+  const sliceToRender = importedProducts.slice(renderStart, renderEnd);
+  const rowElements = [];
+
+  sliceToRender.forEach((product, sliceIndex) => {
+    const realIndex = renderStart + sliceIndex;
+    rowElements.push(buildRowElement(product, realIndex));
   });
 
+  const fragment = document.createDocumentFragment();
+
+  if (renderStart > 0) {
+    fragment.appendChild(buildSpacerRow(renderStart));
+  }
+
+  rowElements.forEach((tr) => fragment.appendChild(tr));
+
+  if (renderEnd < importedProducts.length) {
+    fragment.appendChild(buildSpacerRow(importedProducts.length - renderEnd));
+  }
+
+  validationBody.innerHTML = "";
+  validationBody.appendChild(fragment);
+}
+
+// Registered ONCE, at setup time - not inside renderVisibleRows,
+// which would stack a new listener on every render.
+scrollContainer.addEventListener("scroll", () => {
+  const startIndex = Math.floor(scrollContainer.scrollTop / ROW_HEIGHT);
+  renderVisibleRows(startIndex);
+});
+
+// Shrunk down to: reset scroll, kick off the first render. All the
+// actual row-building now lives in renderVisibleRows/buildRowElement.
+function renderResultsTable(results) {
+  scrollContainer.scrollTop = 0;
+  renderVisibleRows(0);
   reviewSection.classList.add("visible");
 }
+
 function validRows() {
   return importedProducts.filter((product) => product.valid);
 }
 
 // Re-runs validation for a single row after an edit and patches just
-// that row's badge, flagged inputs, and issues text — no full
+// that row's badge, flagged inputs, and issues text - no full
 // re-render, so the input the person is typing in never loses focus.
 function revalidateRow(index) {
   const product = importedProducts[index];
@@ -359,7 +460,13 @@ function revalidateRow(index) {
   product.warnings = warnings;
   product.valid = valid;
 
-  const tr = validationBody.children[index];
+  // Look up by data-index rather than DOM position - once virtualized,
+  // the Nth child of validationBody is no longer necessarily
+  // importedProducts[N]. If this row isn't currently mounted (scrolled
+  // out of view), this returns null and we just bail - importedProducts
+  // is already updated, so it'll render correctly next time it scrolls
+  // into view.
+  const tr = validationBody.querySelector(`tr[data-index="${index}"]`);
   if (!tr) return;
 
   tr.classList.toggle("row-invalid", !product.valid);
@@ -388,10 +495,6 @@ function setActiveSteps(stepNumber) {
   });
 }
 
-// Marks every step (Upload, Review, Import) as completed/green. Only
-// called after a successful import response - a failed import should
-// leave Import as "active" (still pending), not green, since the work
-// isn't actually done.
 function markAllStepsCompleted() {
   steps.forEach((step) => {
     step.classList.remove("active");
@@ -413,9 +516,6 @@ function continueToImport() {
 }
 importBtn.addEventListener("click", importProducts);
 
-// Cycles the import button's label through a sequence of messages while
-// the import request is in flight, so it doesn't look frozen on long
-// imports. Cleared as soon as the fetch settles (success or failure).
 const IMPORTING_MESSAGES = [
   "Importing...",
   "Finishing things up...",
@@ -437,17 +537,6 @@ function startImportingAnimation() {
   return () => clearInterval(intervalId);
 }
 
-// Sends one flat object per valid row - the backend groups rows by
-// brand+model into a single Product (creating it fresh, or appending new
-// colors/variants/optionSchema entries to an existing one), so no
-// grouping is needed on this end.
-//
-// `stockMode` comes from the radio group next to the Import button:
-// "replace" (default) overwrites a matched variant's stock with the
-// imported number; "add" adds the imported number on top of whatever
-// stock that variant already has. Only affects rows that match an
-// existing variant - brand-new variants always just start at the
-// imported stock regardless of this setting.
 async function importProducts() {
   setActiveSteps(3);
   const stockMode =

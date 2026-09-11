@@ -10,10 +10,14 @@
         }
       })();
     </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Phone Store | Product View</title>
-
+    <title>Stocklink | Add Product View</title>
+    <link rel="preload" as="script" href="config.js" />
+    <link rel="preload" as="script" href="shared.js" />
+    <link rel="preload" as="script" href="skeleton.js" />
+    <link rel="preload" as="script" href="sidebar.js" />
     <link rel="stylesheet" href="shared.css" />
 
     <link
@@ -100,7 +104,10 @@
           <button class="logout-btn">Log out</button>
         </div>
       </aside>
-
+      <script src="config.js"></script>
+      <script src="shared.js"></script>
+      <script src="skeleton.js"></script>
+      <script src="sidebar.js"></script>
       <main>
         <!--
           Skeleton placeholder shown only while loadProduct() is in flight
@@ -444,10 +451,6 @@
     <script src="csv-load/specsLoader.js"></script>
     <script src="csv-load/specsLookUp.js"></script>
     <script src="csv-load/specsAutoFill.js"></script>
-    <script src="config.js"></script>
-    <script src="shared.js"></script>
-    <script src="skeleton.js"></script>
-    <script src="sidebar.js"></script>
     <script src="modelNameSearch.js"></script>
 
     <!--

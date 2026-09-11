@@ -11,7 +11,11 @@
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phone Store | Admin</title>
+    <title>Stocklink | Home View</title>
+    <link rel="preload" as="script" href="config.js" />
+    <link rel="preload" as="script" href="shared.js" />
+    <link rel="preload" as="script" href="skeleton.js" />
+    <link rel="preload" as="script" href="sidebar.js" />
     <link rel="stylesheet" href="shared.css" />
     <link rel="stylesheet" href="admin.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,10 +55,10 @@
               </div>
               <div class="notif-list" id="notif-list"></div>
               <div class="notif-empty" id="notif-empty" hidden>
-              <i class="fa-regular fa-bell-slash"></i>
-              <p>No notifications yet</p>
-              <span>You're all caught up</span>
-            </div>
+                <i class="fa-regular fa-bell-slash"></i>
+                <p>No notifications yet</p>
+                <span>You're all caught up</span>
+              </div>
             </div>
           </div>
         </div>
@@ -88,6 +92,10 @@
           <button class="logout-btn">Log out</button>
         </div>
       </aside>
+      <script src="config.js"></script>
+      <script src="shared.js"></script>
+      <script src="skeleton.js"></script>
+      <script src="sidebar.js"></script>
       <main>
         <h1 class="home-title">Home</h1>
 
@@ -280,9 +288,6 @@
       </div>
     </div>
     <div id="toast-container"></div>
-    <script src="config.js"></script>
-    <script src="shared.js"></script>
-    <script src="skeleton.js"></script>
     <script>
       // Runs before admin.js, so these are the *first* paint the user
       // sees. Each call is self-clearing once admin.js writes real
@@ -307,7 +312,6 @@
       });
     </script>
     <script src="admin.js"></script>
-    <script src="sidebar.js"></script>
     <!--
       Integration notes for admin.js (not included in this upload, so
       wiring these two spots by hand):

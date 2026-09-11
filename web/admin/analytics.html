@@ -11,7 +11,11 @@
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phone Store | Admin</title>
+    <title>Stocklink | Analytics View</title>
+    <link rel="preload" as="script" href="config.js" />
+    <link rel="preload" as="script" href="shared.js" />
+    <link rel="preload" as="script" href="skeleton.js" />
+    <link rel="preload" as="script" href="sidebar.js" />
     <link rel="stylesheet" href="shared.css" />
     <link rel="stylesheet" href="analytics.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -50,10 +54,10 @@
               </div>
               <div class="notif-list" id="notif-list"></div>
               <div class="notif-empty" id="notif-empty" hidden>
-              <i class="fa-regular fa-bell-slash"></i>
-              <p>No notifications yet</p>
-              <span>You're all caught up</span>
-            </div>
+                <i class="fa-regular fa-bell-slash"></i>
+                <p>No notifications yet</p>
+                <span>You're all caught up</span>
+              </div>
             </div>
           </div>
         </div>
@@ -88,6 +92,10 @@
           <button class="logout-btn">Log out</button>
         </div>
       </aside>
+      <script src="config.js"></script>
+      <script src="shared.js"></script>
+      <script src="skeleton.js"></script>
+      <script src="sidebar.js"></script>
       <main>
         <div class="hero">
           <h1>Analytics</h1>
@@ -292,10 +300,6 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-    <script src="config.js"></script>
-    <script src="shared.js"></script>
-    <script src="skeleton.js"></script>
-    <script src="sidebar.js"></script>
     <script src="analytics.js"></script>
   </body>
 </html>
