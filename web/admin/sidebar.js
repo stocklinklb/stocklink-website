@@ -77,9 +77,11 @@ function applyPermission(data) {
 
   if (!sidebar) return;
 
-  const currentPage = (
-    window.location.pathname.split("/").pop() || "index"
-  ).replace(/\.html$/, "");
+  const lastSegment = window.location.pathname.split("/").pop();
+  const currentPage =
+    !lastSegment || lastSegment === "admin"
+      ? "index"
+      : lastSegment.replace(/\.html$/, "");
   const currentItem = sidebarItems.find(
     (item) =>
       item.href
