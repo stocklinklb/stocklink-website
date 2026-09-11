@@ -77,9 +77,15 @@ function applyPermission(data) {
 
   if (!sidebar) return;
 
-  const currentPage = window.location.pathname.split("/").pop() || "index.html";
+  const currentPage = (
+    window.location.pathname.split("/").pop() || "index"
+  ).replace(/\.html$/, "");
   const currentItem = sidebarItems.find(
-    (item) => item.href.split("/").pop() === currentPage,
+    (item) =>
+      item.href
+        .split("/")
+        .pop()
+        .replace(/\.html$/, "") === currentPage,
   );
 
   if (
@@ -98,7 +104,15 @@ function applyPermission(data) {
 
   const linkHTML = (item) => `
         <a href="${item.href}"
-           class="${currentPage === item.href.split("/").pop() ? "active" : ""}">
+           class="${
+             currentPage ===
+             item.href
+               .split("/")
+               .pop()
+               .replace(/\.html$/, "")
+               ? "active"
+               : ""
+           }">
           <i class="${item.icon}"></i>
           <span>${item.name}</span>
         </a>
