@@ -1,10 +1,8 @@
 {
   "cleanUrls": true,
+  "trailingSlash": true,
   "redirects": [
     { "source": "/", "destination": "/home", "permanent": true },
     { "source": "/index.html", "destination": "/home", "permanent": true }
-  ],
-  "rewrites": [
-    { "source": "/admin", "destination": "/admin/login.html" }
   ]
 }
