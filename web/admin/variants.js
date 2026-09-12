@@ -10,8 +10,6 @@
 // VARIANT_COLUMN_LABELS, getVariantDimensions), dom.js (storageSection,
 // ramSection, sizeSection, variantsTableContainer, categoryOption,
 // brandOption), utils.js (escapeHtml), color-picker.js (getColorHex),
-// color-images.js (renderColorImageUpload).
-
 // Battery health isn't a "pick one or more" dimension like storage/RAM/color -
 // it's a single number typed once (see #battery-health) that applies to
 // every variant of the product. It's kept out of getVariantDimensions()
@@ -171,10 +169,8 @@ function generateVariants() {
       price: existing ? existing.price : 0,
       stock: existing ? existing.stock : 0,
       sku: existing ? existing.sku : null,
-      // Same battery health value on every variant of the product - not
-      // part of the combo cartesian product, just carried along so it
-      // survives into the save payload.
       batteryHealth: existing ? existing.batteryHealth : null,
+      hasOrders: existing ? existing.hasOrders : false,
     };
   });
 
@@ -334,7 +330,12 @@ function renderVariantsTable(variants) {
               >
 
             </td>
-            <td data-label="Actions" class="variant-actions">
+           <td data-label="Actions" class="variant-actions">
+  ${
+    variant.hasOrders
+      ? `<i class="fa-solid fa-receipt variant-has-orders" title="This variant has past orders"></i>`
+      : ""
+  }
   <button
     type="button"
     class="duplicate-variant-button fa-regular fa-copy"
@@ -364,6 +365,14 @@ function renderVariantsTable(variants) {
 
 `;
 }
+variantsTableContainer.addEventListener("click", (e) => {
+  const receipt = e.target.closest(".variant-has-orders");
+
+  if (receipt) {
+    const productNameValue = productNameInput.value.trim();
+    window.location.href = `/admin/order?search=${encodeURIComponent(productNameValue)}`;
+  }
+});
 document.addEventListener("click", (e) => {
   const deleteBtn = e.target.closest(".delete-variant-button");
   const duplicateBtn = e.target.closest(".duplicate-variant-button");
@@ -478,6 +487,7 @@ document.addEventListener("click", (e) => {
     renderVariantsTable(generatedVariants);
   }
 });
+
 document.addEventListener(
   "blur",
   (e) => {

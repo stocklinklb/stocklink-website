@@ -898,7 +898,8 @@ tbody.addEventListener("click", (event) => {
   if (!row) return;
 
   if (button.dataset.action === "edit") {
-    window.location.href = `add-product.html?id=${row.productId}`;
+    console.log("PRODUCT ID", row.productId);
+    window.location.href = `/admin/add-product?id=${row.productId}`;
     return;
   }
 

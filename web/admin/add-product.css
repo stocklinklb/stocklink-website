@@ -30,7 +30,7 @@
   padding: 0;
   border: 1px solid var(--border);
   border-radius: 7px;
-  
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -42,6 +42,80 @@
     color 0.15s ease,
     transform 0.15s ease;
 }
+/* Order history indicator - shown in the Actions cell for any variant
+   that has past orders against it (see hasOrders in variants.js /
+   product-form.js). Purely informational; doesn't block anything on its
+   own, but pairs with disabling the delete button for these rows since
+   the backend will reject that delete with a FK RESTRICT error. */
+.variant-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.variant-has-orders {
+  position: static !important;
+  inset: auto !important;
+
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  flex: 0 0 32px;
+
+  margin: 0;
+  padding: 0;
+
+  border-radius: 7px;
+
+  font-size: 13px;
+  line-height: 1;
+
+  color: #8b5e34;
+  background: rgba(139, 94, 52, 0.12);
+
+  cursor: help;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.variant-has-orders:hover {
+  color: #6f4727;
+  background: rgba(139, 94, 52, 0.2);
+}
+
+/* Dark theme */
+[data-theme="dark"] .variant-has-orders {
+  color: #c89563;
+  background: rgba(200, 149, 99, 0.15);
+}
+
+[data-theme="dark"] .variant-has-orders:hover {
+  color: #ddb07f;
+  background: rgba(200, 149, 99, 0.25);
+}
+
+.variant-table tbody tr:has(.variant-has-orders) {
+  background: rgba(139, 94, 52, 0.045);
+}
+
+.variant-table tbody tr:has(.variant-has-orders):hover {
+  background: rgba(139, 94, 52, 0.075);
+}
+
+
+
+
+/* Keeps the icon vertically aligned with the duplicate/delete buttons
+   already in .variant-actions, regardless of what layout that container
+   uses (flex row is the common case for an actions cell like this). */
 
 .variant-actions button:hover {
   background: var(--surface-hover);
@@ -58,7 +132,6 @@
 .duplicate-variant-button {
   background: var(--surface);
   color: var(--text-secondary);
-
 }
 
 .duplicate-variant-button:hover {
@@ -67,13 +140,13 @@
 
 /* Delete */
 
-.delete-variant-button{
+.delete-variant-button {
   color: #dc2626;
   background: rgba(220, 38, 38, 0.07);
   border-color: rgba(220, 38, 38, 0.25);
 }
 .delete-varaint-button:hover {
-  color:var(--adm-danger);
+  color: var(--adm-danger);
 }
 /* Sidebar logout button — border reset only; layout/hover for this
    element lives in the shared admin chrome stylesheet, not here. */
@@ -1229,7 +1302,7 @@ label.checkbox input[type="checkbox"] {
   width: 100%;
   height: 30px;
   padding: 0 2px;
-  color:var(--adm-ink);
+  color: var(--adm-ink);
   border: none;
   background: transparent;
 

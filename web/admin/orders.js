@@ -1,6 +1,6 @@
 // API
 const API = API_BASE;
-
+const searchUrl = new URLSearchParams(window.location.search).get("search");
 // Buttons
 const newOrder = document.getElementById("newOrderBtn");
 const closeModal = document.getElementById("orderFormCloseBtn");
@@ -58,6 +58,14 @@ let allVariants = []; // Flattened list for quick searching
 let orders = [];
 let ordersPagination = null;
 let currentSearch = "";
+currentSearch = searchUrl || "";
+orderSearchInput.value = searchUrl || "";
+const newUrl = currentSearch
+  ? `?search=${encodeURIComponent(currentSearch)}`
+  : window.location.pathname;
+
+history.replaceState({ search: currentSearch }, "", newUrl);
+
 let currentStatus = "";
 let currentMetric = "revenue";
 let currentPeriod = "day";
@@ -94,6 +102,7 @@ function buildOrdersUrl() {
   params.set("page", currentPage);
   if (currentStatus) params.set("status", currentStatus);
   if (currentSearch) params.set("search", currentSearch);
+
   return `${ORDERS_API}?${params.toString()}`;
 }
 
@@ -550,13 +559,20 @@ salesTypeToggle.addEventListener("click", (e) => {
 let searchDebounceTimer;
 orderSearchInput.addEventListener("input", () => {
   clearTimeout(searchDebounceTimer);
+
   searchDebounceTimer = setTimeout(() => {
     currentSearch = orderSearchInput.value.trim();
+
+    const newUrl = currentSearch
+      ? `${window.location.pathname}?search=${encodeURIComponent(currentSearch)}`
+      : window.location.pathname;
+
+    history.replaceState({ search: currentSearch }, "", newUrl);
+
     currentPage = 1;
     loadOrders();
   }, 300);
 });
-
 // ============================================
 // Load + render orders
 // ============================================

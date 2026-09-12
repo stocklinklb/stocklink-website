@@ -439,7 +439,9 @@ function showToast(message, type) {
 // (e.g. don't fetch products before we know the user is authenticated)
 // can `await window.adminAccessCheck` - it resolves to the same boolean
 // ensureAdminAccess() always returned.
-setLogOutModal();
+document.addEventListener("DOMContentLoaded", () => {
+  setLogOutModal();
+});
 window.adminAccessCheck = ensureAdminAccess();
 loadStoreLogo();
 loadNotifications();

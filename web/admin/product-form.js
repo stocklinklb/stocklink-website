@@ -401,6 +401,7 @@ function fillProductInformation(product) {
       stock: variant.stock ?? 0,
       sku: variant.sku || null,
       batteryHealth: variant.batteryHealth ?? null,
+      hasOrders: (variant._count?.order ?? 0) > 0,
     };
   });
   // BUG FIX: this used to call generateVariants() here, which re-runs the

@@ -113,7 +113,7 @@ blkArchive.addEventListener("click", () => {
   confirmDeleteBtn.textContent = "Archive";
   confirmDeleteBtn.style.background = "#3b3b3b";
   confirmDeleteBtn.style.color = "#fff";
-  modalP.textContent = `Are you sure you want to archive?`
+  modalP.textContent = `Are you sure you want to archive?`;
 });
 
 cancelBlkBtn.addEventListener("click", () => {
@@ -352,6 +352,7 @@ function updateProductsSummary() {
     productsSummary.innerHTML = `Showing <strong>${currentFiltered.length}</strong> products`;
     bulkDelete.style.display = "none";
     blkEdit.style.display = "none";
+    blkArchive.style.display = "none";
   }
   const rowCheckboxes = document.querySelectorAll(".row-checkbox");
   const checkedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
