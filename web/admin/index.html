@@ -142,54 +142,15 @@
           </div>
         </div>
 
-        <div class="quick-actions quick">
-          <h2>Quick Actions:</h2>
-          <div class="cards">
-            <div class="quick-card add-product" data-href="/admin/add-product.html">
-              <i class="fa-solid fa-circle-plus"></i> <span> Add Product</span>
-            </div>
-
-            <div class="quick-card manage-products" data-href="/admin/products.html">
-              <i class="fa-solid fa-boxes"></i>
-              <span>Manage Products</span>
-            </div>
-            <div
-              class="quick-card"
-              data-href="https://stoclink-demo-front-end.vercel.app/index.html"
-            >
-              <i
-                class="fa-solid fa-arrow-right"
-                style="transform: rotate(-45deg)"
-              ></i
-              ><span>View Store</span>
-            </div>
-            <div
-              class="quick-card excel-import-card"
-              data-href="/admin/excel-import.html"
-              id="excelImportBtn"
-            >
-              <i class="fa-solid fa-file-excel"></i>
-              <span>Excel Import</span>
-            </div>
-          </div>
-          <input
-            type="file"
-            id="excelImportInput"
-            accept=".xlsx,.xls,.csv"
-            hidden
-          />
-        </div>
-        <div class="coming-overlay" style="display: none">
-          <span class="glow-dot"></span>
-          <span>Coming Soon</span>
-        </div>
-        <div class="recent-activities">
+        <section class="first-row">
           <h2
             class="quick-heading"
             style="font-size: 16px; font-weight: 700; margin-bottom: 14px"
           >
             Quick Stats:
           </h2>
+
+          <!-- Row 1: Recent Activity + Visitors Over Time -->
           <div class="dashboard-bottom">
             <section class="activity-box">
               <h2>Recent Activity</h2>
@@ -210,12 +171,108 @@
                 </div>
               </div>
               <div class="activity-footer">
-                <a id="view-all-activity" href="/admin/analytics.html"
+                <a
+                  id="view-all-activity"
+                  class="card-footer-link"
+                  href="/admin/analytics.html"
                   >View all activity</a
                 >
               </div>
             </section>
 
+            <section class="visitors-chart-box">
+              <div class="sales-chart-header">
+                <h2>Visitors Over Time</h2>
+                <div class="sales-chart-controls">
+                  <div
+                    class="chart-toggle-group"
+                    id="visitorsTypeToggle"
+                    role="tablist"
+                  >
+                    <button class="chart-toggle-btn active" data-type="line">
+                      Line
+                    </button>
+                    <button class="chart-toggle-btn" data-type="bar">
+                      Bar
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="visitors-chart-wrapper" id="visitors-chart-wrapper">
+                <div
+                  class="visitors-chart-skeleton"
+                  id="visitors-chart-skeleton"
+                >
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+                <canvas id="visitors-chart"></canvas>
+              </div>
+              <a
+                id="view-visitors"
+                class="card-footer-link"
+                href="/admin/analytics.html"
+                >View Visitors</a
+              >
+            </section>
+          </div>
+
+          <!-- Row 2: Quick Actions -->
+          <div class="quick-actions quick">
+            <h2>Quick Actions:</h2>
+            <div class="cards">
+              <div
+                class="quick-card add-product"
+                data-href="/admin/add-product.html"
+              >
+                <i class="fa-solid fa-circle-plus"></i>
+                <span> Add Product</span>
+              </div>
+
+              <div
+                class="quick-card manage-products"
+                data-href="/admin/products.html"
+              >
+                <i class="fa-solid fa-boxes"></i>
+                <span>Manage Products</span>
+              </div>
+              <div
+                class="quick-card"
+                data-href="https://stoclink-demo-front-end.vercel.app/index.html"
+              >
+                <i
+                  class="fa-solid fa-arrow-right"
+                  style="transform: rotate(-45deg)"
+                ></i
+                ><span>View Store</span>
+              </div>
+              <div
+                class="quick-card excel-import-card"
+                data-href="/admin/excel-import.html"
+                id="excelImportBtn"
+              >
+                <i class="fa-solid fa-file-excel"></i>
+                <span>Excel Import</span>
+              </div>
+            </div>
+            <input
+              type="file"
+              id="excelImportInput"
+              accept=".xlsx,.xls,.csv"
+              hidden
+            />
+          </div>
+          <div class="coming-overlay" style="display: none">
+            <span class="glow-dot"></span>
+            <span>Coming Soon</span>
+          </div>
+
+          <!-- Row 3: Low Stock + Revenue -->
+          <div class="dashboard-bottom">
             <section class="low-stock-box">
               <div class="low-stock-box-title">
                 <h2>Low Stock</h2>
@@ -233,8 +290,38 @@
                 </div>
               </div>
             </section>
+
+            <section class="revenue-chart-box">
+              <div class="sales-chart-header">
+                <h3>Revenue</h3>
+                <div class="sales-chart-controls">
+                  <div
+                    class="chart-toggle-group"
+                    id="salesTypeToggle"
+                    role="tablist"
+                  >
+                    <button class="chart-toggle-btn active" data-type="line">
+                      Line
+                    </button>
+                    <button class="chart-toggle-btn" data-type="bar">
+                      Bar
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="sales-chart-canvas-wrapper">
+                <canvas id="salesChart"></canvas>
+              </div>
+              <a
+                id="view-orders"
+                class="card-footer-link"
+                href="/admin/orders.html"
+                >View Orders</a
+              >
+            </section>
           </div>
 
+          <!-- Row 4: Inventory Overview -->
           <section class="inventory-overview">
             <h2>Inventory Overview</h2>
             <div class="inventory-cards" id="inventoryCards">
@@ -272,7 +359,7 @@
               </div>
             </div>
           </section>
-        </div>
+        </section>
       </main>
     </div>
     <div class="logout-modal-overlay" id="logoutModal">
@@ -311,24 +398,9 @@
         height: 36,
       });
     </script>
+    <!-- Chart.js — required by the visitors/revenue charts (admin.js
+         calls `new Chart(...)`); must load before admin.js runs. -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="/admin/admin.js"></script>
-    <!--
-      Integration notes for admin.js (not included in this upload, so
-      wiring these two spots by hand):
-
-      1) Stat cards / greeting / inventory cards: nothing to do. They
-         use Skeleton.autoReveal() above, which watches each element
-         and un-masks itself the moment admin.js sets its textContent
-         to the real value (with a 6s fallback either way).
-
-      2) Activity feed & Low stock list: Skeleton.listItems() above
-         fills #activityList/#lowStockList with placeholder rows.
-         Whatever admin.js already does to populate them for real
-         (almost certainly `activityList.innerHTML = ...` and
-         `lowStockList.innerHTML = ...`, matching how the old
-         hardcoded demo markup worked) will overwrite the skeleton
-         rows the same way it would have overwritten the old demo
-         content - no changes needed there either.
-    -->
   </body>
 </html>

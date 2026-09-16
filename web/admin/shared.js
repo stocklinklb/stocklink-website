@@ -32,7 +32,36 @@ function checkPermission(name, isOwner, permissions) {
     return true;
   }
   return permissions[name] === true;
+}
+const TIERS_FEATURES = {
+  FLOW: ["home", "orders", "products", "addProducts", "settings"],
+  PRIME: [
+    "home",
+    "orders",
+    "analytics",
+    "products",
+    "addProducts",
+    "excelImport",
+    "missingInfos",
+    "staff",
+    "settings",
+  ],
+  ELITE: [
+    "home",
+    "orders",
+    "analytics",
+    "products",
+    "addProducts",
+    "excelImport",
+    "missingInfos",
+    "staff",
+    "settings",
+  ],
+};
 
+function hasFeature(tier, feature) {
+  if (!feature) return true;
+  return TIERS_FEATURES[tier]?.includes(feature) ?? false;
 }
 
 const savedTheme = localStorage.getItem("theme");
@@ -112,12 +141,36 @@ const notificationsList = document.getElementById("notif-list");
 const notificationsBadge = document.getElementById("notif-badge");
 const notifEmpty = document.getElementById("notif-empty");
 
+function formatNotificationBody(notification) {
+  const { title, content } = notification;
+  switch (content?.type) {
+    case "subscription-deadline":
+      return title;
+    case "low-stock":
+    case "out-of-stock":
+      return `${title}: ${content.productName} (${content.stock} left)`;
+    default:
+      return `${title}: ${content?.productName ?? ""} (${content?.stock ?? "?"} left)`;
+  }
+}
+
+function sortNotifications(notifications) {
+  return [...notifications].sort((a, b) => {
+    const aPriority =
+      !a.isRead && a.content.type === "subscription-deadline" ? 0 : 1;
+    const bPriority =
+      !b.isRead && b.content.type === "subscription-deadline" ? 0 : 1;
+    return aPriority - bPriority;
+  });
+}
+
 function renderNotifications(notifications) {
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const sorted = sortNotifications(notifications);
+  const unreadCount = sorted.filter((n) => !n.isRead).length;
   notificationsBadge.textContent = unreadCount;
   notificationsBadge.hidden = unreadCount === 0;
 
-  if (notifications.length === 0) {
+  if (sorted.length === 0) {
     notificationsList.innerHTML = "";
     notificationsList.hidden = true;
     notifEmpty.hidden = false;
@@ -127,11 +180,13 @@ function renderNotifications(notifications) {
   notifEmpty.hidden = true;
   notificationsList.hidden = false;
 
-  notificationsList.innerHTML = notifications
+  notificationsList.innerHTML = sorted
     .map((notification) => {
+      const isDeadline = notification.content?.type === "subscription-deadline";
+      const deadlineClass = isDeadline ? " subscription-deadline" : "";
       return `
-    <div class = "notif-item ${notification.isRead ? "" : "unread"}" data-id = ${notification.id}>
-      <p class = "notif-item-title">${notification.title}: ${notification.content.productName} (${notification.content.stock} left)</p>
+    <div class = "notif-item ${notification.isRead ? "" : "unread"}${deadlineClass}" data-id = ${notification.id}>
+     <p class = "notif-item-title">${formatNotificationBody(notification)}</p>
       <span class = "notif-item-time">${timeAgo(notification.createdAt)}</span>
     </div>
     `;
@@ -202,9 +257,8 @@ async function logout() {
     });
 
     if (response.ok) {
-      sessionStorage.removeItem("staffMe")
-      window.location.replace("login.html");
-      
+      sessionStorage.removeItem("staffMe");
+      window.location.replace("/admin/login.html");
     }
   } catch (error) {
     console.error("Logout error:", error);
@@ -277,7 +331,10 @@ function updateProfile(user) {
 function paintCachedProfile() {
   try {
     const cached = JSON.parse(localStorage.getItem("adminProfile"));
-    if (cached) updateProfile(cached);
+    if (cached) {
+      updateProfile(cached);
+      if (cached.subscriptionStatus === "EXPIRED") showExpiredBanner();
+    }
   } catch (error) {
     // Corrupt/old cache value - ignore, real fetch will fix it.
   }
@@ -287,14 +344,49 @@ function cacheProfile(user) {
   try {
     localStorage.setItem(
       "adminProfile",
-      JSON.stringify({ name: user.name, role: user.role }),
+      JSON.stringify({
+        name: user.name,
+        role: user.role,
+        subscriptionStatus: user.subscriptionStatus,
+      }),
     );
   } catch (error) {
     // Storage unavailable (private browsing, quota, etc.) - not fatal,
     // just means no instant-paint next time.
   }
 }
+function showExpiredBanner() {
+  if (document.getElementById("subscription-banner")) return;
 
+  const banner = document.createElement("div");
+  banner.id = "subscription-banner";
+  banner.innerHTML = `
+  <span class="banner-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+  <span class="banner-text">Your subscription has ended. You can still view your data, but adding or editing anything is disabled until you renew.</span>
+  <a href="settings.html"><i class="fa-solid fa-arrow-rotate-right"></i> Renew now</a>
+`;
+  document.body.prepend(banner);
+  document.body.classList.add("subscription-expired");
+
+  updateBannerHeightVar();
+  window.addEventListener("resize", updateBannerHeightVar);
+}
+
+function updateBannerHeightVar() {
+  const banner = document.getElementById("subscription-banner");
+  if (!banner) return;
+  document.documentElement.style.setProperty(
+    "--banner-height",
+    `${banner.offsetHeight}px`,
+  );
+}
+
+function hideExpiredBanner() {
+  document.getElementById("subscription-banner")?.remove();
+  document.body.classList.remove("subscription-expired");
+  window.removeEventListener("resize", updateBannerHeightVar);
+  document.documentElement.style.removeProperty("--banner-height");
+}
 paintCachedProfile();
 
 async function ensureAdminAccess(retries = 2) {
@@ -310,6 +402,13 @@ async function ensureAdminAccess(retries = 2) {
         const user = await response.json();
         updateProfile(user);
         cacheProfile(user);
+
+        if (user.subscriptionStatus === "EXPIRED") {
+          showExpiredBanner();
+        } else {
+          hideExpiredBanner();
+        }
+
         return true;
       }
 

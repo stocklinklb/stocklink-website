@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SaaS Accounts Admin</title>
+  <link rel="stylesheet" href="/owner/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <section id="loginView" class="screen hidden">
+      <div class="login-card">
+        <div class="eyebrow">Platform owner</div>
+        <h1>Admin login</h1>
+        <p class="muted">Sign in with your existing admin session endpoint.</p>
+
+        <form id="loginForm" class="stack">
+          <label>
+            Email
+            <input id="loginEmail" type="email" autocomplete="username" required />
+          </label>
+          <label>
+            Password
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button id="loginButton" type="submit" class="button primary">Sign in</button>
+        </form>
+
+        <p class="hint">
+          Login endpoint is configurable in <code>app.js</code>. The default is <code>/login</code>.
+        </p>
+      </div>
+    </section>
+
+    <section id="mainView" class="screen hidden">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Private platform tool</div>
+          <h1>Tenant accounts</h1>
+        </div>
+        <div class="topbar-actions">
+          <span id="accountCount" class="muted"></span>
+          <button id="refreshButton" class="button secondary" type="button">Refresh</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <div id="globalMessage" class="message hidden" role="alert"></div>
+
+        <section class="panel controls-panel">
+          <div class="filters">
+            <label>
+              Search
+              <input id="searchInput" type="search" placeholder="Store name..." />
+            </label>
+
+            <label>
+              Tier
+              <select id="tierFilter">
+                <option value="">All tiers</option>
+                <option value="FLOW">FLOW</option>
+                <option value="PRIME">PRIME</option>
+                <option value="ELITE">ELITE</option>
+              </select>
+            </label>
+
+            <label>
+              Status
+              <select id="statusFilter">
+                <option value="">All statuses</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="EXPIRED">EXPIRED</option>
+                <option value="SUSPENDED">SUSPENDED</option>
+                <option value="CANCELLED">CANCELLED</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel table-panel">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><button class="sort-button" data-sort="name">Account <span data-sort-icon="name"></span></button></th>
+                  <th><button class="sort-button" data-sort="subscriptionTier">Tier <span data-sort-icon="subscriptionTier"></span></button></th>
+                  <th><button class="sort-button" data-sort="subscriptionStatus">Status <span data-sort-icon="subscriptionStatus"></span></button></th>
+                  <th>Active</th>
+                  <th><button class="sort-button" data-sort="subscriptionEnd">Subscription end <span data-sort-icon="subscriptionEnd"></span></button></th>
+                  <th class="actions-col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="accountsBody"></tbody>
+            </table>
+          </div>
+          <div id="emptyState" class="empty hidden">No accounts match the current filters.</div>
+        </section>
+      </main>
+    </section>
+
+    <section id="detailView" class="drawer hidden" aria-hidden="true">
+      <div class="drawer-backdrop" data-close-detail></div>
+      <aside class="drawer-panel">
+        <div class="drawer-header">
+          <div>
+            <div class="eyebrow">Account details</div>
+            <h2 id="detailTitle">Account</h2>
+            <p id="detailSubtitle" class="muted"></p>
+          </div>
+          <button class="icon-button" data-close-detail aria-label="Close details" type="button">×</button>
+        </div>
+
+        <div id="detailMessage" class="message hidden" role="alert"></div>
+
+        <div id="detailLoading" class="loading">Loading account…</div>
+
+        <div id="detailContent" class="hidden">
+          <section>
+            <h3>Usage</h3>
+            <div id="statsGrid" class="stats-grid"></div>
+          </section>
+
+          <section class="section-gap">
+            <h3>Edit account</h3>
+            <form id="accountForm" class="form-grid">
+              <label>
+                Public ID
+                <input name="publicId" type="text" />
+              </label>
+
+              <label>
+                Account name
+                <input name="name" type="text" required />
+              </label>
+
+              <label>
+                Email
+                <input name="email" type="email" />
+              </label>
+
+              <label>
+                Owner name
+                <input name="ownerName" type="text" />
+              </label>
+
+              <label>
+                Owner phone
+                <input name="ownerPhone" type="text" />
+              </label>
+
+              <label>
+                Tier
+                <select name="subscriptionTier">
+                  <option value="FLOW">FLOW</option>
+                  <option value="PRIME">PRIME</option>
+                  <option value="ELITE">ELITE</option>
+                </select>
+              </label>
+
+              <label>
+                Status
+                <select name="subscriptionStatus">
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="EXPIRED">EXPIRED</option>
+                  <option value="SUSPENDED">SUSPENDED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+              </label>
+
+              <label>
+                Subscription start
+                <input name="subscriptionStart" type="date" />
+              </label>
+
+              <label>
+                Subscription end
+                <input name="subscriptionEnd" type="date" />
+              </label>
+
+              <label class="checkbox-row full-width">
+                <input name="isActive" type="checkbox" />
+                <span>Account is active</span>
+              </label>
+
+              <div class="full-width form-actions">
+                <button id="saveButton" class="button primary" type="submit">Save changes</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="section-gap metadata">
+            <h3>Contact & metadata</h3>
+            <dl id="metadataList"></dl>
+          </section>
+
+          <section class="danger-zone section-gap">
+            <div>
+              <h3>Delete account</h3>
+              <p>
+                Permanently deletes this store and all cascaded products, orders, staff accounts, and analytics data.
+                This cannot be undone.
+              </p>
+            </div>
+            <button id="openDeleteButton" type="button" class="button danger">Delete account</button>
+          </section>
+        </div>
+      </aside>
+    </section>
+
+    <section id="deleteModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-delete></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
+        <h2 id="deleteTitle">Permanently delete account</h2>
+        <p>
+          This hard-deletes the tenant and its related data. To continue, type
+          <strong id="deleteStoreName"></strong> exactly.
+        </p>
+
+        <label>
+          Account name
+          <input id="deleteConfirmationInput" type="text" autocomplete="off" />
+        </label>
+
+        <div id="deleteMessage" class="message hidden" role="alert"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="button secondary" data-close-delete>Cancel</button>
+          <button id="confirmDeleteButton" type="button" class="button danger" disabled>Delete permanently</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="/owner/app.js"></script>
+</body>
+</html>

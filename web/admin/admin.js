@@ -7,7 +7,19 @@ const API = API_BASE;
 // Thresholds that decide a variant's stock status.
 // Mirrors the status pills used on the Products page.
 const LOW_STOCK_MAX = 9;
+const visitorsChartCanvas = document.getElementById("visitors-chart");
+const salesChart = document.getElementById("salesChart");
 const username = document.getElementById("user-name");
+
+// State for the visitors chart — loadVisitorsOverTime()/renderVisitorsChart()
+// below were extracted from analytics.js but only the functions came over,
+// not the state they depend on. Restoring the minimum needed for this
+// page (no period toggle here, so currentChartType is fixed to "line").
+let requestId = 0;
+let visitorsChart = null;
+let currentChartType = "line";
+let currentPeriod = "day";
+let lastVisitorsData = [];
 const CATEGORY_ICONS = {
   Phone: "fa-solid fa-mobile-screen-button",
   Phones: "fa-solid fa-mobile-screen-button",
@@ -86,6 +98,267 @@ function flattenVariants(products) {
   );
 }
 
+async function loadVisitorsOverTime(period) {
+  const thisRequest = ++requestId;
+
+  const response = await fetch(
+    `${ANALYTICS_API}/visitors-over-time?period=${period}`,
+    { credentials: "include" },
+  );
+
+  const result = await response.json();
+
+  if (thisRequest !== requestId) return;
+
+  currentPeriod = result.period;
+  lastVisitorsData = result.visitorsOverTime;
+  renderVisitorsChart(lastVisitorsData);
+  // No period toggle on this card (unlike analytics.js's version this
+  // was extracted from) — setActivePeriodButton() doesn't exist here
+  // and isn't needed.
+}
+
+function renderVisitorsChart(data) {
+  const labels = data.map((entry) =>
+    new Date(entry.bucket).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    }),
+  );
+  const counts = data.map((entry) => entry.count);
+
+  // If a chart already exists (e.g. loadAnalytics() runs again), destroy
+  // it first - Chart.js doesn't auto-replace an existing chart on the
+  // same canvas, it'll just draw on top and get visually corrupted.
+  if (visitorsChart) {
+    visitorsChart.destroy();
+  }
+
+  // Headline number + trend badge above the chart, both derived from the
+  // real fetched series — total visitors for the period, and the percent
+  // change from the first to the last data point.
+  const total = counts.reduce((sum, n) => sum + n, 0);
+  const avg = counts.length ? Math.round(total / counts.length) : 0;
+  updateChartHeadline({
+    valueEl: document.getElementById("visitors-big-value"),
+    trendEl: document.getElementById("visitors-trend"),
+    value: total.toLocaleString(),
+    series: counts,
+  });
+  const visitorsInsight = document.getElementById("visitors-chart-insight");
+  if (visitorsInsight) {
+    visitorsInsight.textContent = counts.length
+      ? `Averaging ${avg} visitor${avg === 1 ? "" : "s"}/day over this period`
+      : "No visitor data yet for this period.";
+  }
+
+  visitorsChart = new Chart(visitorsChartCanvas, {
+    type: currentChartType,
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Visitors",
+          data: counts,
+          borderColor: "#2563eb",
+          backgroundColor: "rgba(37, 99, 235, 0.12)",
+          fill: true,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        // Hides the little colored swatch + "Visitors" label Chart.js
+        // draws above the canvas by default — redundant with the card's
+        // own "Visitors Over Time" heading right above it.
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          // autoSkip + a fixed max keep dense day-level ranges from
+          // packing in overlapping/rotated labels — Chart.js drops
+          // ticks evenly rather than cramming or rotating them.
+          ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: 8 },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 }, // whole numbers only - can't have 2.5 visitors
+        },
+      },
+    },
+  });
+
+  // #visitors-chart-skeleton isn't wired into Skeleton.autoReveal/
+  // listItems anywhere (index.html's inline script never references
+  // it) — it's a standalone overlay that only this render step knows
+  // to hide, so it has to happen here, once the chart actually has
+  // data to show.
+  //
+  // Using inline style.display (not the `hidden` attribute) on
+  // purpose: admin.css declares `.visitors-chart-skeleton { display:
+  // flex; }` directly, and that author-stylesheet rule beats the
+  // browser's built-in `[hidden] { display: none; }` default — so
+  // toggling `hidden` silently does nothing here. An inline style
+  // always wins over any stylesheet rule, so this actually hides it.
+  const visitorsSkeleton = document.getElementById("visitors-chart-skeleton");
+  if (visitorsSkeleton) visitorsSkeleton.style.display = "none";
+}
+
+// Shared by both chart cards: sets the big headline number and a
+// green/red trend badge comparing the first vs last point in the
+// series — real signal derived from the fetched data, not fabricated.
+function updateChartHeadline({ valueEl, trendEl, value, series }) {
+  if (valueEl) valueEl.textContent = value;
+  if (!trendEl) return;
+
+  const first = series[0];
+  const last = series[series.length - 1];
+
+  if (series.length < 2 || !first) {
+    trendEl.textContent = "";
+    trendEl.className = "chart-trend";
+    return;
+  }
+
+  const pctChange = ((last - first) / first) * 100;
+  const up = pctChange >= 0;
+  trendEl.textContent = `${up ? "▲" : "▼"} ${Math.abs(pctChange).toFixed(1)}%`;
+  trendEl.className = `chart-trend ${up ? "up" : "down"}`;
+}
+
+document
+  .querySelectorAll("#visitorsTypeToggle .chart-toggle-btn")
+  .forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll("#visitorsTypeToggle .chart-toggle-btn")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentChartType = btn.dataset.type;
+      // Re-render from the already-fetched data — same pattern as the
+      // revenue chart's toggle, no need to refetch just to change the
+      // chart type.
+      renderVisitorsChart(lastVisitorsData);
+    });
+  });
+
+// ---------- Revenue chart (Home dashboard, Low Stock row) ----------
+// Extracted from orders.js's fetchSalesData/formatChartData/loadSalesChart
+// and trimmed to the revenue-only path (this card has no metric toggle,
+// see admin.css revenue-chart-box) with period locked to "day" (no period
+// toggle here either). Only the Line/Bar type toggle applies, wired the
+// same way orders.js wires salesTypeToggle.
+let salesChartInstance = null;
+let currentSalesChartType = "line";
+
+async function fetchSalesData(period) {
+  try {
+    const response = await fetch(
+      `${ORDERS_API}/sales-over-time?period=${period}`,
+      { credentials: "include" },
+    );
+    if (!response.ok) throw new Error("Failed to fetch orders");
+    const result = await response.json();
+    return result.buckets;
+  } catch (error) {
+    console.warn("data not loaded !", error.message);
+    return [];
+  }
+}
+
+function formatRevenueChartData(buckets, type) {
+  const isBar = type === "bar";
+  const revenueColor = "#f97316";
+  const revenueBackground = isBar ? revenueColor : "rgba(249, 115, 22, 0.15)";
+
+  return {
+    // orders.js's version used bucket.date raw, unformatted — fine for
+    // a "day" bucket key internally, but ugly as an axis label straight
+    // from the API. Formatted the same way the visitors chart already
+    // does, for consistency across the two cards.
+    labels: buckets.map((bucket) =>
+      new Date(bucket.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+    ),
+    datasets: [
+      {
+        label: "Revenue",
+        data: buckets.map((bucket) => bucket.revenue),
+        borderColor: revenueColor,
+        backgroundColor: revenueBackground,
+        fill: true,
+        tension: 0.3,
+      },
+    ],
+  };
+}
+
+async function loadRevenueChart(type = currentSalesChartType) {
+  const buckets = await fetchSalesData("day");
+  const chartData = formatRevenueChartData(buckets, type);
+
+  if (!salesChart) return;
+
+  if (salesChartInstance) {
+    salesChartInstance.destroy();
+  }
+
+  const revenues = buckets.map((b) => b.revenue || 0);
+  const total = revenues.reduce((sum, n) => sum + n, 0);
+  const avg = revenues.length ? total / revenues.length : 0;
+  updateChartHeadline({
+    valueEl: document.getElementById("revenue-big-value"),
+    trendEl: document.getElementById("revenue-trend"),
+    value: `$${total.toLocaleString()}`,
+    series: revenues,
+  });
+  const revenueInsight = document.getElementById("revenue-chart-insight");
+  if (revenueInsight) {
+    revenueInsight.textContent = revenues.length
+      ? `Averaging $${avg.toLocaleString(undefined, { maximumFractionDigits: 0 })}/day over this period`
+      : "No revenue data yet for this period.";
+  }
+
+  salesChartInstance = new Chart(salesChart, {
+    type,
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: 8 },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 },
+        },
+      },
+    },
+  });
+}
+
+document
+  .querySelectorAll("#salesTypeToggle .chart-toggle-btn")
+  .forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll("#salesTypeToggle .chart-toggle-btn")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentSalesChartType = btn.dataset.type;
+      loadRevenueChart(currentSalesChartType);
+    });
+  });
+
 function statusOf(stock) {
   if (stock <= 0) return "out";
   if (stock <= LOW_STOCK_MAX) return "low";
@@ -135,6 +408,7 @@ function renderLowStock(rows) {
 
   if (lowItems.length === 0) {
     list.innerHTML = `<p class="empty-note">Nothing running low right now.</p>`;
+    if (salesChartInstance) salesChartInstance.resize();
     return;
   }
 
@@ -147,6 +421,11 @@ function renderLowStock(rows) {
         </div>`,
     )
     .join("");
+
+  // Low Stock can change height (varying item count), which can stretch
+  // this row taller after the Revenue chart already rendered at a
+  // smaller size — force it to redraw at the new size.
+  if (salesChartInstance) salesChartInstance.resize();
 }
 
 function renderInventoryOverview(rows) {
@@ -251,6 +530,11 @@ function renderRecentActivity(logs) {
         </div>`;
     })
     .join("");
+
+  // Activity item count can change this box's height after the Visitors
+  // chart already rendered at a smaller size — force it to redraw so it
+  // fills the row instead of leaving a gap above the insight line.
+  if (visitorsChart) visitorsChart.resize();
 }
 // ---------- Quick actions ----------
 // ensureAdminAccess(), updateProfile(), setLogOutModal() and the login
@@ -290,6 +574,17 @@ async function initAdminPage() {
   loadDashboard();
   loadNotifications();
   loadRecentActivity();
+  loadRevenueChart();
+  loadVisitorsOverTime(currentPeriod);
 }
 
 initAdminPage();
+
+// Final safety net: web fonts / icon fonts can finish loading after
+// everything above has already rendered, nudging line-heights and
+// therefore row heights by a few px. Re-sync both charts once
+// everything has actually settled.
+window.addEventListener("load", () => {
+  if (visitorsChart) visitorsChart.resize();
+  if (salesChartInstance) salesChartInstance.resize();
+});
