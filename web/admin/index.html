@@ -97,10 +97,13 @@
       <script src="/admin/skeleton.js"></script>
       <script src="/admin/sidebar.js"></script>
       <main>
-        <h1 class="home-title">Home</h1>
+        <div class="hero">
+          <h1 class="home-title">Home</h1>
+          <p id="dashboardFreshness">Loading store data…</p>
+        </div>
 
         <div class="quick-stock quick">
-          <h2>Quick Stock Overview:</h2>
+          <h2>Stock Status</h2>
           <div class="cards">
             <div class="card" data-tone="all">
               <div class="card-icon all-products">
@@ -142,47 +145,71 @@
           </div>
         </div>
 
-        <section class="first-row">
-          <h2
-            class="quick-heading"
-            style="font-size: 16px; font-weight: 700; margin-bottom: 14px"
-          >
-            Quick Stats:
-          </h2>
+        <!-- Most actionable signal on the page: promoted above the fold,
+             full width, on its own instead of squeezed into a half-width
+             row with Revenue. -->
+        <section class="low-stock-box low-stock-standalone">
+          <div class="low-stock-box-title">
+            <h2>Low Stock</h2>
+            <button id="view-low-stock">View All Products</button>
+          </div>
 
-          <!-- Row 1: Recent Activity + Visitors Over Time -->
+          <div id="lowStockList">
+            <div class="stock-item">
+              <p>iPhone 15 Pro</p>
+              <span>3 left</span>
+            </div>
+            <div class="stock-item">
+              <p>AirPods Pro 2</p>
+              <span>2 left</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Performance: the two "how are we doing" metrics, each now
+             showing a real headline number + trend badge above the chart
+             (admin.js already computed these via updateChartHeadline();
+             the markup for it just didn't exist yet). -->
+        <section class="performance quick">
+          <h2>Performance</h2>
           <div class="dashboard-bottom">
-            <section class="activity-box">
-              <h2>Recent Activity</h2>
-              <div id="activityList">
-                <div class="activity-item">
-                  <div class="activity-icon">+</div>
-                  <div>
-                    <p><b id="user-name">John</b> added iPhone 16 Pro Max</p>
-                    <span>5 minutes ago</span>
-                  </div>
-                </div>
-                <div class="activity-item">
-                  <div class="activity-icon">↻</div>
-                  <div>
-                    <p><b></b> updated Galaxy S25 stock</p>
-                    <span>20 minutes ago</span>
+            <section class="revenue-chart-box">
+              <div class="sales-chart-header">
+                <h3>Revenue</h3>
+                <div class="sales-chart-controls">
+                  <div
+                    class="chart-toggle-group"
+                    id="salesTypeToggle"
+                    role="tablist"
+                  >
+                    <button class="chart-toggle-btn active" data-type="line">
+                      Line
+                    </button>
+                    <button class="chart-toggle-btn" data-type="bar">
+                      Bar
+                    </button>
                   </div>
                 </div>
               </div>
-              <div class="activity-footer">
-                <a
-                  id="view-all-activity"
-                  class="card-footer-link"
-                  href="/admin/analytics.html"
-                  >View all activity</a
-                >
+              <div class="chart-headline">
+                <span class="chart-big-value" id="revenue-big-value">—</span>
+                <span class="chart-trend" id="revenue-trend"></span>
               </div>
+              <p class="chart-caption" id="revenue-chart-insight"></p>
+              <div class="sales-chart-canvas-wrapper">
+                <canvas id="salesChart"></canvas>
+              </div>
+              <a
+                id="view-orders"
+                class="card-footer-link"
+                href="/admin/orders.html"
+                >View Orders</a
+              >
             </section>
 
             <section class="visitors-chart-box">
               <div class="sales-chart-header">
-                <h2>Visitors Over Time</h2>
+                <h3>Visitors Over Time</h3>
                 <div class="sales-chart-controls">
                   <div
                     class="chart-toggle-group"
@@ -198,6 +225,11 @@
                   </div>
                 </div>
               </div>
+              <div class="chart-headline">
+                <span class="chart-big-value" id="visitors-big-value">—</span>
+                <span class="chart-trend" id="visitors-trend"></span>
+              </div>
+              <p class="chart-caption" id="visitors-chart-insight"></p>
               <div class="visitors-chart-wrapper" id="visitors-chart-wrapper">
                 <div
                   class="visitors-chart-skeleton"
@@ -220,146 +252,135 @@
               >
             </section>
           </div>
-
-          <!-- Row 2: Quick Actions -->
-          <div class="quick-actions quick">
-            <h2>Quick Actions:</h2>
-            <div class="cards">
-              <div
-                class="quick-card add-product"
-                data-href="/admin/add-product.html"
-              >
-                <i class="fa-solid fa-circle-plus"></i>
-                <span> Add Product</span>
-              </div>
-
-              <div
-                class="quick-card manage-products"
-                data-href="/admin/products.html"
-              >
-                <i class="fa-solid fa-boxes"></i>
-                <span>Manage Products</span>
-              </div>
-              <div
-                class="quick-card"
-                data-href="https://stoclink-demo-front-end.vercel.app/index.html"
-              >
-                <i
-                  class="fa-solid fa-arrow-right"
-                  style="transform: rotate(-45deg)"
-                ></i
-                ><span>View Store</span>
-              </div>
-              <div
-                class="quick-card excel-import-card"
-                data-href="/admin/excel-import.html"
-                id="excelImportBtn"
-              >
-                <i class="fa-solid fa-file-excel"></i>
-                <span>Excel Import</span>
-              </div>
-            </div>
-            <input
-              type="file"
-              id="excelImportInput"
-              accept=".xlsx,.xls,.csv"
-              hidden
-            />
-          </div>
-          <div class="coming-overlay" style="display: none">
-            <span class="glow-dot"></span>
-            <span>Coming Soon</span>
-          </div>
-
-          <!-- Row 3: Low Stock + Revenue -->
-          <div class="dashboard-bottom">
-            <section class="low-stock-box">
-              <div class="low-stock-box-title">
-                <h2>Low Stock</h2>
-                <button id="view-low-stock">View All Products</button>
-              </div>
-
-              <div id="lowStockList">
-                <div class="stock-item">
-                  <p>iPhone 15 Pro</p>
-                  <span>3 left</span>
-                </div>
-                <div class="stock-item">
-                  <p>AirPods Pro 2</p>
-                  <span>2 left</span>
-                </div>
-              </div>
-            </section>
-
-            <section class="revenue-chart-box">
-              <div class="sales-chart-header">
-                <h3>Revenue</h3>
-                <div class="sales-chart-controls">
-                  <div
-                    class="chart-toggle-group"
-                    id="salesTypeToggle"
-                    role="tablist"
-                  >
-                    <button class="chart-toggle-btn active" data-type="line">
-                      Line
-                    </button>
-                    <button class="chart-toggle-btn" data-type="bar">
-                      Bar
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="sales-chart-canvas-wrapper">
-                <canvas id="salesChart"></canvas>
-              </div>
-              <a
-                id="view-orders"
-                class="card-footer-link"
-                href="/admin/orders.html"
-                >View Orders</a
-              >
-            </section>
-          </div>
-
-          <!-- Row 4: Inventory Overview -->
-          <section class="inventory-overview">
-            <h2>Inventory Overview</h2>
-            <div class="inventory-cards" id="inventoryCards">
-              <div class="inventory-card">
-                <div class="inventory-icon">
-                  <i class="fa-solid fa-mobile"></i>
-                </div>
-                <h3>Phones</h3>
-                <strong>120</strong>
-                <p>60% of inventory</p>
-              </div>
-              <div class="inventory-card">
-                <div class="inventory-icon">
-                  <i class="fa-solid fa-tablet"></i>
-                </div>
-                <h3>Tablets</h3>
-                <strong>30</strong>
-                <p>15% of inventory</p>
-              </div>
-              <div class="inventory-card">
-                <div class="inventory-icon">
-                  <i class="fa-solid fa-watch"></i>
-                </div>
-                <h3>Wearables</h3>
-                <strong>25</strong>
-                <p>12% of inventory</p>
-              </div>
-              <div class="inventory-card">
-                <div class="inventory-icon">
-                  <i class="fa-solid fa-headset"></i>
-                </div>
-                <h3>Accessories</h3>
-                <strong>25</strong>
-                <p>13% of inventory</p>
-              </div>
-            </div>
-          </section>
         </section>
+
+        <!-- Records / audit trail -->
+        <section class="activity-box">
+          <h2>Recent Activity</h2>
+          <div id="activityList">
+            <div class="activity-item">
+              <div class="activity-icon">+</div>
+              <div>
+                <p><b id="user-name">John</b> added iPhone 16 Pro Max</p>
+                <span>5 minutes ago</span>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon">↻</div>
+              <div>
+                <p><b></b> updated Galaxy S25 stock</p>
+                <span>20 minutes ago</span>
+              </div>
+            </div>
+          </div>
+          <div class="activity-footer">
+            <a
+              id="view-all-activity"
+              class="card-footer-link"
+              href="/admin/analytics.html"
+              >View all activity</a
+            >
+          </div>
+        </section>
+
+        <!-- Composition / context — lowest urgency, stays last -->
+        <section class="inventory-overview">
+          <h2>Inventory Overview</h2>
+          <div class="inventory-cards" id="inventoryCards">
+            <div class="inventory-card">
+              <div class="inventory-icon">
+                <i class="fa-solid fa-mobile"></i>
+              </div>
+              <h3>Phones</h3>
+              <strong>120</strong>
+              <p>60% of inventory</p>
+            </div>
+            <div class="inventory-card">
+              <div class="inventory-icon">
+                <i class="fa-solid fa-tablet"></i>
+              </div>
+              <h3>Tablets</h3>
+              <strong>30</strong>
+              <p>15% of inventory</p>
+            </div>
+            <div class="inventory-card">
+              <div class="inventory-icon">
+                <i class="fa-solid fa-watch"></i>
+              </div>
+              <h3>Wearables</h3>
+              <strong>25</strong>
+              <p>12% of inventory</p>
+            </div>
+            <div class="inventory-card">
+              <div class="inventory-icon">
+                <i class="fa-solid fa-headset"></i>
+              </div>
+              <h3>Accessories</h3>
+              <strong>25</strong>
+              <p>13% of inventory</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Navigation shortcuts — utility, not data, so it moves to the
+             bottom instead of interrupting the data narrative. Visually
+             quieter than the sections above (see .quick-actions-secondary
+             in admin.css). -->
+        <div class="quick-actions quick quick-actions-secondary">
+          <h2>Quick Actions</h2>
+          <div class="cards">
+            <div
+              class="quick-card add-product"
+              data-href="/admin/add-product.html"
+            >
+              <i class="fa-solid fa-circle-plus"></i>
+              <span> Add Product</span>
+            </div>
+
+            <div
+              class="quick-card manage-products"
+              data-href="/admin/products.html"
+            >
+              <i class="fa-solid fa-boxes"></i>
+              <span>Manage Products</span>
+            </div>
+            <div
+              class="quick-card"
+              data-href="https://stoclink-demo-front-end.vercel.app/index.html"
+            >
+              <i
+                class="fa-solid fa-arrow-right"
+                style="transform: rotate(-45deg)"
+              ></i
+              ><span>View Store</span>
+              <!-- Was previously a stray sibling div outside any .quick-card,
+                   so admin.css's .quick-card { position:relative } / 
+                   .coming-overlay { position:absolute; inset:0 } couldn't
+                   actually overlay anything. Nested here (on the card it
+                   visually matches — a demo storefront link) so the overlay
+                   mechanism works if it's ever toggled on. Still hidden by
+                   default; no behavior change today. -->
+              <div class="coming-overlay" style="display: none">
+                <span class="glow-dot"></span>
+                <span>Coming Soon</span>
+              </div>
+            </div>
+            <div
+              class="quick-card excel-import-card"
+              data-href="/admin/excel-import.html"
+              id="excelImportBtn"
+            >
+              <i class="fa-solid fa-file-excel"></i>
+              <span>Excel Import</span>
+            </div>
+          </div>
+          <input
+            type="file"
+            id="excelImportInput"
+            accept=".xlsx,.xls,.csv"
+            hidden
+          />
+        </div>
       </main>
     </div>
     <div class="logout-modal-overlay" id="logoutModal">

@@ -365,6 +365,17 @@ function statusOf(stock) {
   return "in";
 }
 MAX_PRODUCTS_TO_LOAD = 10000;
+
+// Reflects when the stock/inventory numbers on this page were actually
+// pulled, since nothing on the dashboard previously told the store owner
+// how current the data is. Real load time, not a fabricated status.
+function updateFreshness() {
+  const el = document.getElementById("dashboardFreshness");
+  if (!el) return;
+  const now = new Date();
+  el.textContent = `Updated ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+}
+
 async function loadDashboard() {
   let products = [];
 
@@ -384,6 +395,7 @@ async function loadDashboard() {
   renderStatCards(rows);
   renderLowStock(rows);
   renderInventoryOverview(rows);
+  updateFreshness();
 }
 function renderStatCards(rows) {
   const counts = { all: rows.length, in: 0, low: 0, out: 0 };
@@ -408,7 +420,6 @@ function renderLowStock(rows) {
 
   if (lowItems.length === 0) {
     list.innerHTML = `<p class="empty-note">Nothing running low right now.</p>`;
-    if (salesChartInstance) salesChartInstance.resize();
     return;
   }
 
@@ -421,11 +432,6 @@ function renderLowStock(rows) {
         </div>`,
     )
     .join("");
-
-  // Low Stock can change height (varying item count), which can stretch
-  // this row taller after the Revenue chart already rendered at a
-  // smaller size — force it to redraw at the new size.
-  if (salesChartInstance) salesChartInstance.resize();
 }
 
 function renderInventoryOverview(rows) {
@@ -495,12 +501,22 @@ async function loadRecentActivity() {
     renderRecentActivity(result.data);
   } catch (error) {
     console.error(error);
+    // Previously left the hardcoded placeholder items in index.html on
+    // screen indefinitely on failure — now matches the empty-state
+    // pattern already used by Low Stock / Inventory Overview.
+    const list = document.getElementById("activityList");
+    if (list) {
+      list.innerHTML = `<p class="empty-note">Couldn't load recent activity.</p>`;
+    }
   }
 }
 function renderRecentActivity(logs) {
   const list = document.getElementById("activityList");
 
-  if (!logs || logs.length === 0) return;
+  if (!logs || logs.length === 0) {
+    list.innerHTML = `<p class="empty-note">No recent activity yet.</p>`;
+    return;
+  }
 
   list.innerHTML = logs
     .map((log) => {
@@ -530,11 +546,6 @@ function renderRecentActivity(logs) {
         </div>`;
     })
     .join("");
-
-  // Activity item count can change this box's height after the Visitors
-  // chart already rendered at a smaller size — force it to redraw so it
-  // fills the row instead of leaving a gap above the insight line.
-  if (visitorsChart) visitorsChart.resize();
 }
 // ---------- Quick actions ----------
 // ensureAdminAccess(), updateProfile(), setLogOutModal() and the login

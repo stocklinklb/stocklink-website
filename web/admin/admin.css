@@ -64,6 +64,12 @@
       0 0 55px rgba(34, 197, 94, 0.9);
   }
 }
+.hero {
+  position: relative;
+  padding-bottom: 22px;
+  margin-bottom: 32px;
+}
+
 .hero::before {
   content: "";
   position: absolute;
@@ -128,6 +134,16 @@
   border-color: var(--border-strong);
   transform: translateY(-2px);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* Low/Out are the two tones that actually need attention today — give
+   them a visible top accent so they read as "watch these" at a glance,
+   while All/In stay at the page's default (quieter) card weight. */
+.card[data-tone="low"] {
+  border-top: 3px solid var(--warning);
+}
+.card[data-tone="out"] {
+  border-top: 3px solid var(--danger);
 }
 
 .card-top {
@@ -219,6 +235,19 @@
   transform: translateY(-2px);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
 }
+
+/* Quick Actions is navigation, not data — at the bottom of the page it
+   should read as a quiet utility strip, not compete visually with the
+   metrics and alerts above it. */
+.quick-actions-secondary .quick-card {
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.quick-actions-secondary .quick-card:hover {
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.05);
+  transform: none;
+}
 .add-product i {
   color: var(--accent);
 }
@@ -257,6 +286,10 @@
 .revenue-chart-box {
   display: flex;
   flex-direction: column;
+}
+
+.activity-box {
+  margin-bottom: 36px;
 }
 
 #view-all-activity {
@@ -534,8 +567,33 @@
 }
 
 /* ---------- inventory overview ---------- */
+/* ---------- Low Stock: standalone, full-width, actionable ---------- */
+.low-stock-standalone {
+  margin-bottom: 36px;
+  border-left: 4px solid var(--warning);
+}
+
+.low-stock-standalone #lowStockList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2px 24px;
+}
+
+.low-stock-standalone .stock-item {
+  border-bottom: 1px solid var(--surface-muted);
+}
+
+.low-stock-standalone .empty-note {
+  grid-column: 1 / -1;
+}
+
+.performance {
+  margin-bottom: 36px;
+}
+
 .inventory-overview {
-  margin-top: 32px;
+  margin-top: 0;
+  margin-bottom: 36px;
 }
 #view-low-stock {
   padding: 8px 14px;
