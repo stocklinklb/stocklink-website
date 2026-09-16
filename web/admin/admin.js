@@ -161,15 +161,27 @@ function renderVisitorsChart(data) {
           label: "Visitors",
           data: counts,
           borderColor: "#2563eb",
-          backgroundColor: "rgba(37, 99, 235, 0.12)",
+          backgroundColor:
+            currentChartType === "bar"
+              ? "rgba(37, 99, 235, 0.7)"
+              : "rgba(37, 99, 235, 0.12)",
           fill: true,
-          tension: 0.3,
+          tension: 0.05,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+
+          barPercentage: 0.85,
+          categoryPercentage: 0.9,
         },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
       plugins: {
         // Hides the little colored swatch + "Visitors" label Chart.js
         // draws above the canvas by default — redundant with the card's
@@ -178,14 +190,41 @@ function renderVisitorsChart(data) {
       },
       scales: {
         x: {
-          // autoSkip + a fixed max keep dense day-level ranges from
-          // packing in overlapping/rotated labels — Chart.js drops
-          // ticks evenly rather than cramming or rotating them.
-          ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: 8 },
+          grid: {
+            display: false,
+          },
+          border: {
+            display: false,
+          },
+          ticks: {
+            color: "#94a3b8",
+            autoSkip: true,
+            maxRotation: 0,
+            maxTicksLimit: 6,
+            padding: 8,
+            font: {
+              size: 11,
+            },
+          },
         },
+
         y: {
           beginAtZero: true,
-          ticks: { precision: 0 }, // whole numbers only - can't have 2.5 visitors
+          grid: {
+            color: "rgba(15, 23, 42, 0.06)",
+            drawTicks: false,
+          },
+          border: {
+            display: false,
+          },
+          ticks: {
+            color: "#94a3b8",
+            precision: 0,
+            padding: 10,
+            font: {
+              size: 11,
+            },
+          },
         },
       },
     },
@@ -272,7 +311,9 @@ async function fetchSalesData(period) {
 function formatRevenueChartData(buckets, type) {
   const isBar = type === "bar";
   const revenueColor = "#f97316";
-  const revenueBackground = isBar ? revenueColor : "rgba(249, 115, 22, 0.15)";
+  const revenueBackground = isBar
+    ? "rgba(249, 115, 22, 0.65)"
+    : "rgba(249, 115, 22, 0.15)";
 
   return {
     // orders.js's version used bucket.date raw, unformatted — fine for
@@ -292,7 +333,12 @@ function formatRevenueChartData(buckets, type) {
         borderColor: revenueColor,
         backgroundColor: revenueBackground,
         fill: true,
-        tension: 0.3,
+        tension: 0.05,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+
+        barPercentage: 0.85,
+        categoryPercentage: 0.9,
       },
     ],
   };
@@ -329,17 +375,51 @@ async function loadRevenueChart(type = currentSalesChartType) {
     data: chartData,
     options: {
       responsive: true,
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
       },
       scales: {
         x: {
-          ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: 8 },
+          grid: {
+            display: false,
+          },
+          border: {
+            display: false,
+          },
+          ticks: {
+            color: "#94a3b8",
+            autoSkip: true,
+            maxRotation: 0,
+            maxTicksLimit: 6,
+            padding: 8,
+            font: {
+              size: 11,
+            },
+          },
         },
+
         y: {
           beginAtZero: true,
-          ticks: { precision: 0 },
+          grid: {
+            color: "rgba(15, 23, 42, 0.06)",
+            drawTicks: false,
+          },
+          border: {
+            display: false,
+          },
+          ticks: {
+            color: "#94a3b8",
+            precision: 0,
+            padding: 10,
+            font: {
+              size: 11,
+            },
+          },
         },
       },
     },
