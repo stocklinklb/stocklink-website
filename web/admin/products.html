@@ -16,6 +16,7 @@
     <link rel="preload" as="script" href="/admin/shared.js" />
     <link rel="preload" as="script" href="/admin/skeleton.js" />
     <link rel="preload" as="script" href="/admin/sidebar.js" />
+    <link rel="stylesheet" href="/admin/ai-widget.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -422,7 +423,88 @@
         </div>
       </div>
     </div>
+    <div class="ai-widget" id="ai-widget">
+      <button
+        class="ai-widget-fab"
+        id="ai-widget-fab"
+        aria-label="Open AI Assistant"
+        aria-expanded="false"
+      >
+        <i class="fa-solid fa-robot"></i>
+      </button>
 
+      <div class="ai-widget-panel" id="ai-widget-panel" hidden>
+        <div class="ai-widget-header">
+          <div class="ai-widget-header-title">
+            <div class="ai-widget-header-icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <div class="ai-widget-header-copy">
+              <div class="ai-widget-header-name">Assistant</div>
+              <div class="ai-widget-header-status">
+                <span class="ai-widget-header-status-dot"></span>
+                <span>Ready</span>
+              </div>
+            </div>
+          </div>
+          <button
+            class="ai-widget-close"
+            id="ai-widget-close"
+            aria-label="Close AI Assistant"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="ai-widget-body" id="ai-widget-body">
+          <!-- history renders here — next step -->
+        </div>
+
+        <div class="ai-widget-footer" id="ai-widget-footer">
+          <div class="ai-widget-input-row">
+            <textarea
+              class="ai-widget-input"
+              id="ai-widget-input"
+              placeholder="Ask the assistant…"
+              rows="1"
+            ></textarea>
+            <button
+              class="ai-widget-send"
+              id="ai-widget-send"
+              aria-label="Send message"
+              disabled
+            >
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="cookie-banner" class="cookie-banner hidden">
+      <div class="cookie-banner-icon">
+        <i class="fa-solid fa-cookie-bite"></i>
+      </div>
+
+      <div class="cookie-banner-content">
+        <div class="cookie-banner-text">
+          <strong>Cookies on StockLink</strong>
+          <p>
+            We use cookies to improve your experience and understand how the
+            site is used. <a href="/admin/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>
+          </p>
+        </div>
+
+        <div class="cookie-banner-actions">
+          <button id="cookie-decline" class="cookie-btn cookie-btn-decline">
+            Decline
+          </button>
+
+          <button id="cookie-accept" class="cookie-btn cookie-btn-accept">
+            Accept
+          </button>
+        </div>
+      </div>
+    </div>
     <div id="toast-container"></div>
 
     <div class="logout-modal-overlay" id="logoutModal">
@@ -442,6 +524,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
     <script src="/admin/selectBtnFunctionalitty.js"></script>
+    <script src="/admin/ai-widget.js"></script>
     <script src="/admin/products.js"></script>
   </body>
 </html>

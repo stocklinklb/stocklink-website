@@ -123,7 +123,7 @@ async function loadNotifications() {
     const response = await fetch(`${API_ROOT}/notifications`, {
       credentials: "include",
     });
-    if (!response.ok) throw new Error("Failed to fetch products");
+    if (!response.ok) throw new Error("Failed to fetch notifications");
     const result = await response.json();
     notifications = result.data;
     renderNotifications(notifications);
@@ -157,9 +157,9 @@ function formatNotificationBody(notification) {
 function sortNotifications(notifications) {
   return [...notifications].sort((a, b) => {
     const aPriority =
-      !a.isRead && a.content.type === "subscription-deadline" ? 0 : 1;
+      !a.isRead && a.content?.type === "subscription-deadline" ? 0 : 1;
     const bPriority =
-      !b.isRead && b.content.type === "subscription-deadline" ? 0 : 1;
+      !b.isRead && b.content?.type === "subscription-deadline" ? 0 : 1;
     return aPriority - bPriority;
   });
 }
@@ -185,8 +185,8 @@ function renderNotifications(notifications) {
       const isDeadline = notification.content?.type === "subscription-deadline";
       const deadlineClass = isDeadline ? " subscription-deadline" : "";
       return `
-    <div class = "notif-item ${notification.isRead ? "" : "unread"}${deadlineClass}" data-id = ${notification.id}>
-     <p class = "notif-item-title">${formatNotificationBody(notification)}</p>
+    <div class = "notif-item ${notification.isRead ? "" : "unread"}${deadlineClass}" data-id="${escapeHtml(notification.id)}">
+     <p class = "notif-item-title">${escapeHtml(formatNotificationBody(notification))}</p>
       <span class = "notif-item-time">${timeAgo(notification.createdAt)}</span>
     </div>
     `;
@@ -203,7 +203,7 @@ function timeAgo(dateString) {
     return `${minsAgo} minute${minsAgo === 1 ? "" : "s"} ago`;
   }
 
-  const hoursAgo = Math.round(minsAgo / 60);
+  const hoursAgo = Math.floor(minsAgo / 60);
   return `${hoursAgo} hour${hoursAgo === 1 ? "" : "s"} ago`;
 }
 notificationsList.addEventListener("click", async (e) => {
@@ -221,7 +221,7 @@ notificationsList.addEventListener("click", async (e) => {
     loadNotifications();
   } catch (error) {
     console.error("Failed to mark notification as read:", error);
-    showToast("Failed to mark notification as read:", "error");
+    showToast("Failed to mark notification as read", "error");
   }
 });
 markAllRead.addEventListener("click", async () => {
@@ -235,7 +235,7 @@ markAllRead.addEventListener("click", async () => {
     loadNotifications();
   } catch (error) {
     console.error("Failed to mark all notifications as read:", error);
-    showToast("Failed to mark all notifications as read:", "error");
+    showToast("Failed to mark all notifications as read", "error");
   }
 });
 document.addEventListener("click", (e) => {
@@ -530,6 +530,37 @@ function showToast(message, type) {
     }, 300);
   }, 3000);
 }
+// ---------- Cookie banner ----------
+function initCookieBanner() {
+  const banner = document.getElementById("cookie-banner");
+  const acceptButton = document.getElementById("cookie-accept");
+  const declineButton = document.getElementById("cookie-decline");
+
+  // This page has no banner markup, so there's nothing to set up.
+  if (!banner || !acceptButton || !declineButton) return;
+
+  // Only an accepted choice keeps the banner hidden. A declined user is
+  // logged out, so the banner pops up again on load after their next login.
+  if (localStorage.getItem("cookieConsent") === "accepted") return;
+
+  function saveChoice(choice) {
+    localStorage.setItem("cookieConsent", choice);
+    banner.classList.add("hidden");
+  }
+
+  acceptButton.addEventListener("click", () => saveChoice("accepted"));
+  declineButton.addEventListener("click", () => {
+    saveChoice("declined");
+    logout();
+  });
+
+  banner.classList.remove("hidden");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initCookieBanner();
+  setLogOutModal();
+});
 // ---------- Shared init ----------
 // Wires the logout modal immediately and kicks off the auth check right
 // away, so it runs concurrently with whatever the page-specific script
@@ -538,9 +569,6 @@ function showToast(message, type) {
 // (e.g. don't fetch products before we know the user is authenticated)
 // can `await window.adminAccessCheck` - it resolves to the same boolean
 // ensureAdminAccess() always returned.
-document.addEventListener("DOMContentLoaded", () => {
-  setLogOutModal();
-});
 window.adminAccessCheck = ensureAdminAccess();
 loadStoreLogo();
 loadNotifications();

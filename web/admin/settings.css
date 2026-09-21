@@ -22,7 +22,14 @@
   z-index: 9999;
 }
 
-
+.app-version {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.5;
+}
+.app-legal { margin-top: 4px; text-align: center; font-size: 12px; opacity: 0.6; }
+.app-legal a { color: inherit; }
 @keyframes slideIn {
   from {
     transform: translateX(120%);
@@ -92,7 +99,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: 0.2s ease;
-  color:var(--ink);
+  color: var(--ink);
 }
 
 .upload-btn:hover {
