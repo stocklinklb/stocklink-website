@@ -1,5 +1,6 @@
-## 1.0.0 - 2026-09-20
-- First release
+## 1.2.0 - 2026-9-25
+- Assistant: you can now create orders directly through the assistant
+- Assistant: order creation supports adding products, customer details, and order information
 
 ## 1.1.0 - 2026-09-21
 - Assistant: when you ask about one product, it now shows a card with its photo and an "Edit product" link
@@ -7,3 +8,6 @@
 - Assistant: inventory searches (low stock, out of stock, price filters) now show product links too
 - Assistant: product cards and links are kept in the chat history, so they're still there after you refresh
 - Assistant: product lookups send less data to the AI, which makes them lighter on usage
+
+## 1.0.0 - 2026-09-20
+- First release

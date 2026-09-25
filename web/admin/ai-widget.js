@@ -49,10 +49,22 @@
   // Thinking indicator (shown while waiting for the assistant's reply)
   const THINKING_LABELS = [
     "Thinking…",
-    "Reading your store…",
-    "Working on it…",
-    "Still working…",
+    "Analyzing…",
+    "Connecting the dots…",
+    "Taking a closer look…",
+    "Working through it…",
+    "Checking the details…",
+    "Digging a little deeper…",
+    "Putting the pieces together…",
+    "Cross-checking…",
+    "Making sense of it…",
+    "Working out the details…",
+    "Narrowing it down…",
+    "Almost there…",
+    "Putting it together…",
+    "Let me think…",
   ];
+
   const THINKING_INTERVAL_MS = 2200;
 
   let thinkingEl = null;
@@ -73,7 +85,20 @@
       .replaceAll("'", "&#039;");
   }
 
-  // ---- Product links / card (built from the `ui` list the backend sends) ----
+  // ---- Product links / card (built from the `ui` object the backend sends) ----
+
+  // `ui` now arrives as an object keyed by tool name, e.g.
+  // { getProductIdFromName: [...], searchInventory: [...] }, since a single
+  // reply can contain results from more than one lookup tool. Only some tools
+  // produce product-shaped items; this pulls every array value out and merges
+  // them, so results from every tool that returned products are kept, not
+  // just the first (or last) key.
+  function collectProductItems(ui) {
+    if (!ui || typeof ui !== "object") return [];
+    return Object.values(ui)
+      .filter((value) => Array.isArray(value))
+      .flat();
+  }
 
   // Keep only well-formed items, so a bad payload can never break rendering.
   function cleanProductList(list) {
@@ -405,7 +430,12 @@
     const idAttr = msg.id != null ? ` data-id="${msg.id}"` : "";
 
     // Product links/card only ever apply to assistant messages that carry `ui`.
-    const products = isOwner ? [] : cleanProductList(msg.ui);
+    // `ui` is an object keyed by tool name (e.g. getProductIdFromName,
+    // searchInventory), so every tool's items are collected and merged
+    // before cleaning, instead of reading msg.ui as a flat array.
+    const products = isOwner
+      ? []
+      : cleanProductList(collectProductItems(msg.ui));
     let textHtml = escapeHtml(msg.content);
     let productsBlock = "";
 
