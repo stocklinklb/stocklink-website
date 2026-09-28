@@ -1,3 +1,10 @@
+**## 1.3.0 - 2026-09-28**
+
+- Auth: users can now create their own StockLink account through signup
+- Onboarding: new users are now guided through the initial StockLink setup flow after signup
+- Onboarding: users can choose how they want to get started — import products, add products manually, or explore StockLink
+- Onboarding: added the initial UI for inventory importing and manual product setup
+
 ## 1.2.1 - 2026-9-26
 
 Assistant: order proposals now show the products, quantities and prices before you approve them

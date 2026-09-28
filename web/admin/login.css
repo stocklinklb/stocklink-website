@@ -430,13 +430,45 @@ body {
    FORM
    ========================================================= */
 
+.login-forms {
+  position: relative;
+  display: grid;
+}
+
 .login-form {
+  grid-area: 1 / 1; /* both forms sit in the same cell */
+
   display: grid;
   gap: 18px;
+  align-content: start;
+
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+
+  transition:
+    opacity 0.22s var(--ease),
+    transform 0.22s var(--ease),
+    visibility 0s linear 0s;
 }
 
 .login-form.is-hidden {
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  opacity: 0;
+  transform: translateY(6px);
+  visibility: hidden;
+  pointer-events: none;
+
+  /* delay hiding (visibility) until the fade finishes, so it's still
+     interactive/visible while animating out */
+  transition:
+    opacity 0.22s var(--ease),
+    transform 0.22s var(--ease),
+    visibility 0s linear 0.22s;
 }
 
 .form-group {
@@ -765,6 +797,123 @@ input.input-error:focus {
 }
 
 /* =========================================================
+   AUTH SWITCH  (Log in <-> Create store, owner only)
+   ========================================================= */
+
+.auth-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  margin: -14px 0 24px;
+
+  color: var(--ink-soft);
+
+  font-size: 12.5px;
+}
+
+.auth-switch[hidden] {
+  display: none;
+}
+
+.auth-switch button {
+  padding: 2px 4px;
+
+  border: none;
+  border-radius: var(--radius-sm);
+
+  background: transparent;
+  color: var(--accent-dark);
+
+  font-family: var(--font-body);
+  font-size: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s var(--ease),
+    background-color 0.15s var(--ease);
+}
+
+.auth-switch button:hover {
+  background: var(--accent-soft);
+}
+
+.auth-switch button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+html[data-theme="dark"] .auth-switch button {
+  color: var(--accent);
+}
+
+/* =========================================================
+   PASSWORD RULES CHECKLIST (signup)
+   ========================================================= */
+
+.password-rules {
+  list-style: none;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+
+  margin-top: 2px;
+}
+
+.password-rules li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: var(--ink-faint);
+
+  font-size: 11px;
+  line-height: 1.4;
+
+  transition: color 0.18s var(--ease);
+}
+
+.password-rules li::before {
+  content: "";
+
+  flex-shrink: 0;
+
+  width: 14px;
+  height: 14px;
+
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+
+  background: transparent center / 8px no-repeat;
+
+  transition:
+    background-color 0.18s var(--ease),
+    border-color 0.18s var(--ease);
+}
+
+.password-rules li.is-met {
+  color: var(--success);
+}
+
+.password-rules li.is-met::before {
+  border-color: var(--success);
+  background-color: var(--success);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E");
+}
+
+.password-rules.has-error li:not(.is-met) {
+  color: var(--danger);
+}
+
+.password-rules.has-error li:not(.is-met)::before {
+  border-color: var(--danger);
+}
+
+/* =========================================================
    RESPONSIVE
    ========================================================= */
 
@@ -817,6 +966,10 @@ input.input-error:focus {
   .login-form {
     gap: 16px;
   }
+
+  .password-rules {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* =========================================================
@@ -830,11 +983,5 @@ input.input-error:focus {
 
   .floating-card {
     animation: none;
-  }
-
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
   }
 }

@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>StockLink — Get Started</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="/admin/onboarding.css" />
+  </head>
+
+  <body>
+    <main class="onboarding-page">
+      <section class="onboarding-shell" aria-label="StockLink onboarding">
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+        <header class="onboarding-header">
+          <a href="/" class="onboarding-logo" aria-label="StockLink home">
+            <span class="logo-mark">SL</span>
+            <span class="logo-text">StockLink</span>
+          </a>
+
+          <button type="button" class="skip-button" id="global-skip">
+            Skip setup
+          </button>
+        </header>
+
+        <!-- =====================================================
+             PROGRESS
+        ====================================================== -->
+        <div class="onboarding-progress" aria-label="Onboarding progress">
+          <div class="progress-item is-active" data-progress-step="1">
+            <span class="progress-dot"></span>
+          </div>
+
+          <div class="progress-line"></div>
+
+          <div class="progress-item" data-progress-step="2">
+            <span class="progress-dot"></span>
+          </div>
+
+          <div class="progress-line"></div>
+
+          <div class="progress-item" data-progress-step="3">
+            <span class="progress-dot"></span>
+          </div>
+
+          <div class="progress-line"></div>
+
+          <div class="progress-item" data-progress-step="4">
+            <span class="progress-dot"></span>
+          </div>
+        </div>
+
+        <!-- =====================================================
+             CONTENT
+        ====================================================== -->
+        <div class="onboarding-content">
+          <!-- ===================================================
+               STEP 1
+          ==================================================== -->
+          <section class="onboarding-step" id="step-1" data-step="1">
+            <div class="step-content">
+              <span class="eyebrow">Let’s get started</span>
+
+              <h1>Let’s get your stock organized.</h1>
+
+              <p class="step-description">
+                First, let’s set up the basics of your store. You can change
+                this later.
+              </p>
+
+              <div class="form-section">
+                <label for="store-name"> Store name </label>
+
+                <input
+                  id="store-name"
+                  name="store-name"
+                  type="text"
+                  placeholder="Your store name"
+                  autocomplete="organization"
+                />
+              </div>
+
+              <button
+                type="button"
+                class="primary-button"
+                id="step-1-continue"
+                disabled
+              >
+                Continue
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <button type="button" class="text-button" data-skip-step="1">
+                Skip for now
+              </button>
+            </div>
+          </section>
+
+          <!-- ===================================================
+               STEP 2
+          ==================================================== -->
+          <section class="onboarding-step is-hidden" id="step-2" data-step="2">
+            <div class="step-content">
+              <button
+                type="button"
+                class="back-button"
+                data-back-step
+                aria-label="Go back"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back</span>
+              </button>
+              <span class="eyebrow">Next step</span>
+
+              <h1>What do you want to do first?</h1>
+
+              <p class="step-description">
+                Choose the easiest way for you to get started.
+              </p>
+
+              <div class="choice-list">
+                <button type="button" class="choice-card" data-choice="import">
+                  <div class="choice-icon">
+                    <i class="fa-solid fa-file-excel"></i>
+                  </div>
+
+                  <div class="choice-copy">
+                    <strong>Import my products</strong>
+
+                    <span>
+                      Bring your existing inventory into StockLink with an Excel
+                      file.
+                    </span>
+                  </div>
+
+                  <i class="fa-solid fa-arrow-right choice-arrow"></i>
+                </button>
+
+                <button type="button" class="choice-card" data-choice="manual">
+                  <div class="choice-icon">
+                    <i class="fa-solid fa-plus"></i>
+                  </div>
+
+                  <div class="choice-copy">
+                    <strong>Add products manually</strong>
+
+                    <span>
+                      Start adding your inventory one product at a time.
+                    </span>
+                  </div>
+
+                  <i class="fa-solid fa-arrow-right choice-arrow"></i>
+                </button>
+
+                <button type="button" class="choice-card" data-choice="explore">
+                  <div class="choice-icon">
+                    <i class="fa-regular fa-compass"></i>
+                  </div>
+
+                  <div class="choice-copy">
+                    <strong>Explore StockLink</strong>
+
+                    <span>
+                      Take a look around before setting anything up.
+                    </span>
+                  </div>
+
+                  <i class="fa-solid fa-arrow-right choice-arrow"></i>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                class="primary-button"
+                id="step-2-continue"
+                disabled
+              >
+                Continue
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <button type="button" class="text-button" data-skip-step="2">
+                Not sure? Start with an empty store
+              </button>
+            </div>
+          </section>
+
+          <!-- ===================================================
+               STEP 3
+          ==================================================== -->
+          <section class="onboarding-step is-hidden" id="step-3" data-step="3">
+            <!-- ===============================
+                 IMPORT PATH
+            ================================ -->
+            <div class="step-content step-flow" data-flow-content="import">
+              <button
+                type="button"
+                class="back-button"
+                data-back-step
+                aria-label="Go back"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back</span>
+              </button>
+              <span class="eyebrow">Bring your inventory</span>
+
+              <h1>Bring your inventory with you.</h1>
+
+              <p class="step-description">
+                Upload your Excel file and we'll organize your products in
+                StockLink.
+              </p>
+
+              <div class="importer">
+                <div class="importer-icon">
+                  <i class="fa-solid fa-file-excel"></i>
+                </div>
+
+                <h2>Drop your Excel file here</h2>
+
+                <p>or choose a file from your computer</p>
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  id="choose-file-button"
+                >
+                  Choose file
+                </button>
+
+                <input
+                  type="file"
+                  id="inventory-file"
+                  accept=".xlsx,.xls"
+                  hidden
+                />
+
+                <span class="file-format"> .xlsx or .xls </span>
+              </div>
+
+              <div class="selected-file is-hidden" id="selected-file">
+                <div class="selected-file-icon">
+                  <i class="fa-solid fa-file-excel"></i>
+                </div>
+
+                <div class="selected-file-info">
+                  <strong id="selected-file-name"> inventory.xlsx </strong>
+
+                  <span id="selected-file-size"> 0 KB </span>
+                </div>
+
+                <button
+                  type="button"
+                  class="remove-file"
+                  id="remove-file"
+                  aria-label="Remove selected file"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                class="primary-button"
+                id="import-button"
+                disabled
+              >
+                Import products
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <button type="button" class="text-button" data-skip-step="3">
+                Skip for now
+              </button>
+            </div>
+
+            <!-- ===============================
+                 MANUAL PATH
+            ================================ -->
+            <div
+              class="step-content step-flow is-hidden"
+              data-flow-content="manual"
+            >
+              <button
+                type="button"
+                class="back-button"
+                data-back-step
+                aria-label="Go back"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back</span>
+              </button>
+              <span class="eyebrow">Build your inventory</span>
+
+              <h1>Let’s add your first product.</h1>
+
+              <p class="step-description">
+                Add a product now and keep building your inventory from your
+                dashboard.
+              </p>
+
+              <div class="manual-product-preview">
+                <div class="form-section">
+                  <label for="manual-product-name"> Product name </label>
+
+                  <input
+                    id="manual-product-name"
+                    type="text"
+                    placeholder="e.g. iPhone 15 Pro"
+                  />
+                </div>
+
+                <div class="manual-grid">
+                  <div class="form-section">
+                    <label for="manual-product-price"> Price </label>
+
+                    <input
+                      id="manual-product-price"
+                      type="number"
+                      placeholder="0.00"
+                      min="0"
+                    />
+                  </div>
+
+                  <div class="form-section">
+                    <label for="manual-product-stock"> Stock </label>
+
+                    <input
+                      id="manual-product-stock"
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-section">
+                  <label for="manual-product-category"> Category </label>
+
+                  <select id="manual-product-category">
+                    <option value="">Select a category</option>
+                    <option value="phones">Phones</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="laptops">Laptops</option>
+                    <option value="tablets">Tablets</option>
+                    <option value="watches">Watches</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="primary-button"
+                id="manual-product-button"
+              >
+                Add product
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <button type="button" class="text-button" data-skip-step="3">
+                Skip for now
+              </button>
+            </div>
+          </section>
+
+          <!-- ===================================================
+               STEP 4
+          ==================================================== -->
+          <section class="onboarding-step is-hidden" id="step-4" data-step="4">
+            <div class="step-content ready-step">
+              <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <button
+                type="button"
+                class="back-button"
+                data-back-step
+                aria-label="Go back"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back</span>
+              </button>
+              <span class="eyebrow">You're all set</span>
+
+              <h1>You're ready.</h1>
+
+              <p class="step-description" id="ready-description">
+                Your store is ready to start managing inventory with StockLink.
+              </p>
+
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <strong id="stat-products">0</strong>
+                  <span>Products</span>
+                </div>
+
+                <div class="stat-item">
+                  <strong id="stat-categories">0</strong>
+                  <span>Categories</span>
+                </div>
+
+                <div class="stat-item">
+                  <strong id="stat-variants">0</strong>
+                  <span>Variants</span>
+                </div>
+
+                <div class="stat-item">
+                  <strong id="stat-low-stock">0</strong>
+                  <span>Low stock</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="primary-button"
+                id="dashboard-button"
+              >
+                Go to my dashboard
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="/admin/config.js"></script>
+    <script src="/admin/onboarding.js"></script>
+  </body>
+</html>

@@ -11,40 +11,101 @@ const tabOwner = document.getElementById("tab-owner");
 const tabStaff = document.getElementById("tab-staff");
 
 const ownerForm = document.getElementById("owner-login-form");
+const signupForm = document.getElementById("signup-form");
 const staffForm = document.getElementById("staff-login-form");
 
 const ownerErrorMessage = document.getElementById("owner-error");
+const signupErrorMessage = document.getElementById("signup-error");
 const staffErrorMessage = document.getElementById("staff-error");
 
 const ownerEmailInput = document.getElementById("owner-email");
 const ownerPasswordInput = document.getElementById("owner-password");
 
+const signupNameInput = document.getElementById("signup-name");
+const signupEmailInput = document.getElementById("signup-email");
+const signupPasswordInput = document.getElementById("signup-password");
+const passwordRulesList = document.getElementById("password-rules");
+
 const staffUsernameInput = document.getElementById("staff-username");
 const staffPasswordInput = document.getElementById("staff-password");
 
+const authDescription = document.getElementById("auth-description");
+const authSwitch = document.getElementById("auth-switch");
+const authSwitchText = document.getElementById("auth-switch-text");
+const authSwitchButton = document.getElementById("show-signup");
+
+const LOGIN_REDIRECT_URL = "/admin/index.html";
+// Point this at the onboarding screens once they exist.
+const SIGNUP_REDIRECT_URL = "/admin/onboarding.html";
+
 // =========================================================
-// TAB SWITCHING (sliding line indicator + form swap)
+// VIEW STATE
+//   "login"  -> owner login   (Store Owner tab)
+//   "signup" -> owner signup  (Store Owner tab)
+//   "staff"  -> staff login   (Staff tab)
+// Signup is intentionally only reachable from the Store Owner
+// tab; the switch row is hidden while the Staff tab is active.
 // =========================================================
-function switchTab(targetFormId) {
-  const isOwner = targetFormId === "owner-login-form";
+const VIEW_COPY = {
+  login: {
+    description: "Sign in to manage stock and orders quickly.",
+    switchText: "Don't have a store yet?",
+    switchButton: "Create one",
+  },
+  signup: {
+    description: "Create your store and start managing stock in minutes.",
+    switchText: "Already have a store?",
+    switchButton: "Log in",
+  },
+  staff: {
+    description: "Sign in with the details your store owner gave you.",
+  },
+};
 
-  tabOwner.setAttribute("aria-selected", String(isOwner));
-  tabStaff.setAttribute("aria-selected", String(!isOwner));
+let currentView = "login";
 
-  tabList.dataset.active = isOwner ? "owner" : "staff";
+function setView(view) {
+  currentView = view;
 
-  ownerForm.classList.toggle("is-hidden", !isOwner);
-  staffForm.classList.toggle("is-hidden", isOwner);
+  const isStaff = view === "staff";
+  const isSignup = view === "signup";
+
+  // tabs (signup lives under the Store Owner tab)
+  tabOwner.setAttribute("aria-selected", String(!isStaff));
+  tabStaff.setAttribute("aria-selected", String(isStaff));
+  tabList.dataset.active = isStaff ? "staff" : "owner";
+
+  // forms
+  ownerForm.classList.toggle("is-hidden", view !== "login");
+  signupForm.classList.toggle("is-hidden", !isSignup);
+  staffForm.classList.toggle("is-hidden", !isStaff);
+
+  // header copy + login/signup switch (owner only)
+  authDescription.textContent = VIEW_COPY[view].description;
+  authSwitch.hidden = isStaff;
+
+  if (!isStaff) {
+    authSwitchText.textContent = VIEW_COPY[view].switchText;
+    authSwitchButton.textContent = VIEW_COPY[view].switchButton;
+  }
 
   clearErrors();
 }
 
-tabOwner.addEventListener("click", () => switchTab("owner-login-form"));
-tabStaff.addEventListener("click", () => switchTab("staff-login-form"));
+tabOwner.addEventListener("click", () => {
+  // Clicking Store Owner from Staff returns to owner login;
+  // if already on an owner view, keep whichever one is open.
+  if (currentView === "staff") setView("login");
+});
+tabStaff.addEventListener("click", () => setView("staff"));
+
+authSwitchButton.addEventListener("click", () => {
+  setView(currentView === "signup" ? "login" : "signup");
+});
 
 // =========================================================
 // SHOW/HIDE PASSWORD
-// (one handler for both forms — matched by data-target-input)
+// (one handler for all forms — matched by data-target-input)
 // =========================================================
 document.querySelectorAll(".toggle-password").forEach((button) => {
   button.addEventListener("click", () => {
@@ -62,11 +123,53 @@ document.querySelectorAll(".toggle-password").forEach((button) => {
 });
 
 // =========================================================
+// PASSWORD RULES (must mirror the server exactly)
+//   at least 8 characters, one uppercase letter,
+//   one digit, one symbol (any non-letter, non-digit char)
+// =========================================================
+const PASSWORD_RULES = {
+  length: (pw) => pw.length >= 8,
+  upper: (pw) => /[A-Z]/.test(pw),
+  number: (pw) => /[0-9]/.test(pw),
+  symbol: (pw) => /[^A-Za-z0-9]/.test(pw),
+};
+
+function checkPassword(pw) {
+  const results = {};
+  for (const [rule, test] of Object.entries(PASSWORD_RULES)) {
+    results[rule] = test(pw);
+  }
+  return results;
+}
+
+function renderPasswordRules() {
+  const results = checkPassword(signupPasswordInput.value);
+
+  passwordRulesList.querySelectorAll("li").forEach((li) => {
+    li.classList.toggle("is-met", results[li.dataset.rule]);
+  });
+
+  // once the rules are all met, drop any leftover error styling
+  if (Object.values(results).every(Boolean)) {
+    passwordRulesList.classList.remove("has-error");
+    signupPasswordInput
+      .closest(".password-field")
+      .classList.remove("input-error");
+  }
+}
+
+signupPasswordInput.addEventListener("input", renderPasswordRules);
+
+// =========================================================
 // ERROR STATE HELPERS
 // =========================================================
 function clearErrors() {
   ownerErrorMessage.textContent = "";
+  signupErrorMessage.textContent = "";
   staffErrorMessage.textContent = "";
+
+  passwordRulesList.classList.remove("has-error");
+
   document
     .querySelectorAll(".input-error")
     .forEach((el) => el.classList.remove("input-error"));
@@ -77,10 +180,39 @@ function showError(targetErrorEl, message, fieldsToFlag = []) {
   fieldsToFlag.forEach((el) => el && el.classList.add("input-error"));
 }
 
+// Builds the whole 429 message ourselves (the server's text already says
+// "try again later", so we don't reuse it). Retry-After is only readable
+// cross-origin if the API sends `exposedHeaders: ["Retry-After"]`; when it
+// isn't available we fall back to a generic wait message.
+function buildRateLimitMessage(retryAfterHeader) {
+  const seconds = parseInt(retryAfterHeader, 10);
+
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return "Too many attempts. Please wait a little while and try again.";
+  }
+
+  if (seconds < 60) {
+    return `Too many attempts. Try again in ${seconds} second${seconds === 1 ? "" : "s"}.`;
+  }
+
+  const minutes = Math.ceil(seconds / 60);
+  return `Too many attempts. Try again in ${minutes} minute${minutes === 1 ? "" : "s"}.`;
+}
+
 // =========================================================
 // SUBMIT HANDLING (shared logic, per-form config)
 // =========================================================
-async function handleLogin({ form, endpoint, payload, fieldsToFlag, errorEl }) {
+async function handleAuth({
+  form,
+  endpoint,
+  payload,
+  errorEl,
+  fieldsToFlag = [],
+  // optional: (status, message) => array of extra elements to flag
+  pickFieldsForError,
+  fallbackError = "Invalid credentials",
+  redirectTo = LOGIN_REDIRECT_URL,
+}) {
   const submitButton = form.querySelector('button[type="submit"]');
 
   clearErrors();
@@ -90,6 +222,8 @@ async function handleLogin({ form, endpoint, payload, fieldsToFlag, errorEl }) {
   try {
     const response = await fetch(`${API_ROOT}${endpoint}`, {
       method: "POST",
+      // required so the session cookie is saved (user is logged in after
+      // signup / login)
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
@@ -97,15 +231,28 @@ async function handleLogin({ form, endpoint, payload, fieldsToFlag, errorEl }) {
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
+    // errors from limiters / proxies may not be JSON — don't let that throw
+    const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
-      console.log("Login successful", data);
-      window.location.href = "/admin/index.html";
+      console.log("Auth successful", data);
+      window.location.href = redirectTo;
       return;
     }
 
-    showError(errorEl, data.message || "Invalid credentials", fieldsToFlag);
+    if (response.status === 429) {
+      showError(
+        errorEl,
+        buildRateLimitMessage(response.headers.get("Retry-After")),
+      );
+      return;
+    }
+
+    const flagged = pickFieldsForError
+      ? pickFieldsForError(response.status, data.message || "")
+      : fieldsToFlag;
+
+    showError(errorEl, data.message || fallbackError, flagged);
   } catch (error) {
     console.error(error);
     showError(errorEl, "Server connection failed");
@@ -115,14 +262,17 @@ async function handleLogin({ form, endpoint, payload, fieldsToFlag, errorEl }) {
   }
 }
 
+// ---------------------------------------------------------
+// Owner login
+// ---------------------------------------------------------
 ownerForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  handleLogin({
+  handleAuth({
     form: ownerForm,
     endpoint: "/auth/login",
     payload: {
-      email: ownerEmailInput.value,
+      email: ownerEmailInput.value.trim(),
       password: ownerPasswordInput.value,
     },
     fieldsToFlag: [
@@ -133,16 +283,77 @@ ownerForm.addEventListener("submit", (event) => {
   });
 });
 
+// ---------------------------------------------------------
+// Owner signup  ->  POST /auth/signup { name, email, password }
+// ---------------------------------------------------------
+signupForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const name = signupNameInput.value.trim();
+  const email = signupEmailInput.value.trim();
+  const password = signupPasswordInput.value;
+  const passwordField = signupPasswordInput.closest(".password-field");
+
+  // Client-side check: the server only says "too weak", so we enforce
+  // the same rule here and tell the user exactly what's missing.
+  clearErrors();
+
+  if (!name) {
+    showError(signupErrorMessage, "Please enter your store name.", [
+      signupNameInput,
+    ]);
+    return;
+  }
+
+  const results = checkPassword(password);
+  if (!Object.values(results).every(Boolean)) {
+    passwordRulesList.classList.add("has-error");
+    renderPasswordRules();
+    showError(
+      signupErrorMessage,
+      "Password doesn't meet all the requirements below.",
+      [passwordField],
+    );
+    return;
+  }
+
+  handleAuth({
+    form: signupForm,
+    endpoint: "/auth/signup",
+    payload: { name, email, password },
+    errorEl: signupErrorMessage,
+    fallbackError: "Could not create your store. Please try again.",
+    redirectTo: SIGNUP_REDIRECT_URL,
+    // 422 missing field / 400 weak password, invalid email, or taken email
+    pickFieldsForError: (status, message) => {
+      const msg = message.toLowerCase();
+      const flagged = [];
+
+      if (msg.includes("email")) flagged.push(signupEmailInput);
+      if (msg.includes("password") || msg.includes("weak")) {
+        flagged.push(passwordField);
+        passwordRulesList.classList.add("has-error");
+      }
+      if (msg.includes("name")) flagged.push(signupNameInput);
+
+      return flagged;
+    },
+  });
+});
+
+// ---------------------------------------------------------
+// Staff login
+// ---------------------------------------------------------
 staffForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  handleLogin({
+  handleAuth({
     form: staffForm,
     // Adjust this endpoint to whatever the API actually exposes for
     // staff auth — placeholder path, mirrors /auth/login.
     endpoint: "/staff/login",
     payload: {
-      username: staffUsernameInput.value,
+      username: staffUsernameInput.value.trim(),
       password: staffPasswordInput.value,
     },
     fieldsToFlag: [
@@ -152,3 +363,7 @@ staffForm.addEventListener("submit", (event) => {
     errorEl: staffErrorMessage,
   });
 });
+
+// initial state
+setView("login");
+renderPasswordRules();

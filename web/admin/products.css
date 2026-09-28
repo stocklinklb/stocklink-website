@@ -486,7 +486,7 @@ main {
 .archived{
   background: #d6d6d6;
   color: #2b2b2b;
-  border-color: #2b2b2b;
+  border-color: #d6d6d6;
 }
 .action-btn,
 .delete-btn {
