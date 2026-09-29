@@ -153,6 +153,11 @@ function renderVisitorsChart(data) {
     visitorsChart = null;
   }
   const hasVisitors = counts.some((n) => n > 0);
+  toggleChartHeadline(
+    "visitors-big-value",
+    "visitors-chart-insight",
+    !hasVisitors,
+  );
 
   // Headline number + trend badge above the chart, both derived from the
   // real fetched series — total visitors for the period, and the percent
@@ -280,6 +285,18 @@ function renderVisitorsChart(data) {
   // always wins over any stylesheet rule, so this actually hides it.
   const visitorsSkeleton = document.getElementById("visitors-chart-skeleton");
   if (visitorsSkeleton) visitorsSkeleton.style.display = "none";
+}
+
+// Hides (or restores) a chart card's headline number, trend badge and
+// caption. Used when the card is showing its empty state, where a big "0"
+// or "$0" above the message is just noise. style.display is used because
+// .chart-headline sets display: flex in the stylesheet, which beats the
+// `hidden` attribute.
+function toggleChartHeadline(valueId, insightId, hide) {
+  const headline = document.getElementById(valueId)?.closest(".chart-headline");
+  const insight = document.getElementById(insightId);
+  if (headline) headline.style.display = hide ? "none" : "";
+  if (insight) insight.style.display = hide ? "none" : "";
 }
 
 // Shared by both chart cards: sets the big headline number and a
@@ -440,6 +457,11 @@ async function loadRevenueChart(type = currentSalesChartType) {
   // that returns zero-filled days).
   const hasRevenueData = buckets.some(
     (bucket) => bucket.revenue > 0 || bucket.count > 0,
+  );
+  toggleChartHeadline(
+    "revenue-big-value",
+    "revenue-chart-insight",
+    !hasRevenueData,
   );
 
   const revenues = buckets.map((b) => b.revenue || 0);

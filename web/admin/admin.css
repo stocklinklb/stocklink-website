@@ -782,6 +782,7 @@
 #view-orders {
   display: flex;
   align-items: center;
+  color:#2563eb;
   width: fit-content;
   margin-top: 10px;
 }
