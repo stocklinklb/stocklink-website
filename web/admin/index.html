@@ -198,6 +198,23 @@
               <p class="chart-caption" id="revenue-chart-insight"></p>
               <div class="sales-chart-canvas-wrapper">
                 <canvas id="salesChart"></canvas>
+                <div class="chart-empty-state" id="revenueEmptyNoOrders" hidden>
+                  <div class="chart-empty-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                  </div>
+                  <p class="chart-empty-title">No orders yet</p>
+                  <p class="chart-empty-text">
+                    Once customers start placing orders, you’ll see your order
+                    activity here.
+                  </p>
+                </div>
+                <div class="chart-empty-state" id="revenueEmptyNoSales" hidden>
+                  <div class="chart-empty-icon">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                  </div>
+                  <p class="chart-empty-title">No sales yet</p>
+                  <p class="chart-empty-text" id="revenueEmptyNoSalesText"></p>
+                </div>
               </div>
               <a
                 id="view-orders"
@@ -243,6 +260,16 @@
                 </div>
 
                 <canvas id="visitors-chart"></canvas>
+                <div class="chart-empty-state" id="visitors-chart-empty" hidden>
+                  <div class="chart-empty-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                  </div>
+                  <p class="chart-empty-title">No visitor data yet</p>
+                  <p class="chart-empty-text">
+                    Once customers start visiting your store, you’ll see their
+                    activity here.
+                  </p>
+                </div>
               </div>
               <a
                 id="view-visitors"

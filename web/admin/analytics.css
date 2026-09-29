@@ -72,6 +72,44 @@ main {
   font-family: var(--a-font-body);
 }
 
+.visitors-empty-state {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 20px;
+}
+.visitors-empty-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 18px;
+}
+.visitors-empty-state h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+.visitors-empty-state p {
+  max-width: 320px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+.visitors-empty-state[hidden] {
+  display: none;
+}
+
 .analytics-section {
   display: flex;
   flex-direction: column;
@@ -674,6 +712,44 @@ main {
    ACTIVITY — pager
 ========================================================= */
 
+.activity-empty-state {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 20px;
+}
+.activity-empty-state[hidden] {
+  display: none;
+}
+.activity-empty-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: var(--surface-muted);
+  color: var(--accent);
+  font-size: 17px;
+}
+.activity-empty-state h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.activity-empty-state p {
+  max-width: 320px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
 .activity-log-pager {
   display: flex;
   align-items: center;
@@ -732,8 +808,6 @@ main {
   background: #5b8af0;
   border-color: var(--a-accent);
   color: #fff;
-
-
 }
 .activity-log-summary-count {
   color: var(--muted);

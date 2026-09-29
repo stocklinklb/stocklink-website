@@ -178,6 +178,16 @@
               </div>
 
               <canvas id="visitors-chart"></canvas>
+              <div class="visitors-empty-state" hidden>
+                <div class="visitors-empty-icon">
+                  <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h3>No visitor data yet</h3>
+                <p>
+                  Once customers start visiting your store, you’ll see their
+                  activity here.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -281,6 +291,13 @@
                 </div>
               </div>
             </div>
+            <div class="activity-empty-state" id="activity-log-empty" hidden>
+              <div class="activity-empty-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+              <h3 id="activity-log-empty-title">No activity yet</h3>
+              <p id="activity-log-empty-text"></p>
+            </div>
           </div>
           <div id="activity-log-pager" class="activity-log-pager"></div>
         </section>
@@ -296,7 +313,10 @@
           <strong>Cookies on StockLink</strong>
           <p>
             We use cookies to improve your experience and understand how the
-            site is used. <a href="/admin/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>
+            site is used.
+            <a href="/admin/legal.html#privacy" target="_blank" rel="noopener"
+              >Privacy Policy</a
+            >
           </p>
         </div>
 

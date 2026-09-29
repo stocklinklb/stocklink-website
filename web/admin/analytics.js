@@ -19,6 +19,9 @@ const activityIcons = {
   bulk_import: "fa-solid fa-file-import",
   bulk_delete: "fa-solid fa-trash-can",
 };
+const activityEmpty = document.getElementById("activity-log-empty");
+const activityEmptyTitle = document.getElementById("activity-log-empty-title");
+const activityEmptyText = document.getElementById("activity-log-empty-text");
 const limitList = document.getElementById("limit-list");
 let currentLimit = 20;
 
@@ -253,6 +256,29 @@ function renderLogsTable(logs) {
     activityLogList.appendChild(details);
   });
 }
+// Swaps the log list / count / pager for an empty-state message.
+// Uses style.display (not `hidden`) because .activity-log-pager sets
+// display: flex in the stylesheet, which beats the hidden attribute.
+function toggleActivityEmptyState(isEmpty) {
+  [activityLogList, activityLogSummary, activityLogPager].forEach((el) => {
+    el.style.display = isEmpty ? "none" : "";
+  });
+  activityEmpty.hidden = !isEmpty;
+  if (!isEmpty) return;
+
+  // A filter with no matches is a different situation from a store that
+  // has never logged anything, so the message differs.
+  if (currentActionFilter !== "all") {
+    activityEmptyTitle.textContent = "No matching activity";
+    activityEmptyText.textContent =
+      "Nothing found for this filter. Try a different one.";
+  } else {
+    activityEmptyTitle.textContent = "No activity yet";
+    activityEmptyText.textContent =
+      "Changes to your products, like edits, imports and deletes, will show up here.";
+  }
+}
+
 async function loadActivityLogs(page = 1) {
   currentPage = page;
 
@@ -271,8 +297,10 @@ async function loadActivityLogs(page = 1) {
     if (!response.ok) throw new Error("Failed to fetch activity logs");
     const result = await response.json();
     allActivityLogs = result.data;
-    renderLogsTable(allActivityLogs);
-    renderPager(result.page, result.totalPages);
+    const isEmpty = allActivityLogs.length === 0;
+    toggleActivityEmptyState(isEmpty);
+    renderLogsTable(allActivityLogs); // also clears the placeholder row
+    if (!isEmpty) renderPager(result.page, result.totalPages);
   } catch (error) {
     console.error(error);
   }
@@ -286,7 +314,7 @@ function setActivePeriodButton(period) {
     button.classList.toggle("active", button.dataset.period === period);
   });
 }
-
+const visitorsEmptyState = document.querySelector(".visitors-empty-state");
 function toggleChartType() {
   currentChartType = currentChartType === "line" ? "bar" : "line";
   renderVisitorsChart(lastVisitorsData);
@@ -297,6 +325,11 @@ function toggleChartType() {
 }
 
 function renderVisitorsChart(data) {
+  if (data.length === 0) {
+    visitorsChart = null;
+    visitorsChartCanvas.style.display = "none";
+    visitorsEmptyState.hidden = false;
+  }
   const labels = data.map((entry) =>
     new Date(entry.bucket).toLocaleDateString("en-US", {
       month: "short",

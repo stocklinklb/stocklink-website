@@ -214,6 +214,23 @@
           </div>
           <div class="sales-chart-canvas-wrapper">
             <canvas id="salesChart"></canvas>
+            <div class="orders-empty-state" id="salesEmptyNoOrders" hidden>
+              <div class="orders-empty-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+              </div>
+              <h3>No orders yet</h3>
+              <p>
+                Once customers start placing orders, you’ll see your order
+                activity here.
+              </p>
+            </div>
+            <div class="orders-empty-state" id="salesEmptyNoSales" hidden>
+              <div class="orders-empty-icon">
+                <i class="fa-solid fa-dollar-sign"></i>
+              </div>
+              <h3>No sales yet</h3>
+              <p id="salesEmptyNoSalesText"></p>
+            </div>
           </div>
         </div>
         <div class="orders-toolbar">
@@ -684,7 +701,10 @@
           <strong>Cookies on StockLink</strong>
           <p>
             We use cookies to improve your experience and understand how the
-            site is used. <a href="/admin/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>
+            site is used.
+            <a href="/admin/legal.html#privacy" target="_blank" rel="noopener"
+              >Privacy Policy</a
+            >
           </p>
         </div>
 

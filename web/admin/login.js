@@ -122,6 +122,34 @@ document.querySelectorAll(".toggle-password").forEach((button) => {
   });
 });
 
+google.accounts.id.renderButton(
+  document.getElementById("owner-google-button"),
+  {
+    type: "standard",
+    theme: "outline",
+    size: "large",
+    text: "continue_with",
+    shape: "rectangular",
+    logo_alignment: "left",
+    width: 360,
+    state: "owner",
+  },
+);
+
+google.accounts.id.renderButton(
+  document.getElementById("staff-google-button"),
+  {
+    type: "standard",
+    theme: "outline",
+    size: "large",
+    text: "continue_with",
+    shape: "rectangular",
+    logo_alignment: "left",
+    width: 360,
+    state: "staff",
+  },
+);
+
 // =========================================================
 // PASSWORD RULES (must mirror the server exactly)
 //   at least 8 characters, one uppercase letter,

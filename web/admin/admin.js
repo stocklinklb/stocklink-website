@@ -24,13 +24,13 @@ const from = params.get("from");
 if (from === "onboarding") {
   onboardingGuide.classList.remove("is-hidden");
   document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
 }
 
 guideClose.addEventListener("click", () => {
   onboardingGuide.classList.add("is-hidden");
   document.documentElement.style.overflow = "";
-    document.body.style.overflow = "";
+  document.body.style.overflow = "";
 });
 
 let requestId = 0;
@@ -150,7 +150,9 @@ function renderVisitorsChart(data) {
   // same canvas, it'll just draw on top and get visually corrupted.
   if (visitorsChart) {
     visitorsChart.destroy();
+    visitorsChart = null;
   }
+  const hasVisitors = counts.some((n) => n > 0);
 
   // Headline number + trend badge above the chart, both derived from the
   // real fetched series — total visitors for the period, and the percent
@@ -165,10 +167,26 @@ function renderVisitorsChart(data) {
   });
   const visitorsInsight = document.getElementById("visitors-chart-insight");
   if (visitorsInsight) {
-    visitorsInsight.textContent = counts.length
+    // The empty state already says it, so no caption when there's no data.
+    visitorsInsight.textContent = hasVisitors
       ? `Averaging ${avg} visitor${avg === 1 ? "" : "s"}/day over this period`
-      : "No visitor data yet for this period.";
+      : "";
   }
+
+  // Empty state: nothing to plot, so skip the chart and show the message.
+  // (Chart.js sets an inline display:block on the canvas, which beats the
+  // `hidden` attribute, so the canvas is hidden through its style.)
+  const visitorsEmpty = document.getElementById("visitors-chart-empty");
+  const skeleton = document.getElementById("visitors-chart-skeleton");
+  if (!hasVisitors) {
+    if (skeleton) skeleton.style.display = "none";
+    visitorsChartCanvas.style.display = "none";
+    if (visitorsEmpty) visitorsEmpty.hidden = false;
+    return;
+  }
+  // Normal path: undo the empty state (e.g. after a re-render with data).
+  if (visitorsEmpty) visitorsEmpty.hidden = true;
+  visitorsChartCanvas.style.display = "";
 
   visitorsChart = new Chart(visitorsChartCanvas, {
     type: currentChartType,
@@ -322,7 +340,45 @@ async function fetchSalesData(period) {
     return result.buckets;
   } catch (error) {
     console.warn("data not loaded !", error.message);
-    return [];
+    return null; // null = request failed, [] = loaded but empty
+  }
+}
+
+// Only called when the revenue chart is empty, to tell "no orders at all"
+// apart from "orders exist but nothing is sold yet".
+async function fetchOrderTotals() {
+  try {
+    const response = await fetch(`${ORDERS_API}/stats`, {
+      credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch stats");
+    return await response.json(); // { total, pending, sold, revenue }
+  } catch (error) {
+    console.warn("stats not loaded !", error.message);
+    return null;
+  }
+}
+
+const revenueEmptyNoOrders = document.getElementById("revenueEmptyNoOrders");
+const revenueEmptyNoSales = document.getElementById("revenueEmptyNoSales");
+const revenueEmptyNoSalesText = document.getElementById(
+  "revenueEmptyNoSalesText",
+);
+
+async function showRevenueEmptyState() {
+  salesChart.style.display = "none";
+
+  const totals = await fetchOrderTotals();
+  const hasOrders = Boolean(totals && totals.total > 0);
+
+  revenueEmptyNoOrders.hidden = hasOrders;
+  revenueEmptyNoSales.hidden = !hasOrders;
+
+  if (hasOrders) {
+    revenueEmptyNoSalesText.textContent =
+      totals.pending > 0 && totals.sold === 0
+        ? `You have ${totals.pending} pending ${totals.pending === 1 ? "order" : "orders"}. Mark one as sold and its revenue will show up here.`
+        : "No sales recorded in this period.";
   }
 }
 
@@ -364,13 +420,27 @@ function formatRevenueChartData(buckets, type) {
 
 async function loadRevenueChart(type = currentSalesChartType) {
   const buckets = await fetchSalesData("day");
+
+  // Request failed: that's an error, not an empty state.
+  if (buckets === null) {
+    showToast("Failed to load revenue chart", "error");
+    return;
+  }
+
   const chartData = formatRevenueChartData(buckets, type);
 
   if (!salesChart) return;
 
   if (salesChartInstance) {
     salesChartInstance.destroy();
+    salesChartInstance = null;
   }
+
+  // Empty = no buckets, or buckets with nothing in them (covers a backend
+  // that returns zero-filled days).
+  const hasRevenueData = buckets.some(
+    (bucket) => bucket.revenue > 0 || bucket.count > 0,
+  );
 
   const revenues = buckets.map((b) => b.revenue || 0);
   const total = revenues.reduce((sum, n) => sum + n, 0);
@@ -383,10 +453,20 @@ async function loadRevenueChart(type = currentSalesChartType) {
   });
   const revenueInsight = document.getElementById("revenue-chart-insight");
   if (revenueInsight) {
-    revenueInsight.textContent = revenues.length
+    // The empty state already says it, so no caption when there's no data.
+    revenueInsight.textContent = hasRevenueData
       ? `Averaging $${avg.toLocaleString(undefined, { maximumFractionDigits: 0 })}/day over this period`
-      : "No revenue data yet for this period.";
+      : "";
   }
+
+  if (!hasRevenueData) {
+    await showRevenueEmptyState();
+    return;
+  }
+  // Normal path: undo the empty state.
+  revenueEmptyNoOrders.hidden = true;
+  revenueEmptyNoSales.hidden = true;
+  salesChart.style.display = "";
 
   salesChartInstance = new Chart(salesChart, {
     type,

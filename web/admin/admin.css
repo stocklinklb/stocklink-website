@@ -666,7 +666,7 @@
 .sales-chart-canvas-wrapper {
   position: relative;
   flex: 1;
-  min-height: 220px;
+  min-height: 170px;
   /* Pull out to the card's edges — Chart.js already pads internally for
      axis labels, so this uses that padding as the visual margin instead
      of stacking the card's own padding on top of it, letting the plotted
@@ -678,6 +678,52 @@
 .sales-chart-canvas-wrapper canvas {
   width: 100% !important;
   height: 100% !important;
+}
+
+/* Empty state shown in place of a chart with nothing to plot. Sits over
+   the chart wrapper (which is position: relative) so the card keeps its
+   size when it swaps in. */
+.chart-empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px 24px;
+}
+
+.chart-empty-state[hidden] {
+  display: none;
+}
+
+.chart-empty-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: var(--surface-muted);
+  color: var(--accent);
+  font-size: 17px;
+}
+
+.chart-empty-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.chart-empty-text {
+  max-width: 300px;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
 }
 
 /* Sits between the title row and the chart itself — a headline number
@@ -993,7 +1039,7 @@
      floor — keeps the chart from collapsing, not a forced height. */
   .visitors-chart-wrapper,
   .sales-chart-canvas-wrapper {
-    min-height: 180px;
+    min-height: 160px;
     margin: 0 -16px;
   }
 

@@ -166,7 +166,15 @@
             </div>
 
             <button type="submit">Log in as Owner</button>
+            <div class="google-auth">
+              <div class="google-divider">
+                <span></span>
+                <p>or</p>
+                <span></span>
+              </div>
 
+              <div id="owner-google-button" class="google-button"></div>
+            </div>
             <p class="error-message" id="owner-error" role="alert"></p>
           </form>
 
@@ -365,12 +373,23 @@
 
             <button type="submit">Log in as Staff</button>
 
+            <div class="google-auth">
+              <div class="google-divider">
+                <span></span>
+                <p>or</p>
+                <span></span>
+              </div>
+
+              <div id="staff-google-button" class="google-button"></div>
+            </div>
+
             <p class="error-message" id="staff-error" role="alert"></p>
           </form>
         </div>
       </section>
     </main>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="/admin/config.js"></script>
     <script src="/admin/login.js"></script>
   </body>

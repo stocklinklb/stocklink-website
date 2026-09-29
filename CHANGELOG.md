@@ -1,3 +1,8 @@
+## 1.3.3 - 2026-09-29
+
+- Dashboard: charts and the activity log now show a helpful message instead of an empty graph when there's no data yet
+- Orders: the sales chart now explains whether you have no orders yet or orders that aren't sold yet
+
 ## 1.3.2 - 2026-09-29
 
 - Auth: fixed staff login being blocked by subscription and tier middleware before the staff session was established

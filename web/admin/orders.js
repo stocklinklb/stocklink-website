@@ -234,6 +234,7 @@ orderForm.addEventListener("submit", async (e) => {
     showToast(isEditing ? "Order updated" : "Order created", "success");
     loadOrders();
     loadQuickStats();
+    loadSalesChart(currentPeriod, currentMetric, currentType);
   } catch (error) {
     showToast("Something went wrong", "error");
   } finally {
@@ -298,20 +299,88 @@ async function fetchSalesData(period) {
     return result.buckets;
   } catch (error) {
     console.warn("data not loaded !", error.message);
-    return [];
+    return null; // null = request failed, [] = loaded but empty
   }
 }
+
+// Only called when the chart is empty, to tell "no orders at all"
+// apart from "orders exist but nothing is sold yet".
+async function fetchOrderTotals() {
+  try {
+    const response = await fetch(`${ORDERS_API}/stats`, {
+      credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch stats");
+    return await response.json(); // { total, pending, sold, revenue }
+  } catch (error) {
+    console.warn("stats not loaded !", error.message);
+    return null;
+  }
+}
+const salesEmptyNoOrders = document.getElementById("salesEmptyNoOrders");
+const salesEmptyNoSales = document.getElementById("salesEmptyNoSales");
+const salesEmptyNoSalesText = document.getElementById("salesEmptyNoSalesText");
+
+function hideSalesEmptyStates() {
+  salesEmptyNoOrders.hidden = true;
+  salesEmptyNoSales.hidden = true;
+}
+
+async function showSalesEmptyState(canvas) {
+  // Drop the old chart so it can't linger behind the message.
+  if (salesChart) {
+    salesChart.destroy();
+    salesChart = null;
+  }
+  // Chart.js sets an inline display:block on the canvas, which beats the
+  // `hidden` attribute, so hide it through the style instead.
+  canvas.style.display = "none";
+
+  const totals = await fetchOrderTotals();
+  const hasOrders = Boolean(totals && totals.total > 0);
+
+  salesEmptyNoOrders.hidden = hasOrders;
+  salesEmptyNoSales.hidden = !hasOrders;
+
+  if (hasOrders) {
+    salesEmptyNoSalesText.textContent =
+      totals.pending > 0 && totals.sold === 0
+        ? `You have ${totals.pending} pending ${totals.pending === 1 ? "order" : "orders"}. Mark one as sold and its revenue will show up here.`
+        : "No sales recorded in this period.";
+  }
+}
+
 async function loadSalesChart(
   period = "day",
   metric = "revenue",
   type = "line",
 ) {
-  const buckets = await fetchSalesData(period);
-  const chartData = formatChartData(buckets, metric, type);
-
   const canvas = document.getElementById("salesChart");
   if (!canvas) return;
 
+  const buckets = await fetchSalesData(period);
+
+  // Request failed: that's an error, not an empty state.
+  if (buckets === null) {
+    showToast("Failed to load sales chart", "error");
+    return;
+  }
+
+  // Empty = no buckets, or buckets with nothing in them (covers a backend
+  // that returns zero-filled days).
+  const hasSales = buckets.some(
+    (bucket) => bucket.revenue > 0 || bucket.count > 0,
+  );
+  if (!hasSales) {
+    await showSalesEmptyState(canvas);
+    return;
+  }
+
+  // Normal path: undo whatever the empty state did.
+  hideSalesEmptyStates();
+  canvas.style.display = "";
+
+  const chartData = formatChartData(buckets, metric, type);
   const ctx = canvas.getContext("2d");
 
   if (salesChart) {
@@ -926,6 +995,7 @@ async function markOrderSold(orderId, triggerBtn) {
     showToast("Order marked as sold", "success");
     loadOrders();
     loadQuickStats();
+    loadSalesChart(currentPeriod, currentMetric, currentType);
   } catch (error) {
     showToast("Something went wrong", "error");
   } finally {
@@ -1059,6 +1129,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
     unlockBodyScroll();
     loadOrders();
     loadQuickStats();
+    loadSalesChart(currentPeriod, currentMetric, currentType);
   } catch (error) {
     showToast("Something went wrong", "error");
   } finally {
