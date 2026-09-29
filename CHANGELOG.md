@@ -1,3 +1,7 @@
+## 1.3.2 - 2026-09-29
+
+- Auth: fixed staff login being blocked by subscription and tier middleware before the staff session was established
+
 ## 1.3.1 - 2026-09-29
 
 - Onboarding: choosing "Import my products" now takes you to the full Excel importer instead of a simplified upload box
