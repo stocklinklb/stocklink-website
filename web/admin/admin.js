@@ -15,6 +15,24 @@ const username = document.getElementById("user-name");
 // below were extracted from analytics.js but only the functions came over,
 // not the state they depend on. Restoring the minimum needed for this
 // page (no period toggle here, so currentChartType is fixed to "line").
+const onboardingGuide = document.getElementById("onboarding-guide");
+const guideClose = document.getElementById("guide-close");
+
+const params = new URLSearchParams(window.location.search);
+const from = params.get("from");
+
+if (from === "onboarding") {
+  onboardingGuide.classList.remove("is-hidden");
+  document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+}
+
+guideClose.addEventListener("click", () => {
+  onboardingGuide.classList.add("is-hidden");
+  document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+});
+
 let requestId = 0;
 let visitorsChart = null;
 let currentChartType = "line";

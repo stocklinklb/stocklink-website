@@ -300,7 +300,10 @@
           <strong>Cookies on StockLink</strong>
           <p>
             We use cookies to improve your experience and understand how the
-            site is used. <a href="/admin/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>
+            site is used.
+            <a href="/admin/legal.html#privacy" target="_blank" rel="noopener"
+              >Privacy Policy</a
+            >
           </p>
         </div>
 
@@ -313,6 +316,45 @@
             Accept
           </button>
         </div>
+      </div>
+    </div>
+    <div class="onboarding-guide is-hidden" id="onboarding-guide">
+      <div
+        class="onboarding-guide-box"
+        role="dialog"
+        aria-labelledby="guide-title"
+      >
+        <h2 id="guide-title">Import your inventory</h2>
+        <p class="guide-sub">Three quick steps and you're done.</p>
+
+        <ol class="guide-steps">
+          <li>
+            <span class="guide-num">1</span>
+            <div>
+              <strong>Choose your Excel file</strong>
+              <p>
+                Drag it in or click "Choose File". Need a starting point?
+                Download the template.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="guide-num">2</span>
+            <div>
+              <strong>Fix any red rows</strong>
+              <p>Click a cell to edit it. Only valid rows get imported.</p>
+            </div>
+          </li>
+          <li>
+            <span class="guide-num">3</span>
+            <div>
+              <strong>Click Import</strong>
+              <p>Your products go straight into your store.</p>
+            </div>
+          </li>
+        </ol>
+
+        <button type="button" class="guide-btn" id="guide-close">Got it</button>
       </div>
     </div>
     <div id="toast-container"></div>

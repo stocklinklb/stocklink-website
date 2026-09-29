@@ -3,6 +3,7 @@
 // =========================================================
 
 const storeName = document.getElementById("store-name");
+const storeNameError = document.getElementById("store-name-error");
 
 const onboardingSteps = document.querySelectorAll(".onboarding-step");
 const onboardingContent = document.querySelector(".onboarding-content");
@@ -19,78 +20,55 @@ const globalSkip = document.getElementById("global-skip");
 const skipButtons = document.querySelectorAll("[data-skip-step]");
 
 // =========================================================
-// STEP 3 — IMPORT
-// =========================================================
-
-const importer = document.querySelector(".importer");
-
-const chooseFileButton = document.getElementById("choose-file-button");
-
-const inventoryFile = document.getElementById("inventory-file");
-
-const selectedFileContainer = document.getElementById("selected-file");
-
-const selectedFileName = document.getElementById("selected-file-name");
-
-const selectedFileSize = document.getElementById("selected-file-size");
-
-const removeFileButton = document.getElementById("remove-file");
-
-const importButton = document.getElementById("import-button");
-
-// =========================================================
-// STEP 3 — MANUAL
-// =========================================================
-
-const manualProductName = document.getElementById("manual-product-name");
-
-const manualProductPrice = document.getElementById("manual-product-price");
-
-const manualProductStock = document.getElementById("manual-product-stock");
-
-const manualProductCategory = document.getElementById(
-  "manual-product-category",
-);
-
-const manualProductButton = document.getElementById("manual-product-button");
-
-// =========================================================
-// STEP 4
-// =========================================================
-
-const dashboardButton = document.getElementById("dashboard-button");
-
-const readyDescription = document.getElementById("ready-description");
-
-const statProducts = document.getElementById("stat-products");
-
-const statCategories = document.getElementById("stat-categories");
-
-const statVariants = document.getElementById("stat-variants");
-
-const statLowStock = document.getElementById("stat-low-stock");
-
-// =========================================================
 // STATE
 // =========================================================
 
 let selectedFlow = null;
-let selectedFile = null;
+let originalName = null;
 
 // =========================================================
-// STORE NAME
+// STORE NAME — PREFILL
+// =========================================================
+
+async function loadStore() {
+  const response = await fetch(`${API_ROOT}/auth/me`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    window.location.href = "/admin/login.html";
+    return;
+  }
+
+  const result = await response.json();
+
+  originalName = result.name;
+  storeName.value = result.name;
+  step1Continue.disabled = storeName.value.trim() === "";
+}
+
+// =========================================================
+// STORE NAME — INPUT
 // =========================================================
 
 storeName.addEventListener("input", () => {
-  const hasStoreName = storeName.value.trim() !== "";
-
-  step1Continue.disabled = !hasStoreName;
+  step1Continue.disabled = storeName.value.trim() === "";
+  storeNameError.textContent = "";
 });
 
 const backButtons = document.querySelectorAll("[data-back-step]");
 
 backButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    choiceCards.forEach((card) => {
+      card.classList.remove("is-selected");
+    });
+
+    // Reset the selection state
+    selectedFlow = null;
+    step2Continue.disabled = true;
+
     const currentStep = getCurrentStep();
 
     if (currentStep > 1) {
@@ -162,7 +140,7 @@ function showStep(stepNumber) {
 
     targetStep.classList.remove("is-hidden");
 
-    updateProgress(stepNumber);
+    updateProgress(stepNumber === 2 && selectedFlow ? 3 : stepNumber);
 
     onboardingContent.classList.remove("is-changing");
 
@@ -181,20 +159,69 @@ function showNextStep(stepNumber) {
 }
 
 // =========================================================
-// STEP 1 — CONTINUE
+// STEP 1 — CONTINUE (save the name only if it changed)
 // =========================================================
 
-step1Continue.addEventListener("click", () => {
+step1Continue.addEventListener("click", async () => {
   const name = storeName.value.trim();
 
   if (name === "") {
     return;
   }
 
-  console.log("Store name:", name);
+  // Unchanged: no request needed.
+  if (name === originalName) {
+    showNextStep(getCurrentStep());
+    return;
+  }
 
-  showNextStep(getCurrentStep());
+  step1Continue.disabled = true;
+  storeNameError.textContent = "";
+
+  try {
+    const response = await fetch(`${API_ROOT}/settings`, {
+      // TODO: replace with the real settings route path
+      method: "PUT", // TODO: replace with the real method
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }), // TODO: replace with the real field name
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+
+      storeNameError.textContent =
+        data.message || "Couldn't save your store name.";
+
+      return;
+    }
+
+    originalName = name;
+    showNextStep(getCurrentStep());
+  } catch (error) {
+    console.error(error);
+    storeNameError.textContent = "Server connection failed";
+  } finally {
+    step1Continue.disabled = storeName.value.trim() === "";
+  }
 });
+
+async function recordOnBoard(eventType, metadata) {
+  try {
+    const response = await fetch(`${API_ROOT}/onboarding`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({ eventType, metadata }),
+    });
+    if (!response.ok) {
+      console.error("Failed to record onboarding event:", response.status);
+    }
+  } catch (error) {
+    console.error("Failed to record onboarding event:", error);
+  }
+}
 
 // =========================================================
 // STEP 2 — CHOICE SELECTION
@@ -211,306 +238,47 @@ choiceCards.forEach((card) => {
     selectedFlow = card.dataset.choice;
 
     step2Continue.disabled = false;
+    updateProgress(3);
 
-    console.log("Selected flow:", selectedFlow);
+    console.log("Selected flow:", selectedFlow.toUpperCase());
   });
 });
-
-// =========================================================
-// SHOW STEP 3 FLOW
-// =========================================================
-
-function showFlowContent(flow) {
-  const flowContents = document.querySelectorAll("[data-flow-content]");
-
-  flowContents.forEach((content) => {
-    content.classList.add("is-hidden");
-  });
-
-  const targetContent = document.querySelector(`[data-flow-content="${flow}"]`);
-
-  if (!targetContent) {
-    console.error(`No onboarding content found for flow: ${flow}`);
-
-    return;
-  }
-
-  targetContent.classList.remove("is-hidden");
-}
 
 // =========================================================
 // STEP 2 — CONTINUE
 // =========================================================
 
-step2Continue.addEventListener("click", () => {
+step2Continue.addEventListener("click", async () => {
   if (!selectedFlow) {
     return;
   }
 
   if (selectedFlow === "import") {
-    showFlowContent("import");
-    showNextStep(getCurrentStep());
-
+    recordOnBoard("STEP_CHOICE", {
+      path: "IMPORT",
+    });
+    goToDashboardPage("excel-import");
     return;
   }
 
   if (selectedFlow === "manual") {
-    showFlowContent("manual");
-    showNextStep(getCurrentStep());
+    recordOnBoard("STEP_CHOICE", {
+      path: "MANUAL",
+    });
+    goToDashboardPage("add-product");
 
     return;
   }
 
   if (selectedFlow === "explore") {
-    goToDashboard();
+    recordOnBoard("PATH_CHOSEN", {
+      path: "EXPLORE",
+    });
+    goToDashboardPage("");
 
     return;
   }
 });
-
-// =========================================================
-// FILE PICKER
-// =========================================================
-
-chooseFileButton.addEventListener("click", () => {
-  inventoryFile.click();
-});
-
-// =========================================================
-// FILE SELECTED
-// =========================================================
-
-inventoryFile.addEventListener("change", () => {
-  const file = inventoryFile.files[0];
-
-  if (!file) {
-    return;
-  }
-
-  setSelectedFile(file);
-});
-
-// =========================================================
-// SET SELECTED FILE
-// =========================================================
-
-function setSelectedFile(file) {
-  selectedFile = file;
-
-  selectedFileName.textContent = file.name;
-
-  selectedFileSize.textContent = formatFileSize(file.size);
-
-  selectedFileContainer.classList.remove("is-hidden");
-
-  importButton.disabled = false;
-
-  console.log("Selected file:", selectedFile);
-}
-
-// =========================================================
-// FORMAT FILE SIZE
-// =========================================================
-
-function formatFileSize(bytes) {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-// =========================================================
-// REMOVE FILE
-// =========================================================
-
-removeFileButton.addEventListener("click", () => {
-  selectedFile = null;
-
-  inventoryFile.value = "";
-
-  selectedFileContainer.classList.add("is-hidden");
-
-  importButton.disabled = true;
-
-  console.log("File removed");
-});
-
-// =========================================================
-// DRAG & DROP
-// =========================================================
-
-if (importer) {
-  importer.addEventListener("dragover", (event) => {
-    event.preventDefault();
-
-    importer.classList.add("is-dragging");
-  });
-
-  importer.addEventListener("dragleave", () => {
-    importer.classList.remove("is-dragging");
-  });
-
-  importer.addEventListener("drop", (event) => {
-    event.preventDefault();
-
-    importer.classList.remove("is-dragging");
-
-    const file = event.dataTransfer.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    const extension = file.name.split(".").pop()?.toLowerCase();
-
-    const validExtensions = ["xlsx", "xls"];
-
-    if (!validExtensions.includes(extension)) {
-      console.error("Invalid file type.");
-
-      return;
-    }
-
-    setSelectedFile(file);
-  });
-}
-
-// =========================================================
-// IMPORT PRODUCTS
-// =========================================================
-
-importButton.addEventListener("click", async () => {
-  if (!selectedFile) {
-    return;
-  }
-
-  importButton.disabled = true;
-  importButton.classList.add("is-loading");
-
-  try {
-    /*
-        Your real importer API call goes here.
-
-        Example:
-
-        const formData = new FormData();
-
-        formData.append(
-          "file",
-          selectedFile,
-        );
-
-        const response = await fetch(
-          `${API_ROOT}/products/import`,
-          {
-            method: "POST",
-            credentials: "include",
-            body: formData,
-          },
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Import failed",
-          );
-        }
-
-        setReadyStats(data.stats);
-
-        readyDescription.textContent =
-          "Your inventory is now in StockLink.";
-
-        showStep(4);
-      */
-
-    console.log("Ready to import:", selectedFile);
-  } catch (error) {
-    console.error("Import failed:", error);
-  } finally {
-    importButton.classList.remove("is-loading");
-
-    importButton.disabled = selectedFile === null;
-  }
-});
-
-// =========================================================
-// MANUAL PRODUCT
-// =========================================================
-
-manualProductButton.addEventListener("click", async () => {
-  const name = manualProductName.value.trim();
-
-  const price = manualProductPrice.value;
-
-  const stock = manualProductStock.value;
-
-  const category = manualProductCategory.value;
-
-  if (!name) {
-    manualProductName.focus();
-    return;
-  }
-
-  if (price === "") {
-    manualProductPrice.focus();
-    return;
-  }
-
-  if (stock === "") {
-    manualProductStock.focus();
-    return;
-  }
-
-  if (!category) {
-    manualProductCategory.focus();
-    return;
-  }
-
-  const productData = {
-    name,
-    price: Number(price),
-    stock: Number(stock),
-    category,
-  };
-
-  console.log("Manual product:", productData);
-
-  /*
-      Your real create-product API call goes here.
-
-      After success:
-
-      setReadyStats(data.stats);
-
-      readyDescription.textContent =
-        "Your first product is in. You can keep building your inventory from your dashboard.";
-
-      showStep(4);
-    */
-});
-
-// =========================================================
-// READY PAGE — STATS
-// =========================================================
-
-function setReadyStats({
-  products = 0,
-  categories = 0,
-  variants = 0,
-  lowStock = 0,
-}) {
-  statProducts.textContent = products;
-  statCategories.textContent = categories;
-  statVariants.textContent = variants;
-  statLowStock.textContent = lowStock;
-}
 
 // =========================================================
 // SKIP BUTTONS
@@ -528,7 +296,7 @@ skipButtons.forEach((button) => {
       return;
     }
 
-    goToDashboard();
+    goToDashboardPage("");
   });
 });
 
@@ -537,24 +305,16 @@ skipButtons.forEach((button) => {
 // =========================================================
 
 globalSkip.addEventListener("click", () => {
-  goToDashboard();
+  goToDashboardPage("");
 });
 
 // =========================================================
 // GO TO DASHBOARD
 // =========================================================
 
-function goToDashboard() {
-  window.location.href = "/admin/index.html";
+function goToDashboardPage(page) {
+  window.location.href = `/admin/${page}?from=onboarding`;
 }
-
-// =========================================================
-// DASHBOARD BUTTON
-// =========================================================
-
-dashboardButton.addEventListener("click", () => {
-  goToDashboard();
-});
 
 // =========================================================
 // INITIAL STATE
@@ -564,4 +324,7 @@ showStep(1);
 
 step1Continue.disabled = true;
 step2Continue.disabled = true;
-importButton.disabled = true;
+
+// Runs last so the prefill can enable Continue after the
+// initial disabled state above has been applied.
+loadStore();

@@ -189,3 +189,20 @@ function getVariantDimensions() {
 
   return [];
 }
+
+const paramsValue = new URLSearchParams(window.location.search).get("from");
+const guideBtn = document.getElementById("guide-close");
+if (paramsValue === "onboarding") {
+  const onboardingGuide = document.querySelector(".onboarding-guide");
+  if (paramsValue === "onboarding") {
+    onboardingGuide.classList.remove("is-hidden");
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    
+  }
+  guideBtn.addEventListener("click", () => {
+    onboardingGuide.classList.add("is-hidden");
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  });
+}

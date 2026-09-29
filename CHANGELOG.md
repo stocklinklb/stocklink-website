@@ -1,4 +1,11 @@
-**## 1.3.0 - 2026-09-28**
+## 1.3.1 - 2026-09-29
+
+- Onboarding: choosing "Import my products" now takes you to the full Excel importer instead of a simplified upload box
+- Onboarding: a short guide now walks you through importing your first file
+- Onboarding: choosing "Add a product" now takes you to the full add prodcuts page instead of the simplified box
+- Onboarding: a short guide now walks you through adding your first product
+
+## 1.3.0 - 2026-09-28
 
 - Auth: users can now create their own StockLink account through signup
 - Onboarding: new users are now guided through the initial StockLink setup flow after signup

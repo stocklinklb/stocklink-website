@@ -5,7 +5,7 @@ const reviewSection = document.getElementById("review-section");
 const uploadEmptyState = document.getElementById("upload-empty-state");
 const selectedFile = document.getElementById("selected-file");
 const reviewActionsBar = document.getElementById("review-actions-bar");
-
+const paramsValue = new URLSearchParams(window.location.search).get("from");
 const fileName = document.getElementById("file-name");
 const fileSize = document.getElementById("file-size");
 const totalCount = document.querySelector(".total-count");
@@ -24,12 +24,20 @@ let importedProducts = [];
 const ROW_HEIGHT = 48;
 const BUFFER = 5;
 const scrollContainer = document.querySelector(".review-card");
-excelFile.addEventListener("change", handleFileSelect);
 
+excelFile.addEventListener("change", handleFileSelect);
+const guideBtn = document.getElementById("guide-close");
 continueBtn.addEventListener("click", readExcelFile);
 
 removeFileBtn.addEventListener("click", removeSelectedFile);
 backBtn.addEventListener("click", removeSelectedFile);
+const onboardingGuide = document.querySelector(".onboarding-guide");
+if ((paramsValue === "onboarding")) {
+  onboardingGuide.classList.remove("is-hidden");
+}
+guideBtn.addEventListener("click", () => {
+  onboardingGuide.classList.add("is-hidden");
+});
 function removeSelectedFile() {
   // Clear the actual file input
   excelFile.value = "";

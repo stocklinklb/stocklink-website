@@ -431,6 +431,47 @@
         </div>
       </main>
     </div>
+    <div class="onboarding-guide is-hidden" id="onboarding-guide">
+      <div
+        class="onboarding-guide-box"
+        role="dialog"
+        aria-labelledby="guide-title"
+      >
+        <h2 id="guide-title">Add your first product</h2>
+        <p class="guide-sub">Three quick steps and it's in your store.</p>
+
+        <ol class="guide-steps">
+          <li>
+            <span class="guide-num">1</span>
+            <div>
+              <strong>Fill in the basics</strong>
+              <p>Enter the brand, model name and category.</p>
+            </div>
+          </li>
+          <li>
+            <span class="guide-num">2</span>
+            <div>
+              <strong>Add your options</strong>
+              <p>
+                Set the storage, colors and condition, then a price and stock
+                for each.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="guide-num">3</span>
+            <div>
+              <strong>Save the product</strong>
+              <p>
+                It goes live in your store right away. You can edit it any time.
+              </p>
+            </div>
+          </li>
+        </ol>
+
+        <button type="button" class="guide-btn" id="guide-close">Got it</button>
+      </div>
+    </div>
     <div id="toast-container"></div>
     <div id="cookie-banner" class="cookie-banner hidden">
       <div class="cookie-banner-icon">
@@ -442,7 +483,10 @@
           <strong>Cookies on StockLink</strong>
           <p>
             We use cookies to improve your experience and understand how the
-            site is used. <a href="/admin/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>
+            site is used.
+            <a href="/admin/legal.html#privacy" target="_blank" rel="noopener"
+              >Privacy Policy</a
+            >
           </p>
         </div>
 
@@ -455,7 +499,8 @@
             Accept
           </button>
         </div>
-      </div></div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal">
