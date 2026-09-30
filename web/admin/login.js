@@ -209,13 +209,19 @@ function renderPasswordRules() {
   }
 }
 async function handleGoogleCredential(response) {
-  // show errors in whichever form is currently visible
-  const errorEl =
-    currentView === "signup" ? signupErrorMessage : ownerErrorMessage;
+  // One Google callback serves every form, so pick the endpoint and
+  // error box from whichever view is open.
+  const isStaff = currentView === "staff";
+  const endpoint = isStaff ? "/staff/google" : "/auth/google";
+  const errorEl = isStaff
+    ? staffErrorMessage
+    : currentView === "signup"
+      ? signupErrorMessage
+      : ownerErrorMessage;
 
   try {
     clearErrors();
-    const res = await fetch(`${API_ROOT}/auth/google`, {
+    const res = await fetch(`${API_ROOT}${endpoint}`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -233,9 +239,9 @@ async function handleGoogleCredential(response) {
       return;
     }
 
-    window.location.href = data.isNewStore
-      ? SIGNUP_REDIRECT_URL
-      : LOGIN_REDIRECT_URL;
+    // Staff never go through onboarding; only brand-new owner stores do.
+    window.location.href =
+      !isStaff && data.isNewStore ? SIGNUP_REDIRECT_URL : LOGIN_REDIRECT_URL;
   } catch (error) {
     console.error(error);
     showError(errorEl, "Server connection failed.");

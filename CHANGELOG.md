@@ -1,3 +1,11 @@
+## 1.5.0 - 2026-09-30
+
+- Settings: you can now link your Google account to your StockLink account from the Settings page
+- Settings: you can now unlink your Google account; you'll be asked to confirm with Google first
+- Settings: a confirmation window now appears before you unlink your Google account
+- Settings: saving your store profile now shows a clear message if something goes wrong
+- Auth: now staffs can link their accounts with google , and sign in using it 
+
 ## 1.4.0 - 2026-09-30
 
 - Auth: you can now sign in or sign up with your Google account
