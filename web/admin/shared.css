@@ -1809,30 +1809,6 @@ body.subscription-expired main {
 .skel-only {
   display: none;
 }
-.toast {
-  min-width: 280px;
-  padding: 16px 20px;
-  border-radius: var(--adm-radius-md);
-  color: white;
-  font-size: 14.5px;
-  font-weight: 600;
-  box-shadow: var(--adm-shadow-lg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  animation: slideIn 0.3s var(--adm-ease);
-}
-
-.toast.success {
-  background: var(--adm-success);
-}
-.toast.error {
-  background: var(--adm-danger);
-}
-
-.toast.hide {
-  animation: slideOut 0.3s var(--adm-ease) forwards;
-}
 /* Masks an existing element's own text/content in place, without
    changing its layout, size, or DOM structure - safe to drop onto
    any element a page script already targets by id/selector (e.g.
@@ -1891,74 +1867,117 @@ body.subscription-expired main {
    Used by showToast() in shared.js — kept here (not a page-specific
    CSS file) since the toast container/markup is shared across every
    admin page that includes shared.js. */
-
 #toast-container {
   position: fixed;
-  top: 24px;
-  right: 24px;
+  top: 90%;
+  left: 50%;
+  transform: translateX(-50%);
+
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+
+  width: max-content;
+  max-width: calc(100vw - 28px);
+
   z-index: 9999;
 }
 
 .toast {
-  min-width: 280px;
-  padding: 16px 20px;
-  border-radius: var(--radius-md, 12px);
-  color: white;
-  font-size: 15px;
-  font-weight: 500;
-  box-shadow: var(--shadow-lg);
+  min-width: 300px;
+  max-width: 380px;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  animation: slideIn 0.3s ease;
+  gap: 11px;
+
+  padding: 11px 14px;
+
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+
+  animation: slideIn 0.25s var(--adm-ease);
 }
 
-.toast.success {
-  background: var(--success);
+.toast::before {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  font-family: "Font Awesome 6 Free";
+  font-size: 12px;
+  font-weight: 900;
 }
 
-.toast.error {
-  background: var(--danger);
+.toast.success::before {
+  content: "\f00c";
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.toast.error::before {
+  content: "\f00d";
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .toast.hide {
-  animation: slideOut 0.3s ease forwards;
+  animation: slideOut 0.25s var(--adm-ease) forwards;
 }
 
 @keyframes slideIn {
   from {
-    transform: translateX(120%);
+    transform: translateY(20px);
     opacity: 0;
   }
+
   to {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
 @keyframes slideOut {
   from {
-    transform: translateX(0);
+    transform: translateX(20px);
     opacity: 1;
   }
+
   to {
-    transform: translateX(120%);
+    transform: translateX(20px);
     opacity: 0;
   }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
   #toast-container {
-    top: 16px;
-    right: 16px;
-    left: 16px;
+    top: auto;
+    bottom: 20px;
+    left: 14px;
+    right: 14px;
+    transform: none;
+
+    width: auto;
+    max-width: none;
   }
 
   #toast-container .toast {
-    min-width: 0;
     width: 100%;
+    min-width: 0;
+    max-width: none;
+    box-sizing: border-box;
   }
 }

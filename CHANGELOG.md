@@ -1,3 +1,7 @@
+## 1.5.1 - 2026-09-30
+
+- Styling: Changed the styling of the toast container , and changed it's position
+
 ## 1.5.0 - 2026-09-30
 
 - Settings: you can now link your Google account to your StockLink account from the Settings page
