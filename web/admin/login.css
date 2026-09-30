@@ -103,6 +103,7 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 24px;
 
   display: flex;
@@ -158,33 +159,140 @@ body {
 }
 
 /*
-   Google renders the actual button.
-   We only control its container.
+   Google's own button lives in a cross-origin iframe and can't be
+   styled. So we show our own button (.google-button-face) and put
+   Google's real button on top of it, invisible, to receive the click.
 */
 
 .google-button {
+  position: relative;
+
   width: 100%;
+  height: 49px;
+}
+
+/* ----- visible button: mirrors the inputs / primary button ----- */
+
+.google-button-face {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 0 16px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--surface-soft);
+  color: var(--ink);
+
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+
+  pointer-events: none;
+
+  transition:
+    transform 0.18s var(--ease),
+    border-color 0.18s var(--ease),
+    background-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
+}
+
+.google-button-face svg {
+  flex-shrink: 0;
+}
+
+.google-button:hover .google-button-face {
+  transform: translateY(-1px);
+
+  border-color: var(--border-strong);
+  background: var(--surface);
+
+  box-shadow: var(--shadow-md);
+}
+
+.google-button:active .google-button-face {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* keyboard focus lands on Google's iframe, so show the ring on our face */
+.google-button:focus-within .google-button-face {
+  border-color: var(--accent);
+  background: var(--surface);
+
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+/* ----- invisible Google button on top ----- */
+
+.google-button-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 
   display: flex;
   justify-content: center;
 
-  min-height: 44px;
+  /* Google's "large" button is 40px tall; stretch it to fill our 49px
+     so the whole face is clickable. Transforms apply to hit-testing. */
+  overflow: hidden;
+  opacity: 0.0001;
+  cursor: pointer;
 }
 
-/*
-   Google may render an iframe/button inside here,
-   so don't force styles onto its internal elements.
-*/
+.google-button-overlay > div {
+  transform: scaleY(1.225);
+  transform-origin: top center;
 
-.google-button > div {
   max-width: 100%;
 }
 
-/* Keep it comfortable on small screens */
+.google-button-overlay iframe {
+  max-width: 100%;
+}
+
+.google-auth[hidden] {
+  display: none;
+}
+
+/* ----- small screens ----- */
+
+@media (max-width: 520px) {
+  .google-button,
+  .google-button-face {
+    height: 48px;
+  }
+
+  .google-button-overlay > div {
+    transform: scaleY(1.2);
+  }
+}
 
 @media (max-width: 380px) {
   .google-auth {
     gap: 12px;
+  }
+
+  .google-button-face {
+    gap: 8px;
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+}
+
+/* very narrow phones: shorten the label so it never wraps/clips */
+@media (max-width: 320px) {
+  .google-button-face span {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -983,6 +1091,116 @@ html[data-theme="dark"] .auth-switch button {
 }
 
 /* =========================================================
+   COMPACT SIGNUP
+   The signup view has the most content (3 fields + checklist +
+   Google), so it gets tighter spacing and a collapsible checklist.
+   JS sets data-view="login|signup|staff" on .login-card.
+   ========================================================= */
+
+.login-card[data-view="signup"] {
+  padding-top: 30px;
+  padding-bottom: 28px;
+}
+
+.login-card[data-view="signup"] .login-tabs {
+  margin-bottom: 20px;
+}
+
+.login-card[data-view="signup"] .brand {
+  margin-bottom: 22px;
+}
+
+.login-card[data-view="signup"] .logo {
+  width: 42px;
+  height: 42px;
+
+  margin-bottom: 12px;
+
+  border-radius: 13px;
+
+  font-size: 13px;
+}
+
+.login-card[data-view="signup"] .brand p {
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.login-card[data-view="signup"] .auth-switch {
+  margin-bottom: 18px;
+}
+
+#signup-form {
+  gap: 14px;
+}
+
+#signup-form .form-group > input {
+  height: 44px;
+}
+
+#signup-form .password-field {
+  min-height: 44px;
+}
+
+#signup-form .password-field input,
+#signup-form .toggle-password {
+  height: 42px;
+}
+
+#signup-form .toggle-password {
+  width: 42px;
+}
+
+#signup-form .google-auth {
+  gap: 10px;
+  margin-top: 0;
+}
+
+/* Checklist stays out of the way until the password is focused,
+   has something typed in it, or failed validation. */
+#signup-form .password-rules {
+  max-height: 0;
+  margin-top: -8px; /* cancels the .form-group gap while collapsed */
+
+  overflow: hidden;
+  opacity: 0;
+
+  transition:
+    max-height 0.22s var(--ease),
+    margin-top 0.22s var(--ease),
+    opacity 0.18s var(--ease);
+}
+
+#signup-form .form-group:focus-within .password-rules,
+#signup-form .form-group:has(input:not(:placeholder-shown)) .password-rules,
+#signup-form .password-rules.has-error {
+  max-height: 120px;
+  margin-top: 2px;
+
+  opacity: 1;
+}
+
+@media (max-width: 520px) {
+  .login-card[data-view="signup"] {
+    padding-top: 26px;
+    padding-bottom: 22px;
+  }
+
+  .login-card[data-view="signup"] .brand {
+    margin-bottom: 18px;
+  }
+
+  /* the tagline is the first thing to go on small phones */
+  .login-card[data-view="signup"] .brand p {
+    display: none;
+  }
+
+  .login-card[data-view="signup"] .auth-switch {
+    margin-top: -6px;
+  }
+}
+
+/* =========================================================
    RESPONSIVE
    ========================================================= */
 
@@ -1052,5 +1270,66 @@ html[data-theme="dark"] .auth-switch button {
 
   .floating-card {
     animation: none;
+  }
+}
+
+/* =========================================================
+   SHORT SCREENS / LANDSCAPE
+   Height is the constraint (phones on their side), so the
+   width-based rules above don't apply. Drop the decorative
+   cards and tighten the card so less scrolling is needed.
+   ========================================================= */
+
+@media (max-height: 560px) and (orientation: landscape) {
+  body {
+    padding: 12px;
+  }
+
+  .floating-card {
+    display: none;
+  }
+
+  .login-page {
+    max-width: 440px;
+  }
+
+  .login-card[data-view] {
+    padding: 22px 26px 20px;
+  }
+
+  .login-card[data-view] .login-tabs {
+    margin-bottom: 14px;
+  }
+
+  .login-card[data-view] .brand {
+    margin-bottom: 16px;
+  }
+
+  .login-card[data-view] .logo {
+    width: 36px;
+    height: 36px;
+
+    margin-bottom: 8px;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+  }
+
+  .login-card[data-view] .brand h1 {
+    font-size: 22px;
+  }
+
+  .login-card[data-view] .brand p {
+    display: none;
+  }
+
+  .login-card[data-view] .auth-switch {
+    margin: -6px 0 14px;
+  }
+
+  .login-form,
+  #signup-form {
+    gap: 12px;
   }
 }

@@ -1,3 +1,8 @@
+## 1.4.0 - 2026-09-30
+
+- Auth: you can now sign in or sign up with your Google account
+- Auth: if you already have a StockLink account with the same email, signing in with Google connects to it automatically
+
 ## 1.3.3 - 2026-09-29
 
 - Dashboard: charts and the activity log now show a helpful message instead of an empty graph when there's no data yet
@@ -11,7 +16,7 @@
 
 - Onboarding: choosing "Import my products" now takes you to the full Excel importer instead of a simplified upload box
 - Onboarding: a short guide now walks you through importing your first file
-- Onboarding: choosing "Add a product" now takes you to the full add prodcuts page instead of the simplified box
+- Onboarding: choosing "Add a product" now takes you to the full add products page instead of the simplified box
 - Onboarding: a short guide now walks you through adding your first product
 
 ## 1.3.0 - 2026-09-28
@@ -21,11 +26,11 @@
 - Onboarding: users can choose how they want to get started — import products, add products manually, or explore StockLink
 - Onboarding: added the initial UI for inventory importing and manual product setup
 
-## 1.2.1 - 2026-9-26
+## 1.2.1 - 2026-09-26
 
-Assistant: order proposals now show the products, quantities and prices before you approve them
+- Assistant: order proposals now show the products, quantities and prices before you approve them
 
-## 1.2.0 - 2026-9-25
+## 1.2.0 - 2026-09-25
 
 - Assistant: you can now create orders directly through the assistant
 - Assistant: order creation supports adding products, customer details, and order information

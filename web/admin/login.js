@@ -66,6 +66,7 @@ let currentView = "login";
 
 function setView(view) {
   currentView = view;
+  document.querySelector(".login-card").dataset.view = view;
 
   const isStaff = view === "staff";
   const isSignup = view === "signup";
@@ -122,33 +123,55 @@ document.querySelectorAll(".toggle-password").forEach((button) => {
   });
 });
 
-google.accounts.id.renderButton(
-  document.getElementById("owner-google-button"),
-  {
-    type: "standard",
-    theme: "outline",
-    size: "large",
-    text: "continue_with",
-    shape: "rectangular",
-    logo_alignment: "left",
-    width: 360,
-    state: "owner",
-  },
-);
+// =========================================================
+// GOOGLE SIGN-IN
+// Google draws its button inside a cross-origin iframe, so its
+// look can't be changed with CSS. Instead we style our own button
+// (.google-button-face) and lay Google's real button on top of it,
+// invisible, so clicks still go to Google. The iframe needs a pixel
+// width, so we re-render it whenever the container size changes.
+// =========================================================
+const googleButtons = document.querySelectorAll(".google-button");
 
-google.accounts.id.renderButton(
-  document.getElementById("staff-google-button"),
-  {
-    type: "standard",
-    theme: "outline",
-    size: "large",
-    text: "continue_with",
-    shape: "rectangular",
-    logo_alignment: "left",
-    width: 360,
-    state: "staff",
-  },
-);
+function renderGoogleButtons() {
+  googleButtons.forEach((wrap) => {
+    const overlay = wrap.querySelector(".google-button-overlay");
+    const width = Math.round(wrap.getBoundingClientRect().width);
+    if (!overlay || !width) return;
+
+    overlay.innerHTML = "";
+    google.accounts.id.renderButton(overlay, {
+      type: "standard",
+      theme: "outline",
+      size: "large",
+      text: wrap.dataset.googleText || "continue_with",
+      shape: "rectangular",
+      // Google accepts 200-400px
+      width: Math.min(400, Math.max(200, width)),
+    });
+  });
+}
+
+if (window.google && google.accounts && google.accounts.id) {
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential,
+  });
+
+  renderGoogleButtons();
+
+  let googleResizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(googleResizeTimer);
+    googleResizeTimer = setTimeout(renderGoogleButtons, 150);
+  });
+} else {
+  // Google script blocked/offline: hide the sections instead of
+  // breaking the rest of the login page.
+  document
+    .querySelectorAll(".google-auth")
+    .forEach((el) => el.setAttribute("hidden", ""));
+}
 
 // =========================================================
 // PASSWORD RULES (must mirror the server exactly)
@@ -185,7 +208,39 @@ function renderPasswordRules() {
       .classList.remove("input-error");
   }
 }
+async function handleGoogleCredential(response) {
+  // show errors in whichever form is currently visible
+  const errorEl =
+    currentView === "signup" ? signupErrorMessage : ownerErrorMessage;
 
+  try {
+    clearErrors();
+    const res = await fetch(`${API_ROOT}/auth/google`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ credential: response.credential }),
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (res.status === 429) {
+      showError(errorEl, buildRateLimitMessage(res.headers.get("Retry-After")));
+      return;
+    }
+
+    if (!res.ok) {
+      showError(errorEl, data.message || "Google sign-in failed");
+      return;
+    }
+
+    window.location.href = data.isNewStore
+      ? SIGNUP_REDIRECT_URL
+      : LOGIN_REDIRECT_URL;
+  } catch (error) {
+    console.error(error);
+    showError(errorEl, "Server connection failed.");
+  }
+}
 signupPasswordInput.addEventListener("input", renderPasswordRules);
 
 // =========================================================

@@ -42,6 +42,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
 
   font-family:
     Inter,
@@ -84,6 +85,7 @@ button:disabled {
 
 .onboarding-page {
   min-height: 100vh;
+  min-height: 100dvh;
 
   display: flex;
   align-items: center;
@@ -605,7 +607,10 @@ button:disabled {
 
 @media (max-width: 640px) {
   .onboarding-page {
-    align-items: flex-start;
+    /* keep the card vertically centered on phones too; if a step is
+       taller than the screen, min-height lets the page grow and scroll
+       instead of clipping */
+    align-items: center;
 
     padding: 16px;
   }
@@ -662,5 +667,135 @@ button:disabled {
 
   .choice-arrow {
     display: none;
+  }
+}
+
+/* =========================================================
+   TABLETS (portrait) — keep the card from stretching edge to
+   edge and give it a bit more breathing room
+   ========================================================= */
+
+@media (min-width: 641px) and (max-width: 1100px) and (orientation: portrait) {
+  .onboarding-shell {
+    width: min(100%, 640px);
+
+    padding: 32px 44px 44px;
+  }
+
+  .onboarding-progress {
+    margin: 44px auto 60px;
+  }
+}
+
+/* =========================================================
+   SHORT SCREENS / LANDSCAPE (phones on their side, small
+   laptops). Height is the constraint here, not width, so the
+   width-based rules above don't help. Tighten the vertical
+   rhythm and lay the step-2 choices out side by side.
+   ========================================================= */
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .onboarding-page {
+    padding: 12px 16px;
+  }
+
+  .onboarding-shell {
+    padding: 16px 24px 20px;
+
+    border-radius: 14px;
+  }
+
+  .onboarding-header {
+    min-height: 32px;
+  }
+
+  .onboarding-progress {
+    margin: 12px auto 20px;
+  }
+
+  .eyebrow {
+    display: none;
+  }
+
+  .step-content h1 {
+    font-size: 26px;
+  }
+
+  .step-description {
+    margin-top: 8px;
+
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .form-section {
+    margin-top: 18px;
+  }
+
+  .form-section input,
+  .form-section select {
+    height: 44px;
+  }
+
+  .primary-button {
+    min-height: 44px;
+
+    margin-top: 16px;
+  }
+
+  .text-button {
+    margin-top: 8px;
+  }
+
+  .back-button {
+    margin-bottom: 10px;
+  }
+
+  /* step 1: keep the form a sensible width instead of ~700px wide */
+  #step-1 .step-content {
+    width: min(100%, 420px);
+  }
+
+  /* step 2: three choices in a row instead of a tall stack */
+  #step-2 .step-content {
+    width: 100%;
+  }
+
+  .choice-list {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+
+    margin-top: 18px;
+  }
+
+  .choice-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 12px;
+  }
+
+  .choice-arrow {
+    display: none;
+  }
+
+  #step-2 .primary-button {
+    display: flex;
+
+    width: min(100%, 360px);
+
+    margin-inline: auto;
+  }
+}
+
+/* very short landscape (e.g. iPhone SE on its side) */
+@media (max-height: 420px) and (orientation: landscape) {
+  .step-description {
+    display: none;
+  }
+
+  .onboarding-progress {
+    margin-bottom: 14px;
   }
 }

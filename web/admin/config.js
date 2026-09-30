@@ -18,6 +18,9 @@ const API_ROOT =
   window.location.hostname === "127.0.0.1"
     ? "http://127.0.0.1:4000"
     : "https://stocklink-demo-production.up.railway.app";
+
+const GOOGLE_CLIENT_ID =
+  "645635292874-ga4v1b44u77dncsf65ff5p9bkq4ai4o6.apps.googleusercontent.com";
 // Products resource base. Product list/detail/create/update/delete
 // and product-image upload all hang off this.
 //   GET    API_BASE                -> list products
