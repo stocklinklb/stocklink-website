@@ -1,3 +1,8 @@
+## 1.5.2 - 2026-1-01
+
+- Styling : Fixed mobile rule for the toast , as it's taking full width 
+
+
 ## 1.5.1 - 2026-09-30
 
 - Styling: Changed the styling of the toast container , and changed it's position

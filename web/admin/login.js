@@ -133,6 +133,33 @@ document.querySelectorAll(".toggle-password").forEach((button) => {
 // =========================================================
 const googleButtons = document.querySelectorAll(".google-button");
 
+// Swaps a Google button into / out of its "Logging you in…" state.
+// Each button says something different ("Continue with…", "Sign up
+// with…"), so the original text is saved the first time and restored later.
+function setGoogleLoading(wrap, isLoading) {
+  if (!wrap) return;
+
+  const label = wrap.querySelector(".google-button-face span");
+  if (!label) return;
+
+  if (wrap.dataset.label === undefined) {
+    wrap.dataset.label = label.textContent;
+  }
+
+  label.textContent = isLoading ? "Logging you in…" : wrap.dataset.label;
+  wrap.classList.toggle("is-loading", isLoading);
+}
+
+// Back button after the redirect: some browsers restore the page from the
+// back/forward cache still frozen in the loading state, so reset it.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    document
+      .querySelectorAll(".google-button")
+      .forEach((wrap) => setGoogleLoading(wrap, false));
+  }
+});
+
 function renderGoogleButtons() {
   googleButtons.forEach((wrap) => {
     const overlay = wrap.querySelector(".google-button-overlay");
@@ -218,9 +245,19 @@ async function handleGoogleCredential(response) {
     : currentView === "signup"
       ? signupErrorMessage
       : ownerErrorMessage;
+  const thatForm = isStaff
+    ? staffForm
+    : currentView === "signup"
+      ? signupForm
+      : ownerForm;
+  const wrap = thatForm.querySelector(".google-button");
+
+  // Declared out here so `finally` can see it.
+  let redirecting = false;
 
   try {
     clearErrors();
+    setGoogleLoading(wrap, true);
     const res = await fetch(`${API_ROOT}${endpoint}`, {
       method: "POST",
       credentials: "include",
@@ -240,11 +277,15 @@ async function handleGoogleCredential(response) {
     }
 
     // Staff never go through onboarding; only brand-new owner stores do.
+    // Stay in the loading state until the page actually changes.
+    redirecting = true;
     window.location.href =
       !isStaff && data.isNewStore ? SIGNUP_REDIRECT_URL : LOGIN_REDIRECT_URL;
   } catch (error) {
     console.error(error);
     showError(errorEl, "Server connection failed.");
+  } finally {
+    if (!redirecting) setGoogleLoading(wrap, false);
   }
 }
 signupPasswordInput.addEventListener("input", renderPasswordRules);

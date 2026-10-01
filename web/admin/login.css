@@ -259,6 +259,19 @@ body {
   max-width: 100%;
 }
 
+/* ----- loading (after Google returns a credential) ----- */
+
+/* the overlay catches the clicks, so blocking it stops double clicks */
+.google-button.is-loading .google-button-overlay {
+  pointer-events: none;
+}
+
+/* same look as the submit button's loading state */
+.google-button.is-loading .google-button-face {
+  opacity: 0.7;
+  cursor: default;
+}
+
 .google-auth[hidden] {
   display: none;
 }

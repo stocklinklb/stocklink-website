@@ -1964,7 +1964,7 @@ body.subscription-expired main {
 /* Mobile */
 @media (max-width: 480px) {
   #toast-container {
-    top: auto;
+    top: auto !important;
     bottom: 20px;
     left: 14px;
     right: 14px;

@@ -15,11 +15,23 @@ let logoInput;
 let googleLinkTitle;
 let googleLinkDescription;
 let googleLinkBtn;
-let isGoogleLinked = false;
 let unlinkModal;
 
+// Google section state
+let isGoogleLinked = false;
+let googleHasPassword = true;
+// "link" or "unlink" - set when the Google modal opens, read when Google
+// hands back the credential.
+let googleAction = "link";
+
+// Elements of the Google modal (built once in buildGoogleModal)
+let googleModal;
+let googleModalTitle;
+let googleModalText;
+let googleModalButton;
+let googleModalCancel;
+
 document.addEventListener("DOMContentLoaded", () => {
-  // FIX: id in the HTML is "google-link-title" (was "googleLinkTitle" -> null)
   googleLinkTitle = document.getElementById("google-link-title");
   googleLinkDescription = document.getElementById("google-link-description");
   googleLinkBtn = document.getElementById("link-google-btn");
@@ -39,9 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   logoInput.addEventListener("change", handleLogoChange);
 
-  // FIX: this used to run at top level, before the DOM existed, so
-  // googleLinkBtn was undefined and the script threw.
   initGoogle();
+  buildGoogleModal();
   googleLinkBtn.addEventListener("click", handleGoogleButtonClick);
 
   unlinkModal = document.getElementById("unlink-modal");
@@ -56,7 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === unlinkModal) closeUnlinkModal();
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !unlinkModal.hidden) closeUnlinkModal();
+    if (e.key !== "Escape") return;
+    if (!unlinkModal.hidden) closeUnlinkModal();
+    if (googleModal.style.display !== "none") closeGoogleModal();
   });
 
   loadSettings();
@@ -113,14 +126,40 @@ function initGoogle() {
   });
 }
 
+// Unlink stays disabled when Google is the account's only way to sign in.
+function setGoogleBusy(busy) {
+  googleLinkBtn.disabled = busy || (isGoogleLinked && !googleHasPassword);
+}
+
+// Asks the server what the real state is (for the owner or for the staff
+// member who is logged in) and redraws the section from it.
+async function refreshGoogleStatus() {
+  try {
+    const res = await fetch(`${API_ROOT}/auth/google/status`, {
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("Status request failed");
+
+    const data = await res.json();
+    googleHasPassword = Boolean(data.hasPassword);
+    renderGoogleState(Boolean(data.googleLinked));
+  } catch (error) {
+    console.error(error);
+    googleLinkDescription.textContent =
+      "Couldn't load your Google account status.";
+    googleLinkBtn.disabled = true;
+  }
+}
+
 // Single place that draws the Google section for either state.
 function renderGoogleState(linked) {
   isGoogleLinked = linked;
   googleLinkTitle.textContent = "Google Account";
 
   if (linked) {
-    googleLinkDescription.textContent =
-      "Your Google account is linked for easier sign in.";
+    googleLinkDescription.textContent = googleHasPassword
+      ? "Your Google account is linked for easier sign in."
+      : "Your Google account is linked and is your only way to sign in, so it can't be unlinked yet.";
     googleLinkBtn.innerHTML = `
       <i class="fa-solid fa-link-slash"></i>
       <span>Unlink Google Account</span>
@@ -136,12 +175,8 @@ function renderGoogleState(linked) {
     googleLinkBtn.classList.remove("unlink");
   }
 
-  googleLinkBtn.disabled = false;
+  setGoogleBusy(false);
 }
-
-// "link" or "unlink" - decided when the button is clicked, used when
-// Google hands back the credential.
-let googleAction = "link";
 
 function handleGoogleButtonClick() {
   if (typeof google === "undefined" || !google.accounts?.id) {
@@ -154,8 +189,7 @@ function handleGoogleButtonClick() {
     return;
   }
 
-  googleAction = "link";
-  google.accounts.id.prompt();
+  openGoogleModal("link");
 }
 
 function openUnlinkModal() {
@@ -168,17 +202,141 @@ function closeUnlinkModal() {
   googleLinkBtn.focus();
 }
 
-// Confirmed in the modal -> re-verify with Google, then the credential
-// callback posts to /auth/google/unlink.
+// Confirmed in the modal -> ask Google to re-verify. The credential
+// callback then posts to /auth/google/unlink.
 function confirmUnlink() {
   unlinkModal.hidden = true;
-  googleAction = "unlink";
-  google.accounts.id.prompt();
+  openGoogleModal("unlink");
+}
+
+/* -------------------------
+   Google modal
+
+   Google's One Tap prompt (google.accounts.id.prompt) can be silently
+   suppressed after a user dismisses it once, which would make the Link
+   and Unlink buttons do nothing. A rendered Google button always works,
+   so it lives in this small modal. It is built here (with inline styles
+   and fallback colours) so no HTML or CSS changes are needed.
+------------------------- */
+
+function buildGoogleModal() {
+  googleModal = document.createElement("div");
+  googleModal.setAttribute("role", "dialog");
+  googleModal.setAttribute("aria-modal", "true");
+  googleModal.setAttribute("aria-labelledby", "google-modal-title");
+  googleModal.style.cssText = [
+    "position:fixed",
+    "inset:0",
+    "z-index:1100",
+    "display:none",
+    "align-items:center",
+    "justify-content:center",
+    "padding:16px",
+    "background:rgba(15,23,42,0.45)",
+  ].join(";");
+
+  const card = document.createElement("div");
+  card.style.cssText = [
+    "width:min(92vw,360px)",
+    "padding:24px 20px",
+    "text-align:center",
+    "background:var(--surface,#fff)",
+    "color:var(--ink,#111827)",
+    "border:1px solid var(--border,#e2e8f0)",
+    "border-radius:var(--radius-lg,16px)",
+    "box-shadow:var(--shadow-lg,0 20px 40px rgba(15,23,42,0.12))",
+    "font-family:inherit",
+  ].join(";");
+
+  googleModalTitle = document.createElement("h3");
+  googleModalTitle.id = "google-modal-title";
+  googleModalTitle.style.cssText = "margin:0 0 8px;font-size:17px;";
+
+  googleModalText = document.createElement("p");
+  googleModalText.style.cssText = [
+    "margin:0 0 18px",
+    "font-size:13px",
+    "line-height:1.5",
+    "color:var(--ink-soft,#475569)",
+  ].join(";");
+
+  // Google draws its real button in here
+  googleModalButton = document.createElement("div");
+  googleModalButton.style.cssText =
+    "display:flex;justify-content:center;min-height:44px;";
+
+  googleModalCancel = document.createElement("button");
+  googleModalCancel.type = "button";
+  googleModalCancel.textContent = "Cancel";
+  googleModalCancel.style.cssText = [
+    "margin-top:14px",
+    "padding:8px 16px",
+    "border:1px solid var(--border,#e2e8f0)",
+    "border-radius:var(--radius-md,12px)",
+    "background:transparent",
+    "color:inherit",
+    "font:inherit",
+    "font-size:13px",
+    "cursor:pointer",
+  ].join(";");
+
+  googleModalCancel.addEventListener("click", closeGoogleModal);
+  // Click on the dark backdrop (not the card) closes it
+  googleModal.addEventListener("click", (e) => {
+    if (e.target === googleModal) closeGoogleModal();
+  });
+
+  card.append(
+    googleModalTitle,
+    googleModalText,
+    googleModalButton,
+    googleModalCancel,
+  );
+  googleModal.appendChild(card);
+  document.body.appendChild(googleModal);
+}
+
+function openGoogleModal(action) {
+  googleAction = action;
+
+  googleModalTitle.textContent =
+    action === "link" ? "Link your Google account" : "Confirm with Google";
+  googleModalText.textContent =
+    action === "link"
+      ? "Choose the Google account you want to use to sign in."
+      : "Choose the Google account that is linked to this profile to confirm the unlink.";
+
+  googleModalButton.innerHTML = "";
+  google.accounts.id.renderButton(googleModalButton, {
+    type: "standard",
+    theme: "outline",
+    size: "large",
+    text: action === "link" ? "continue_with" : "signin_with",
+    shape: "rectangular",
+    // Google accepts 200-400px; 240 fits the card on small phones
+    width: 240,
+  });
+
+  googleModal.style.display = "flex";
+  googleModalCancel.focus();
+}
+
+// Hides without moving focus (used right after Google returns a credential,
+// because the button is about to be disabled).
+function hideGoogleModal() {
+  googleModal.style.display = "none";
+}
+
+function closeGoogleModal() {
+  hideGoogleModal();
+  googleLinkBtn.focus();
 }
 
 async function handleGoogleCredential(response) {
   const action = googleAction;
-  googleLinkBtn.disabled = true;
+  hideGoogleModal();
+  setGoogleBusy(true);
+
   try {
     const res = await fetch(`${API_ROOT}/auth/google/${action}`, {
       method: "POST",
@@ -190,16 +348,17 @@ async function handleGoogleCredential(response) {
 
     if (res.status === 429) {
       showToast("Too many attempts. Please try again later.", "error");
-      googleLinkBtn.disabled = false;
+      setGoogleBusy(false);
       return;
     }
     if (!res.ok) {
       showToast(data.message || `Google ${action} failed`, "error");
-      googleLinkBtn.disabled = false;
+      setGoogleBusy(false);
       return;
     }
 
-    renderGoogleState(action === "link");
+    // Show what the server says, not what we assume happened
+    await refreshGoogleStatus();
     showToast(
       data.message ||
         (action === "link"
@@ -210,7 +369,7 @@ async function handleGoogleCredential(response) {
   } catch (error) {
     console.error(`GOOGLE ${action.toUpperCase()} FETCH ERROR:`, error);
     showToast("Server connection failed.", "error");
-    googleLinkBtn.disabled = false;
+    setGoogleBusy(false);
   }
 }
 
@@ -248,21 +407,11 @@ async function loadSettings() {
       applyStoreLogo(store.logo);
     }
 
-    // The API scopes this to the logged-in account (store for owners,
-    // staffAccount by staffId for staff). Never read store.googleId here:
-    // for a staff member that is the OWNER's Google link, not theirs.
-    if (typeof store.googleLinked !== "boolean") {
-      console.warn(
-        "GET /settings did not return googleLinked; falling back to store.googleId",
-      );
-    }
-    const linked =
-      typeof store.googleLinked === "boolean"
-        ? store.googleLinked
-        : Boolean(store.googleId);
-
-    // linked -> button becomes "Unlink", otherwise "Link"
-    renderGoogleState(linked);
+    // The Google state comes from its own route, which looks at the account
+    // that is actually logged in (the owner's store, or the staff member's
+    // own account). Never read store.googleId here: for a staff member that
+    // would be the OWNER's Google link, not theirs.
+    await refreshGoogleStatus();
   } catch (error) {
     console.error(error);
   } finally {
@@ -297,8 +446,6 @@ async function saveSettings() {
       body: JSON.stringify(store),
     });
 
-    // FIX: the old code threw before reaching showToast (and referenced
-    // `json` before it was defined, and passed `error` as the type).
     const json = await response.json().catch(() => ({}));
 
     if (!response.ok) {
