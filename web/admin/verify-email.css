@@ -1,0 +1,411 @@
+/* =========================================================
+   STOCKLINK — EMAIL VERIFICATION
+   ========================================================= */
+
+:root {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: #111827;
+  background: #f8fafc;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.background-orbs {
+  position: fixed;
+  inset: 0;
+
+  overflow: hidden;
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+.background-orb {
+  position: absolute;
+
+  width: 280px;
+  height: 280px;
+
+  border-radius: 50%;
+
+  filter: blur(70px);
+  opacity: 0.22;
+
+  will-change: transform;
+
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+}
+
+
+/* Orb 1 */
+
+.background-orb-1 {
+  top: -100px;
+  left: -80px;
+
+  background: #60a5fa;
+
+  animation-name: float-orb-1;
+  animation-duration: 13s;
+}
+
+
+/* Orb 2 */
+
+.background-orb-2 {
+  top: 15%;
+  right: -120px;
+
+  width: 330px;
+  height: 330px;
+
+  background: #93c5fd;
+
+  animation-name: float-orb-2;
+  animation-duration: 17s;
+}
+
+
+/* Orb 3 */
+
+.background-orb-3 {
+  bottom: -120px;
+  left: 18%;
+
+  width: 320px;
+  height: 320px;
+
+  background: #bfdbfe;
+
+  animation-name: float-orb-3;
+  animation-duration: 15s;
+}
+
+
+/* Orb 4 */
+
+.background-orb-4 {
+  right: 18%;
+  bottom: 8%;
+
+  width: 220px;
+  height: 220px;
+
+  background: #dbeafe;
+
+  animation-name: float-orb-4;
+  animation-duration: 11s;
+}
+
+
+@keyframes float-orb-1 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(70px, 50px, 0) scale(1.12);
+  }
+}
+
+
+@keyframes float-orb-2 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(-90px, 70px, 0) scale(1.08);
+  }
+}
+
+
+@keyframes float-orb-3 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(80px, -60px, 0) scale(1.15);
+  }
+}
+
+
+@keyframes float-orb-4 {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(-60px, -50px, 0) scale(1.1);
+  }
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.verification-container {
+  position: relative;
+
+  z-index: 1;
+
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.verification-card {
+  width: 100%;
+  max-width: 450px;
+
+  padding: 42px 38px 38px;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 20px;
+
+  text-align: center;
+
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.08),
+    0 4px 14px rgba(15, 23, 42, 0.04);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  animation: card-enter 0.4s ease both;
+}
+
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.verification-icon {
+  width: 64px;
+  height: 64px;
+
+  margin: 0 auto 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 16px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-size: 27px;
+  line-height: 1;
+}
+
+.verification-icon span {
+  display: block;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.verification-content {
+  width: 100%;
+}
+
+.verification-eyebrow {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #2563eb;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.verification-content h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+
+  letter-spacing: -0.025em;
+}
+
+.verification-content p {
+  max-width: 360px;
+
+  margin: 15px auto 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.verification-login-button {
+  width: 100%;
+
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 25px;
+  padding: 0 18px;
+
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.verification-login-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.verification-login-button:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   HIDDEN
+   ========================================================= */
+
+[hidden] {
+  display: none !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .verification-container {
+    padding: 18px;
+  }
+
+  .verification-card {
+    padding: 34px 22px 30px;
+    border-radius: 17px;
+  }
+
+  .verification-content h1 {
+    font-size: 25px;
+  }
+
+  .verification-icon {
+    width: 58px;
+    height: 58px;
+
+    margin-bottom: 20px;
+
+    border-radius: 14px;
+
+    font-size: 24px;
+  }
+
+  .background-orb {
+    filter: blur(60px);
+    opacity: 0.18;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .background-orb {
+    animation: none;
+  }
+
+  .verification-card {
+    animation: none;
+  }
+}

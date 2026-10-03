@@ -338,6 +338,8 @@ async function handleAuth({
   payload,
   errorEl,
   fieldsToFlag = [],
+  onSuccess,
+  onFailure,
   // optional: (status, message) => array of extra elements to flag
   pickFieldsForError,
   fallbackError = "Invalid credentials",
@@ -365,7 +367,12 @@ async function handleAuth({
     const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
+
       console.log("Auth successful", data);
+      if (onSuccess) {
+        onSuccess(data);
+        return;
+      }
       window.location.href = redirectTo;
       return;
     }
@@ -375,9 +382,13 @@ async function handleAuth({
         errorEl,
         buildRateLimitMessage(response.headers.get("Retry-After")),
       );
+
       return;
     }
-
+    if (onFailure) {
+      onFailure?.(response.status, data);
+      return;
+    }
     const flagged = pickFieldsForError
       ? pickFieldsForError(response.status, data.message || "")
       : fieldsToFlag;
@@ -390,6 +401,57 @@ async function handleAuth({
     submitButton.classList.remove("is-loading");
     submitButton.disabled = false;
   }
+}
+const emailVerificationPanel = document.getElementById("email-verification-panel")
+const brand = document.querySelector(".brand")
+const resendButton = document.getElementById("resend-verification");
+function showVerifyPanel(email, mode) {
+  if (mode === "sent") {
+    showVerificationPanel();
+    return true;
+  }
+  if (mode === "failed") {
+
+    showVerificationPanel();
+  }
+}
+
+resendButton.addEventListener("click", async () => {
+  let secondsLeft = 5;
+  resendButton.disabled = true;
+  resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i>
+              Resend verification email in ${secondsLeft}s`
+
+  const countDown = setInterval(() => {
+    secondsLeft--;
+    resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i>
+              Resend verification email in ${secondsLeft}s`
+
+    if (secondsLeft < 0) {
+      clearInterval(countDown);
+      resendButton.disabled = false;
+      resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i>
+              Resend verification email`
+    }
+  }, 1000)
+})
+
+
+
+
+function showVerificationPanel() {
+  authSwitch.classList.add("is-hidden")
+  brand.classList.add("is-hidden")
+  signupForm.classList.add("is-hidden");
+  authDescription.classList.add("is-hidden");
+  emailVerificationPanel.classList.remove("is-hidden");
+}
+function hideVerificationPanel() {
+  authSwitch.classList.remove("is-hidden")
+  brand.classList.remove("is-hidden")
+  signupForm.classList.remove("is-hidden");
+  authDescription.classList.remove("is-hidden");
+  emailVerificationPanel.classList.add("is-hidden");
 }
 
 // ---------------------------------------------------------
@@ -447,13 +509,14 @@ signupForm.addEventListener("submit", (event) => {
     return;
   }
 
+
   handleAuth({
     form: signupForm,
     endpoint: "/auth/signup",
     payload: { name, email, password },
     errorEl: signupErrorMessage,
     fallbackError: "Could not create your store. Please try again.",
-    redirectTo: SIGNUP_REDIRECT_URL,
+    onSuccess: () => showVerificationPanel(),
     // 422 missing field / 400 weak password, invalid email, or taken email
     pickFieldsForError: (status, message) => {
       const msg = message.toLowerCase();
@@ -469,6 +532,8 @@ signupForm.addEventListener("submit", (event) => {
       return flagged;
     },
   });
+
+
 });
 
 // ---------------------------------------------------------

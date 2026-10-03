@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta name="referrer" content="no-referrer" />
+
+  <title>Verify your email — StockLink</title>
+
+  <link rel="stylesheet" href="/admin/verify-email.css" />
+
+  <script src="/admin/config.js" defer></script>
+  <script src="/admin/verify-email.js" defer></script>
+</head>
+
+<body>
+
+  <!-- Animated background -->
+  <div class="background-orbs" aria-hidden="true">
+    <div class="background-orb background-orb-1"></div>
+    <div class="background-orb background-orb-2"></div>
+    <div class="background-orb background-orb-3"></div>
+    <div class="background-orb background-orb-4"></div>
+  </div>
+
+  <main class="verification-container">
+
+    <section class="verification-card">
+
+      <div class="verification-icon">
+        <span>✉</span>
+      </div>
+
+      <div class="verification-content">
+
+        <span class="verification-eyebrow">
+          StockLink
+        </span>
+
+        <h1 id="verification-status">
+          Verifying your email...
+        </h1>
+
+        <p id="verification-message">
+          Please wait while we verify your email address.
+        </p>
+
+        <a id="verification-login-link" class="verification-login-button" href="/admin/login.html" hidden>
+          Go to login
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+
+</html>

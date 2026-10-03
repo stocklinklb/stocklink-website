@@ -248,7 +248,7 @@ body {
   cursor: pointer;
 }
 
-.google-button-overlay > div {
+.google-button-overlay>div {
   transform: scaleY(1.225);
   transform-origin: top center;
 
@@ -279,12 +279,13 @@ body {
 /* ----- small screens ----- */
 
 @media (max-width: 520px) {
+
   .google-button,
   .google-button-face {
     height: 48px;
   }
 
-  .google-button-overlay > div {
+  .google-button-overlay>div {
     transform: scaleY(1.2);
   }
 }
@@ -405,6 +406,7 @@ body {
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0) rotate(-6deg);
@@ -420,6 +422,7 @@ body {
 }
 
 @keyframes float-right {
+
   0%,
   100% {
     transform: translateY(0) rotate(6deg);
@@ -435,6 +438,7 @@ body {
 }
 
 @keyframes float-bottom {
+
   0%,
   100% {
     transform: translateY(0) rotate(-4deg);
@@ -626,7 +630,8 @@ body {
 }
 
 .login-form {
-  grid-area: 1 / 1; /* both forms sit in the same cell */
+  grid-area: 1 / 1;
+  /* both forms sit in the same cell */
 
   display: grid;
   gap: 18px;
@@ -874,7 +879,7 @@ input.input-error:focus {
    LOGIN BUTTON
    ========================================================= */
 
-.login-form > button[type="submit"] {
+.login-form>button[type="submit"] {
   width: 100%;
   height: 49px;
 
@@ -903,7 +908,7 @@ input.input-error:focus {
     opacity 0.18s var(--ease);
 }
 
-.login-form > button[type="submit"]:hover {
+.login-form>button[type="submit"]:hover {
   transform: translateY(-1px);
 
   background: var(--accent-dark);
@@ -911,11 +916,11 @@ input.input-error:focus {
   box-shadow: var(--shadow-accent-lg);
 }
 
-.login-form > button[type="submit"]:active {
+.login-form>button[type="submit"]:active {
   transform: translateY(0);
 }
 
-.login-form > button[type="submit"].is-loading {
+.login-form>button[type="submit"].is-loading {
   opacity: 0.7;
   cursor: default;
   pointer-events: none;
@@ -1147,7 +1152,7 @@ html[data-theme="dark"] .auth-switch button {
   gap: 14px;
 }
 
-#signup-form .form-group > input {
+#signup-form .form-group>input {
   height: 44px;
 }
 
@@ -1173,7 +1178,8 @@ html[data-theme="dark"] .auth-switch button {
    has something typed in it, or failed validation. */
 #signup-form .password-rules {
   max-height: 0;
-  margin-top: -8px; /* cancels the .form-group gap while collapsed */
+  margin-top: -8px;
+  /* cancels the .form-group gap while collapsed */
 
   overflow: hidden;
   opacity: 0;
@@ -1344,5 +1350,268 @@ html[data-theme="dark"] .auth-switch button {
   .login-form,
   #signup-form {
     gap: 12px;
+  }
+}
+
+/* =========================================================
+   EMAIL VERIFICATION SUCCESS PANEL
+   ========================================================= */
+/* =========================================================
+   EMAIL VERIFICATION SUCCESS PANEL
+   ========================================================= */
+
+.is-hidden {
+  display: none !important;
+}
+
+.email-verification-panel {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 42px 36px 34px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+
+  text-align: center;
+
+  animation: verificationPanelIn 0.35s ease both;
+}
+
+@keyframes verificationPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Icon */
+
+.verification-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-size: 26px;
+}
+
+.verification-icon i {
+  transform: translateX(-1px);
+}
+
+
+/* Content */
+
+.verification-content {
+  width: 100%;
+}
+
+.verification-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.verification-content h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.verification-description {
+  margin: 16px 0 0;
+
+  color: #374151;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.verification-description strong {
+  color: #111827;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.verification-hint {
+  max-width: 390px;
+  margin: 10px auto 26px;
+
+  color: #6b7280;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* Primary button */
+
+.verification-primary-button {
+  width: 100%;
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  padding: 0 18px;
+
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.verification-primary-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.verification-primary-button:active {
+  transform: translateY(1px);
+}
+
+
+/* Secondary button */
+
+.verification-secondary-button {
+  width: 100%;
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 10px;
+  padding: 0 18px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #374151;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.verification-secondary-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.verification-secondary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* Resend feedback */
+
+.resend-message {
+  margin: 12px 0 0;
+
+  color: #2563eb;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.resend-message.error {
+  color: #dc2626;
+}
+
+
+/* Footer hint */
+
+.verification-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+
+  margin-top: 25px;
+  padding-top: 20px;
+
+  border-top: 1px solid #f0f0f0;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.verification-footer i {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 520px) {
+  .email-verification-panel {
+    padding: 34px 22px 28px;
+    border-radius: 16px;
+  }
+
+  .verification-content h1 {
+    font-size: 25px;
+  }
+
+  .verification-icon {
+    width: 62px;
+    height: 62px;
+    margin-bottom: 21px;
   }
 }
