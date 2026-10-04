@@ -1,4 +1,19 @@
 // =========================================================
+// CONSTANTS
+// =========================================================
+
+const STEP_STORE_NAME = 1;
+const STEP_BUSINESS_TYPE = 2;
+const STEP_CHOICE = 3;
+
+// What each choice card does when "Continue" is pressed on the last step.
+const FLOW_CONFIG = {
+  import: { eventType: "STEP_CHOICE", path: "IMPORT", page: "excel-import" },
+  manual: { eventType: "STEP_CHOICE", path: "MANUAL", page: "add-product" },
+  explore: { eventType: "PATH_CHOSEN", path: "EXPLORE", page: "" },
+};
+
+// =========================================================
 // DOM REFERENCES
 // =========================================================
 
@@ -12,12 +27,27 @@ const progressLines = document.querySelectorAll(".progress-line");
 
 const step1Continue = document.getElementById("step-1-continue");
 const step2Continue = document.getElementById("step-2-continue");
+const step3Continue = document.getElementById("step-3-continue");
 
 const choiceCards = document.querySelectorAll(".choice-card");
 
 const globalSkip = document.getElementById("global-skip");
-
 const skipButtons = document.querySelectorAll("[data-skip-step]");
+const backButtons = document.querySelectorAll("[data-back-step]");
+
+const businessSearch = document.getElementById("business-type-search");
+const businessTypeList = document.getElementById("business-type-list");
+
+// Error message element for the business type step.
+// Uses #business-type-error if it exists in the HTML, otherwise creates it.
+let businessTypeError = document.getElementById("business-type-error");
+
+if (!businessTypeError) {
+  businessTypeError = document.createElement("p");
+  businessTypeError.id = "business-type-error";
+  businessTypeError.className = storeNameError.className;
+  businessTypeList.insertAdjacentElement("afterend", businessTypeError);
+}
 
 // =========================================================
 // STATE
@@ -26,26 +56,35 @@ const skipButtons = document.querySelectorAll("[data-skip-step]");
 let selectedFlow = null;
 let originalName = null;
 
+let businessTypes = [];
+let selectedBusinessType = null; // what the user has highlighted
+let savedBusinessType = null; // what has already been saved on the server
+
 // =========================================================
 // STORE NAME — PREFILL
 // =========================================================
 
 async function loadStore() {
-  const response = await fetch(`${API_ROOT}/auth/me`, {
-    method: "GET",
-    credentials: "include",
-  });
+  try {
+    const response = await fetch(`${API_ROOT}/auth/me`, {
+      method: "GET",
+      credentials: "include",
+    });
 
-  if (!response.ok) {
-    window.location.href = "/admin/login.html";
-    return;
+    if (!response.ok) {
+      window.location.href = "/admin/login.html";
+      return;
+    }
+
+    const result = await response.json();
+
+    originalName = result.name;
+    storeName.value = result.name ?? "";
+    step1Continue.disabled = storeName.value.trim() === "";
+  } catch (error) {
+    console.error(error);
+    storeNameError.textContent = "Server connection failed";
   }
-
-  const result = await response.json();
-
-  originalName = result.name;
-  storeName.value = result.name;
-  step1Continue.disabled = storeName.value.trim() === "";
 }
 
 // =========================================================
@@ -57,24 +96,162 @@ storeName.addEventListener("input", () => {
   storeNameError.textContent = "";
 });
 
-const backButtons = document.querySelectorAll("[data-back-step]");
+// =========================================================
+// BUSINESS TYPE — LOAD + RENDER
+// =========================================================
 
-backButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    choiceCards.forEach((card) => {
-      card.classList.remove("is-selected");
+async function loadBusinessTypes() {
+  try {
+    const response = await fetch(`${API_ROOT}/onboarding/business-types`, {
+      method: "GET",
+      credentials: "include",
     });
 
-    // Reset the selection state
-    selectedFlow = null;
-    step2Continue.disabled = true;
-
-    const currentStep = getCurrentStep();
-
-    if (currentStep > 1) {
-      showStep(currentStep - 1);
+    if (!response.ok) {
+      businessTypeError.textContent = "Couldn't load business types.";
+      return;
     }
+
+    const data = await response.json();
+
+    businessTypes = data.businessTypes || [];
+    buildSearchList(businessTypes);
+  } catch (error) {
+    console.error(error);
+    businessTypeError.textContent = "Server connection failed";
+  }
+}
+
+function buildSearchList(list) {
+  businessTypeList.innerHTML = "";
+
+  if (list.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "business-type-empty";
+    empty.textContent = "No matching business types.";
+    businessTypeList.appendChild(empty);
+    return;
+  }
+
+  list.forEach((business) => {
+    const button = document.createElement("button");
+    button.className = "business-type-item";
+    button.type = "button";
+    button.dataset.businessType = business.id;
+
+    // Keep the selection visible after searching / re-rendering.
+    if (business.id === selectedBusinessType) {
+      button.classList.add("is-selected");
+    }
+
+    const icon = document.createElement("div");
+    icon.className = "business-type-icon";
+    icon.innerHTML = '<i class="fa-solid fa-store"></i>';
+
+    const name = document.createElement("span");
+    name.className = "business-type-name";
+    name.textContent = business.name;
+
+    const check = document.createElement("span");
+    check.className = "business-type-check";
+    check.innerHTML = '<i class="fa-solid fa-check"></i>';
+
+    button.append(icon, name, check);
+    businessTypeList.appendChild(button);
   });
+}
+
+// =========================================================
+// BUSINESS TYPE — SELECTION
+// =========================================================
+
+businessTypeList.addEventListener("click", (event) => {
+  const item = event.target.closest(".business-type-item");
+
+  if (!item) return;
+
+  businessTypeList
+    .querySelectorAll(".business-type-item")
+    .forEach((b) => b.classList.remove("is-selected"));
+
+  item.classList.add("is-selected");
+
+  selectedBusinessType = item.dataset.businessType;
+  step2Continue.disabled = false;
+  businessTypeError.textContent = "";
+});
+
+// =========================================================
+// BUSINESS TYPE — SEARCH
+// =========================================================
+
+businessSearch.addEventListener("input", (event) => {
+  const searchValue = event.target.value.toLowerCase().trim();
+
+  const filtered = businessTypes.filter((business) =>
+    business.name.toLowerCase().includes(searchValue),
+  );
+
+  buildSearchList(filtered);
+});
+
+// =========================================================
+// BUSINESS TYPE — CONTINUE (save, then go to the next step)
+// =========================================================
+
+
+const generalStoreButton = document.getElementById("business-type-general");
+
+generalStoreButton.addEventListener("click", () => {
+  selectedBusinessType = "GENERAL_STORE";
+  businessSearch.value = "";
+  buildSearchList(businessTypes); // re-render so the item shows as selected
+
+  step2Continue.disabled = false;
+  businessTypeError.textContent = "";
+
+  businessTypeList
+    .querySelector(".is-selected")
+    ?.scrollIntoView({ block: "nearest" });
+});
+
+step2Continue.addEventListener("click", async () => {
+  if (!selectedBusinessType) return;
+
+  // Already saved (e.g. user went back and forward): no request needed.
+  if (selectedBusinessType === savedBusinessType) {
+    showNextStep(getCurrentStep());
+    return;
+  }
+
+  step2Continue.disabled = true;
+  businessTypeError.textContent = "";
+
+  try {
+    const response = await fetch(`${API_ROOT}/onboarding/business`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ businessType: selectedBusinessType }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+
+      businessTypeError.textContent =
+        data.message || "Couldn't save your business type.";
+
+      return;
+    }
+
+    savedBusinessType = selectedBusinessType;
+    showNextStep(getCurrentStep());
+  } catch (error) {
+    console.error(error);
+    businessTypeError.textContent = "Server connection failed";
+  } finally {
+    step2Continue.disabled = !selectedBusinessType;
+  }
 });
 
 // =========================================================
@@ -127,7 +304,6 @@ function showStep(stepNumber) {
 
   if (!targetStep) {
     console.error(`Onboarding step ${stepNumber} was not found.`);
-
     return;
   }
 
@@ -140,11 +316,9 @@ function showStep(stepNumber) {
 
     targetStep.classList.remove("is-hidden");
 
-    updateProgress(stepNumber === 2 && selectedFlow ? 3 : stepNumber);
+    updateProgress(stepNumber);
 
     onboardingContent.classList.remove("is-changing");
-
-    console.log("Current onboarding step:", getCurrentStep());
   }, 220);
 }
 
@@ -153,10 +327,36 @@ function showStep(stepNumber) {
 // =========================================================
 
 function showNextStep(stepNumber) {
-  const nextStepNumber = Number(stepNumber) + 1;
-
-  showStep(nextStepNumber);
+  showStep(Number(stepNumber) + 1);
 }
+
+// =========================================================
+// BACK BUTTONS
+// =========================================================
+
+function resetFlowSelection() {
+  choiceCards.forEach((card) => {
+    card.classList.remove("is-selected");
+  });
+
+  selectedFlow = null;
+  step3Continue.disabled = true;
+}
+
+backButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const currentStep = getCurrentStep();
+
+    // Only the choice step has a selection that needs resetting.
+    if (currentStep === STEP_CHOICE) {
+      resetFlowSelection();
+    }
+
+    if (currentStep > 1) {
+      showStep(currentStep - 1);
+    }
+  });
+});
 
 // =========================================================
 // STEP 1 — CONTINUE (save the name only if it changed)
@@ -206,15 +406,20 @@ step1Continue.addEventListener("click", async () => {
   }
 });
 
+// =========================================================
+// ONBOARDING EVENTS
+// =========================================================
+
 async function recordOnBoard(eventType, metadata) {
   try {
     const response = await fetch(`${API_ROOT}/onboarding`, {
       method: "PATCH",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      keepalive: true,
+      keepalive: true, // lets the request finish even if we redirect right after
       body: JSON.stringify({ eventType, metadata }),
     });
+
     if (!response.ok) {
       console.error("Failed to record onboarding event:", response.status);
     }
@@ -224,7 +429,7 @@ async function recordOnBoard(eventType, metadata) {
 }
 
 // =========================================================
-// STEP 2 — CHOICE SELECTION
+// STEP 3 — CHOICE SELECTION (import / manual / explore)
 // =========================================================
 
 choiceCards.forEach((card) => {
@@ -236,48 +441,23 @@ choiceCards.forEach((card) => {
     card.classList.add("is-selected");
 
     selectedFlow = card.dataset.choice;
-
-    step2Continue.disabled = false;
-    updateProgress(3);
-
-    console.log("Selected flow:", selectedFlow.toUpperCase());
+    step3Continue.disabled = false;
   });
 });
 
 // =========================================================
-// STEP 2 — CONTINUE
+// STEP 3 — CONTINUE
 // =========================================================
 
-step2Continue.addEventListener("click", async () => {
-  if (!selectedFlow) {
+step3Continue.addEventListener("click", () => {
+  const flow = FLOW_CONFIG[selectedFlow];
+
+  if (!flow) {
     return;
   }
 
-  if (selectedFlow === "import") {
-    recordOnBoard("STEP_CHOICE", {
-      path: "IMPORT",
-    });
-    goToDashboardPage("excel-import");
-    return;
-  }
-
-  if (selectedFlow === "manual") {
-    recordOnBoard("STEP_CHOICE", {
-      path: "MANUAL",
-    });
-    goToDashboardPage("add-product");
-
-    return;
-  }
-
-  if (selectedFlow === "explore") {
-    recordOnBoard("PATH_CHOSEN", {
-      path: "EXPLORE",
-    });
-    goToDashboardPage("");
-
-    return;
-  }
+  recordOnBoard(flow.eventType, { path: flow.path });
+  goToDashboardPage(flow.page);
 });
 
 // =========================================================
@@ -288,11 +468,10 @@ skipButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const step = Number(button.dataset.skipStep);
 
-    console.log(`Skipping onboarding step ${step}`);
-
-    if (step === 1) {
-      showNextStep(getCurrentStep());
-
+    // Steps before the last one skip to the next step.
+    // Skipping the last step leaves onboarding.
+    if (step < STEP_CHOICE) {
+      showStep(step + 1);
       return;
     }
 
@@ -320,11 +499,13 @@ function goToDashboardPage(page) {
 // INITIAL STATE
 // =========================================================
 
-showStep(1);
+showStep(STEP_STORE_NAME);
 
 step1Continue.disabled = true;
 step2Continue.disabled = true;
+step3Continue.disabled = true;
 
 // Runs last so the prefill can enable Continue after the
 // initial disabled state above has been applied.
 loadStore();
+loadBusinessTypes();

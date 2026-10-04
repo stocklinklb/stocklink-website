@@ -1,197 +1,226 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>StockLink — Get Started</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+  <title>StockLink — Get Started</title>
 
-    <link rel="stylesheet" href="/admin/onboarding.css" />
-  </head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <body>
-    <main class="onboarding-page">
-      <section class="onboarding-shell" aria-label="StockLink onboarding">
-        <!-- =====================================================
+  <link rel="stylesheet" href="/admin/onboarding.css" />
+</head>
+
+<body>
+  <main class="onboarding-page">
+    <section class="onboarding-shell" aria-label="StockLink onboarding">
+      <!-- =====================================================
              HEADER
         ====================================================== -->
-        <header class="onboarding-header">
-          <a href="/" class="onboarding-logo" aria-label="StockLink home">
-            <span class="logo-mark">SL</span>
-            <span class="logo-text">StockLink</span>
-          </a>
+      <header class="onboarding-header">
+        <a href="/" class="onboarding-logo" aria-label="StockLink home">
+          <span class="logo-mark">SL</span>
+          <span class="logo-text">StockLink</span>
+        </a>
 
-          <button type="button" class="skip-button" id="global-skip">
-            Skip setup
-          </button>
-        </header>
+        <button type="button" class="skip-button" id="global-skip">
+          Skip setup
+        </button>
+      </header>
 
-        <!-- =====================================================
+      <!-- =====================================================
              PROGRESS
         ====================================================== -->
-        <div class="onboarding-progress" aria-label="Onboarding progress">
-          <div class="progress-item is-active" data-progress-step="1">
-            <span class="progress-dot"></span>
-          </div>
-
-          <div class="progress-line"></div>
-
-          <div class="progress-item" data-progress-step="2">
-            <span class="progress-dot"></span>
-          </div>
-
-          <div class="progress-line"></div>
-
-          <div class="progress-item" data-progress-step="3">
-            <span class="progress-dot"></span>
-          </div>
+      <div class="onboarding-progress" aria-label="Onboarding progress">
+        <div class="progress-item is-active" data-progress-step="1">
+          <span class="progress-dot"></span>
         </div>
 
-        <!-- =====================================================
+        <div class="progress-line"></div>
+
+        <div class="progress-item" data-progress-step="2">
+          <span class="progress-dot"></span>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-item" data-progress-step="3">
+          <span class="progress-dot"></span>
+        </div>
+      </div>
+
+      <!-- =====================================================
              CONTENT
         ====================================================== -->
-        <div class="onboarding-content">
-          <!-- ===================================================
-               STEP 1
+      <div class="onboarding-content">
+        <!-- ===================================================
+               STEP 1 — STORE NAME
           ==================================================== -->
-          <section class="onboarding-step" id="step-1" data-step="1">
-            <div class="step-content">
-              <span class="eyebrow">Let’s get started</span>
+        <section class="onboarding-step" id="step-1" data-step="1">
+          <div class="step-content">
+            <span class="eyebrow">Let’s get started</span>
 
-              <h1>Let’s get your stock organized.</h1>
+            <h1>Let’s get your stock organized.</h1>
 
-              <p class="step-description">
-                First, let’s set up the basics of your store. You can change
-                this later.
-              </p>
+            <p class="step-description">
+              First, let’s set up the basics of your store. You can change
+              this later.
+            </p>
 
-              <div class="form-section">
-                <label for="store-name"> Store name </label>
+            <div class="form-section">
+              <label for="store-name"> Store name </label>
 
-                <input
-                  id="store-name"
-                  name="store-name"
-                  type="text"
-                  placeholder="Your store name"
-                  autocomplete="organization"
-                />
-                <p class="error-message" id="store-name-error" role="alert"></p>
+              <input id="store-name" name="store-name" type="text" placeholder="Your store name"
+                autocomplete="organization" />
+              <p class="error-message" id="store-name-error" role="alert"></p>
+            </div>
+
+            <button type="button" class="primary-button" id="step-1-continue" disabled>
+              Continue
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <button type="button" class="text-button" data-skip-step="1">
+              Skip for now
+            </button>
+          </div>
+        </section>
+
+        <!-- ===================================================
+               STEP 2 — BUSINESS TYPE
+          ==================================================== -->
+        <section class="onboarding-step is-hidden" id="step-2" data-step="2">
+          <div class="step-content business-type-content">
+
+            <button type="button" class="back-button" data-back-step aria-label="Go back">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+
+            <span class="eyebrow">Tell us about your store</span>
+
+            <h1>What kind of store do you run?</h1>
+
+            <p class="step-description">
+              We'll use this to set up categories and product options that fit your
+              inventory. You can change them later.
+            </p>
+
+            <div class="business-type-picker">
+
+              <div class="business-type-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input id="business-type-search" type="search" placeholder="Search store types..." autocomplete="off" />
               </div>
 
-              <button
-                type="button"
-                class="primary-button"
-                id="step-1-continue"
-                disabled
-              >
-                Continue
-                <i class="fa-solid fa-arrow-right"></i>
-              </button>
-
-              <button type="button" class="text-button" data-skip-step="1">
-                Skip for now
-              </button>
-            </div>
-          </section>
-
-          <!-- ===================================================
-               STEP 2
-          ==================================================== -->
-          <section class="onboarding-step is-hidden" id="step-2" data-step="2">
-            <div class="step-content">
-              <button
-                type="button"
-                class="back-button"
-                data-back-step
-                aria-label="Go back"
-              >
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>Back</span>
-              </button>
-              <span class="eyebrow">Next step</span>
-
-              <h1>What do you want to do first?</h1>
-
-              <p class="step-description">
-                Choose the easiest way for you to get started.
-              </p>
-
-              <div class="choice-list">
-                <button type="button" class="choice-card" data-choice="import">
-                  <div class="choice-icon">
-                    <i class="fa-solid fa-file-excel"></i>
-                  </div>
-
-                  <div class="choice-copy">
-                    <strong>Import my products</strong>
-
-                    <span>
-                      Bring your existing inventory into StockLink with an Excel
-                      file.
-                    </span>
-                  </div>
-
-                  <i class="fa-solid fa-arrow-right choice-arrow"></i>
-                </button>
-
-                <button type="button" class="choice-card" data-choice="manual">
-                  <div class="choice-icon">
-                    <i class="fa-solid fa-plus"></i>
-                  </div>
-
-                  <div class="choice-copy">
-                    <strong>Add products manually</strong>
-
-                    <span>
-                      Start adding your inventory one product at a time.
-                    </span>
-                  </div>
-
-                  <i class="fa-solid fa-arrow-right choice-arrow"></i>
-                </button>
-
-                <button type="button" class="choice-card" data-choice="explore">
-                  <div class="choice-icon">
-                    <i class="fa-regular fa-compass"></i>
-                  </div>
-
-                  <div class="choice-copy">
-                    <strong>Explore StockLink</strong>
-
-                    <span>
-                      Take a look around before setting anything up.
-                    </span>
-                  </div>
-
-                  <i class="fa-solid fa-arrow-right choice-arrow"></i>
-                </button>
+              <div class="business-type-list" id="business-type-list" role="listbox" aria-label="Business type">
+                <!-- Rendered by onboarding.js -->
               </div>
 
-              <button
-                type="button"
-                class="primary-button"
-                id="step-2-continue"
-                disabled
-              >
-                Continue
-                <i class="fa-solid fa-arrow-right"></i>
+              <p class="business-type-empty" id="business-type-empty" hidden>
+                No store types found.
+              </p>
+
+            </div>
+
+            <button type="button" class="primary-button" id="step-2-continue" disabled>
+              Continue
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <button type="button" class="text-button" id="business-type-general">
+              Not listed? Use General Store
+            </button>
+
+          </div>
+        </section>
+
+        <!-- ===================================================
+               STEP 3 — FIRST ACTION
+          ==================================================== -->
+        <section class="onboarding-step is-hidden" id="step-3" data-step="3">
+          <div class="step-content">
+            <button type="button" class="back-button" data-back-step aria-label="Go back">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <span class="eyebrow">Next step</span>
+
+            <h1>What do you want to do first?</h1>
+
+            <p class="step-description">
+              Choose the easiest way for you to get started.
+            </p>
+
+            <div class="choice-list">
+              <button type="button" class="choice-card" data-choice="import">
+                <div class="choice-icon">
+                  <i class="fa-solid fa-file-excel"></i>
+                </div>
+
+                <div class="choice-copy">
+                  <strong>Import my products</strong>
+
+                  <span>
+                    Bring your existing inventory into StockLink with an Excel
+                    file.
+                  </span>
+                </div>
+
+                <i class="fa-solid fa-arrow-right choice-arrow"></i>
               </button>
 
-              <button type="button" class="text-button" data-skip-step="2">
-                Not sure? Start with an empty store
+              <button type="button" class="choice-card" data-choice="manual">
+                <div class="choice-icon">
+                  <i class="fa-solid fa-plus"></i>
+                </div>
+
+                <div class="choice-copy">
+                  <strong>Add products manually</strong>
+
+                  <span>
+                    Start adding your inventory one product at a time.
+                  </span>
+                </div>
+
+                <i class="fa-solid fa-arrow-right choice-arrow"></i>
+              </button>
+
+              <button type="button" class="choice-card" data-choice="explore">
+                <div class="choice-icon">
+                  <i class="fa-regular fa-compass"></i>
+                </div>
+
+                <div class="choice-copy">
+                  <strong>Explore StockLink</strong>
+
+                  <span>
+                    Take a look around before setting anything up.
+                  </span>
+                </div>
+
+                <i class="fa-solid fa-arrow-right choice-arrow"></i>
               </button>
             </div>
-          </section>
-        </div>
-      </section>
-    </main>
 
-    <script src="/admin/config.js"></script>
-    <script src="/admin/onboarding.js"></script>
-  </body>
-</html>
+            <button type="button" class="primary-button" id="step-3-continue" disabled>
+              Continue
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <button type="button" class="text-button" data-skip-step="3">
+              Not sure? Start with an empty store
+            </button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="/admin/config.js"></script>
+  <script src="/admin/onboarding.js"></script>
+</body>
+
+</html> 

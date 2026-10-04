@@ -6,7 +6,6 @@
 // color-picker.js, color-images.js, variants.js, specifications.js, and
 // product-form.js - they all read/write these globals.
 
-console.log("CURRENT URL:", window.location.href);
 
 const BRANDS = [
   "Apple",
@@ -40,10 +39,6 @@ const BRANDS = [
   "UGREEN",
 ];
 
-window.addEventListener("beforeunload", function () {
-  console.trace("PAGE IS LEAVING");
-});
-console.log("ADD PRODUCT JS LOADED");
 
 // API_BASE (from config.js) IS the products resource base already
 // (".../products") — don't append "/products" again here, or every
@@ -57,10 +52,7 @@ let productId = urlParams.get("id");
 
 let editMode = productId !== null;
 
-console.log({
-  productId,
-  editMode,
-});
+
 let currentProduct = null;
 
 // Required specs, keyed by category. Only the fields that actually exist
