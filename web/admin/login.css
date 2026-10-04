@@ -1354,29 +1354,38 @@ html[data-theme="dark"] .auth-switch button {
 }
 
 /* =========================================================
-   EMAIL VERIFICATION SUCCESS PANEL
-   ========================================================= */
-/* =========================================================
-   EMAIL VERIFICATION SUCCESS PANEL
+   EMAIL VERIFICATION PANEL
+   Shown inside .login-card after signup. Uses the same design
+   tokens as the rest of the page, so dark mode works too.
    ========================================================= */
 
-.is-hidden {
+/* Scoped on purpose. A global ".is-hidden { display: none !important }"
+   would also kill the fade transition on ".login-form.is-hidden". */
+.email-verification-panel.is-hidden,
+.resend-message.is-hidden {
   display: none !important;
 }
 
+/* While the panel is open, hide the login chrome above it
+   (tabs, logo + "Sign in..." text, "Create one" switch). */
+.login-card:has(.email-verification-panel:not(.is-hidden)) .login-tabs,
+.login-card:has(.email-verification-panel:not(.is-hidden)) .brand,
+.login-card:has(.email-verification-panel:not(.is-hidden)) .auth-switch {
+  display: none;
+}
+
 .email-verification-panel {
+  /* same grid cell the forms use */
+  grid-area: 1 / 1;
+  position: relative;
+
   width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 42px 36px 34px;
+  padding: 40px 0 0;
 
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
-
+  /* no card of its own: it already lives inside .login-card */
   text-align: center;
 
-  animation: verificationPanelIn 0.35s ease both;
+  animation: verificationPanelIn 0.35s var(--ease) both;
 }
 
 @keyframes verificationPanelIn {
@@ -1392,6 +1401,56 @@ html[data-theme="dark"] .auth-switch button {
 }
 
 
+/* Back button */
+
+.verification-back-button {
+  position: absolute;
+  top: 0;
+  left: -8px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 12px 7px 9px;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+
+  background: transparent;
+  color: var(--ink-soft);
+
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s var(--ease),
+    color 0.15s var(--ease),
+    border-color 0.15s var(--ease);
+}
+
+.verification-back-button:hover {
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.verification-back-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.verification-back-button svg {
+  transition: transform 0.15s var(--ease);
+}
+
+.verification-back-button:hover svg {
+  transform: translateX(-2px);
+}
+
+
 /* Icon */
 
 .verification-icon {
@@ -1399,20 +1458,43 @@ html[data-theme="dark"] .auth-switch button {
   height: 68px;
   margin: 0 auto 24px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
 
   border-radius: 50%;
 
-  background: #eff6ff;
-  color: #2563eb;
-
-  font-size: 26px;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
-.verification-icon i {
-  transform: translateX(-1px);
+/* Envelope SVG (drawn in with a stroke animation) */
+
+.envelope-svg {
+  display: block;
+  overflow: visible;
+}
+
+.envelope-svg .env-body,
+.envelope-svg .env-flap {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  animation: envelopeDraw 0.7s ease forwards;
+}
+
+.envelope-svg .env-flap {
+  animation-delay: 0.45s;
+}
+
+@keyframes envelopeDraw {
+  1% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
 }
 
 
@@ -1426,7 +1508,7 @@ html[data-theme="dark"] .auth-switch button {
   display: block;
   margin-bottom: 8px;
 
-  color: #2563eb;
+  color: var(--accent);
 
   font-size: 12px;
   font-weight: 700;
@@ -1434,48 +1516,49 @@ html[data-theme="dark"] .auth-switch button {
   text-transform: uppercase;
 }
 
-.verification-content h1 {
+.verification-content h2 {
   margin: 0;
 
-  color: #111827;
+  color: var(--ink);
 
-  font-size: 28px;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: 27px;
+  line-height: 1.15;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.04em;
 }
 
 .verification-description {
   margin: 16px 0 0;
 
-  color: #374151;
+  color: var(--ink-soft);
 
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
 .verification-description strong {
-  color: #111827;
+  color: var(--ink);
   font-weight: 600;
   overflow-wrap: anywhere;
 }
 
 .verification-hint {
-  max-width: 390px;
+  max-width: 340px;
   margin: 10px auto 26px;
 
-  color: #6b7280;
+  color: var(--ink-soft);
 
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 
-/* Primary button */
+/* Primary button (matches the "Log in" submit button) */
 
 .verification-primary-button {
   width: 100%;
-  min-height: 46px;
+  min-height: 49px;
 
   display: inline-flex;
   align-items: center;
@@ -1484,39 +1567,54 @@ html[data-theme="dark"] .auth-switch button {
 
   padding: 0 18px;
 
-  border: 1px solid #2563eb;
-  border-radius: 10px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
 
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--accent-contrast);
 
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-decoration: none;
 
   cursor: pointer;
 
+  box-shadow: var(--shadow-accent-sm);
+
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.15s ease;
+    transform 0.18s var(--ease),
+    box-shadow 0.18s var(--ease),
+    background-color 0.18s var(--ease),
+    border-color 0.18s var(--ease);
 }
 
 .verification-primary-button:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  transform: translateY(-1px);
+
+  border-color: var(--accent-dark);
+  background: var(--accent-dark);
+
+  box-shadow: var(--shadow-accent-lg);
 }
 
 .verification-primary-button:active {
-  transform: translateY(1px);
+  transform: translateY(0);
+}
+
+.verification-primary-button:focus-visible,
+.verification-secondary-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 
-/* Secondary button */
+/* Secondary button (matches the Google button look) */
 
 .verification-secondary-button {
   width: 100%;
-  min-height: 44px;
+  min-height: 49px;
 
   display: inline-flex;
   align-items: center;
@@ -1526,28 +1624,38 @@ html[data-theme="dark"] .auth-switch button {
   margin-top: 10px;
   padding: 0 18px;
 
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 
-  background: #ffffff;
-  color: #374151;
+  background: var(--surface-soft);
+  color: var(--ink);
 
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 
   cursor: pointer;
 
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+    transform 0.18s var(--ease),
+    border-color 0.18s var(--ease),
+    background-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
 }
 
-.verification-secondary-button:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-  color: #111827;
+.verification-secondary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  border-color: var(--border-strong);
+  background: var(--surface);
+
+  box-shadow: var(--shadow-md);
+}
+
+.verification-secondary-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .verification-secondary-button:disabled {
@@ -1561,14 +1669,14 @@ html[data-theme="dark"] .auth-switch button {
 .resend-message {
   margin: 12px 0 0;
 
-  color: #2563eb;
+  color: var(--accent);
 
   font-size: 13px;
   line-height: 1.5;
 }
 
 .resend-message.error {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 
@@ -1580,12 +1688,12 @@ html[data-theme="dark"] .auth-switch button {
   justify-content: center;
   gap: 7px;
 
-  margin-top: 25px;
-  padding-top: 20px;
+  margin-top: 24px;
+  padding-top: 18px;
 
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border);
 
-  color: #9ca3af;
+  color: var(--ink-faint);
 
   font-size: 12px;
   line-height: 1.5;
@@ -1601,17 +1709,32 @@ html[data-theme="dark"] .auth-switch button {
 
 @media (max-width: 520px) {
   .email-verification-panel {
-    padding: 34px 22px 28px;
-    border-radius: 16px;
+    padding-top: 36px;
   }
 
-  .verification-content h1 {
-    font-size: 25px;
+  .verification-content h2 {
+    font-size: 24px;
   }
 
   .verification-icon {
     width: 62px;
     height: 62px;
     margin-bottom: 21px;
+  }
+}
+
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .email-verification-panel {
+    animation: none;
+  }
+
+  .envelope-svg .env-body,
+  .envelope-svg .env-flap {
+    animation: none;
+    opacity: 1;
+    stroke-dashoffset: 0;
   }
 }

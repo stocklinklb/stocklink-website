@@ -33,10 +33,13 @@ const authDescription = document.getElementById("auth-description");
 const authSwitch = document.getElementById("auth-switch");
 const authSwitchText = document.getElementById("auth-switch-text");
 const authSwitchButton = document.getElementById("show-signup");
-
+const verificationPanelBack = document.getElementById("verification-back");
 const LOGIN_REDIRECT_URL = "/admin/index.html";
 // Point this at the onboarding screens once they exist.
 const SIGNUP_REDIRECT_URL = "/admin/onboarding.html";
+
+
+verificationPanelBack.addEventListener("click", hideVerificationPanel)
 
 // =========================================================
 // VIEW STATE

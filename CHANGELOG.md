@@ -1,4 +1,13 @@
-## 1.5.2 - 2026-1-01
+## 1.6.0 - 2026-10-04
+
+- Auth: new accounts must now verify their email before they can log in
+- Auth: after signing up, a verification email is sent; clicking its link verifies your email and signs you in
+- Auth: you can request a new verification email if the first one doesn't arrive
+- Auth: signing in with an unverified email is now blocked
+- Auth: signing in with Google now counts as a verified email
+
+
+## 1.5.2 - 2026-10-01
 
 - Styling : Fixed mobile rule for the toast , as it's taking full width 
 

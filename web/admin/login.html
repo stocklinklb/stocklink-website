@@ -24,10 +24,7 @@
       <strong>+12%</strong>
     </div>
 
-    <div class="floating-card card-three" aria-hidden="true">
-      <span>Orders</span>
-      <strong>56</strong>
-    </div>
+
 
     <section class="login-card">
       <!-- Tab toggle -->
@@ -217,15 +214,32 @@
 
           <p class="error-message" id="signup-error" role="alert"></p>
         </form>
-        <section id="email-verification-panel" class="email-verification-panel is-hidden">
+        <!-- =====================================================
+           EMAIL VERIFICATION
+      ====================================================== -->
+        <section id="email-verification-panel" class="email-verification-panel is-hidden"
+          aria-labelledby="verification-title">
+          <button type="button" id="verification-back" class="verification-back-button" aria-label="Go back">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+            </svg>
+            <span>Back</span>
+          </button>
+
           <div class="verification-icon">
-            <i class="fa-solid fa-envelope"></i>
+            <svg class="envelope-svg" viewBox="0 0 32 32" width="34" height="34" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect class="env-body" pathLength="1" x="4" y="7" width="24" height="18" rx="3.5" />
+              <path class="env-flap" pathLength="1" d="M5.5 10.5L16 18l10.5-7.5" />
+            </svg>
           </div>
 
           <div class="verification-content">
             <span class="verification-eyebrow">Almost there</span>
 
-            <h1>Check your email</h1>
+            <h2 id="verification-title">Check your email</h2>
 
             <p class="verification-description">
               We sent a verification link to
@@ -239,19 +253,19 @@
 
             <a id="open-email-button" class="verification-primary-button" href="#" target="_blank"
               rel="noopener noreferrer">
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
               Open your email
             </a>
 
             <button type="button" id="resend-verification" class="verification-secondary-button">
-              <i class="fa-solid fa-rotate-right"></i>
+              <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
               Resend verification email
             </button>
 
-            <p id="resend-message" class="resend-message is-hidden"></p>
+            <p id="resend-message" class="resend-message is-hidden" role="status" aria-live="polite"></p>
 
             <div class="verification-footer">
-              <i class="fa-solid fa-circle-info"></i>
+              <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
               <span>
                 Didn't receive it? Check your spam or junk folder.
               </span>

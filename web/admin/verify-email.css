@@ -1,194 +1,170 @@
 /* =========================================================
    STOCKLINK — EMAIL VERIFICATION
+   Same design-token language as login.css.
+   The page colour follows body[data-state]:
+     verifying -> blue   |   verified -> green   |   failed -> red
    ========================================================= */
 
 :root {
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  --font-display: "Sora", "Inter", Arial, sans-serif;
+  --font-body: "Sora", "Inter", Arial, sans-serif;
 
-  color: #111827;
-  background: #f8fafc;
+  --ink: #111827;
+  --ink-soft: #475569;
+  --ink-faint: #94a3b8;
+
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-muted: #f1f5f9;
+
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+  --accent-contrast: #ffffff;
+  --accent-soft: #dbeafe;
+  --accent-ring: rgba(37, 99, 235, 0.16);
+
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+
+  --shadow-accent-sm: 0 6px 16px rgba(37, 99, 235, 0.22);
+  --shadow-accent-lg: 0 16px 32px rgba(37, 99, 235, 0.3);
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
 
+html[data-theme="dark"] {
+  --ink: #f3f4f6;
+  --ink-soft: #a7adb7;
+  --ink-faint: #727985;
+
+  --bg: #0f1115;
+  --surface: #15181d;
+  --surface-soft: #1b1f25;
+  --surface-muted: #22272e;
+
+  --border: #252b33;
+  --border-strong: #343b45;
+
+  --accent: #4f7cff;
+  --accent-dark: #3b68e8;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(79, 124, 255, 0.13);
+  --accent-ring: rgba(79, 124, 255, 0.18);
+
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.11);
+
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.11);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.35);
+
+  --shadow-accent-sm: 0 6px 16px rgba(79, 124, 255, 0.3);
+  --shadow-accent-lg: 0 16px 32px rgba(79, 124, 255, 0.38);
+}
+
+
+/* =========================================================
+   STATE COLOURS
+   Registered as <color> so switching state cross-fades
+   (browsers without @property just switch instantly).
+   ========================================================= */
+
+@property --state {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2563eb;
+}
+
+@property --state-soft {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #dbeafe;
+}
+
+@property --state-ring {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(37, 99, 235, 0.16);
+}
+
+body {
+  /* default = verifying */
+  --state: var(--accent);
+  --state-soft: var(--accent-soft);
+  --state-ring: var(--accent-ring);
+
+  transition:
+    --state 0.45s var(--ease),
+    --state-soft 0.45s var(--ease),
+    --state-ring 0.45s var(--ease);
+}
+
+body[data-state="verified"] {
+  --state: var(--success);
+  --state-soft: var(--success-soft);
+  --state-ring: color-mix(in srgb, var(--success) 18%, transparent);
+}
+
+body[data-state="failed"] {
+  --state: var(--danger);
+  --state-soft: var(--danger-soft);
+  --state-ring: color-mix(in srgb, var(--danger) 18%, transparent);
+}
+
+
+/* =========================================================
+   RESET + PAGE
+   ========================================================= */
+
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-html,
-body {
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
-}
-
 body {
   min-height: 100vh;
-  overflow: hidden;
-  background: #f8fafc;
-}
-
-
-/* =========================================================
-   BACKGROUND
-   ========================================================= */
-
-.background-orbs {
-  position: fixed;
-  inset: 0;
-
-  overflow: hidden;
-  pointer-events: none;
-
-  z-index: 0;
-}
-
-.background-orb {
-  position: absolute;
-
-  width: 280px;
-  height: 280px;
-
-  border-radius: 50%;
-
-  filter: blur(70px);
-  opacity: 0.22;
-
-  will-change: transform;
-
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-timing-function: ease-in-out;
-}
-
-
-/* Orb 1 */
-
-.background-orb-1 {
-  top: -100px;
-  left: -80px;
-
-  background: #60a5fa;
-
-  animation-name: float-orb-1;
-  animation-duration: 13s;
-}
-
-
-/* Orb 2 */
-
-.background-orb-2 {
-  top: 15%;
-  right: -120px;
-
-  width: 330px;
-  height: 330px;
-
-  background: #93c5fd;
-
-  animation-name: float-orb-2;
-  animation-duration: 17s;
-}
-
-
-/* Orb 3 */
-
-.background-orb-3 {
-  bottom: -120px;
-  left: 18%;
-
-  width: 320px;
-  height: 320px;
-
-  background: #bfdbfe;
-
-  animation-name: float-orb-3;
-  animation-duration: 15s;
-}
-
-
-/* Orb 4 */
-
-.background-orb-4 {
-  right: 18%;
-  bottom: 8%;
-
-  width: 220px;
-  height: 220px;
-
-  background: #dbeafe;
-
-  animation-name: float-orb-4;
-  animation-duration: 11s;
-}
-
-
-@keyframes float-orb-1 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  to {
-    transform: translate3d(70px, 50px, 0) scale(1.12);
-  }
-}
-
-
-@keyframes float-orb-2 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  to {
-    transform: translate3d(-90px, 70px, 0) scale(1.08);
-  }
-}
-
-
-@keyframes float-orb-3 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  to {
-    transform: translate3d(80px, -60px, 0) scale(1.15);
-  }
-}
-
-
-@keyframes float-orb-4 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  to {
-    transform: translate3d(-60px, -50px, 0) scale(1.1);
-  }
-}
-
-
-/* =========================================================
-   PAGE
-   ========================================================= */
-
-.verification-container {
-  position: relative;
-
-  z-index: 1;
-
-  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 24px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 24px;
+  font-family: var(--font-body);
+  color: var(--ink);
+
+  background:
+    radial-gradient(circle at 50% 0%, var(--state-soft), transparent 34%),
+    var(--bg);
+
+  overflow-x: hidden;
+}
+
+.verification-container {
+  width: 100%;
+  max-width: 460px;
 }
 
 
@@ -197,28 +173,41 @@ body {
    ========================================================= */
 
 .verification-card {
+  position: relative;
+
   width: 100%;
-  max-width: 450px;
+  padding: 44px 36px 36px;
 
-  padding: 42px 38px 38px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
 
-  background: rgba(255, 255, 255, 0.92);
-
-  border: 1px solid rgba(229, 231, 235, 0.9);
-  border-radius: 20px;
+  background: var(--surface);
 
   text-align: center;
 
   box-shadow:
-    0 20px 50px rgba(15, 23, 42, 0.08),
-    0 4px 14px rgba(15, 23, 42, 0.04);
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    var(--shadow-lg);
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  animation: card-enter 0.4s ease both;
+  animation: card-enter 0.4s var(--ease) both;
 }
 
+/* top accent bar, takes the state colour */
+.verification-card::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  width: 52px;
+  height: 3px;
+
+  transform: translateX(-50%);
+
+  background: var(--state);
+  border-radius: 0 0 var(--radius-pill) var(--radius-pill);
+}
 
 @keyframes card-enter {
   from {
@@ -234,31 +223,93 @@ body {
 
 
 /* =========================================================
-   ICON
+   STATUS ICON
    ========================================================= */
 
 .verification-icon {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
 
-  margin: 0 auto 22px;
+  margin: 0 auto 24px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
 
-  border-radius: 16px;
+  border-radius: 50%;
 
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--state-soft);
+  color: var(--state);
 
-  font-size: 27px;
-  line-height: 1;
+  box-shadow: 0 0 0 7px var(--state-ring);
 }
 
-.verification-icon span {
+.state-icon {
+  display: none;
+  overflow: visible;
+}
+
+body[data-state="verifying"] .icon-verifying,
+body[data-state="verified"] .icon-verified,
+body[data-state="failed"] .icon-failed {
   display: block;
-  transform: translateY(-1px);
+  animation: icon-pop 0.35s var(--ease) both;
+}
+
+@keyframes icon-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* verifying: spinning arc */
+.icon-verifying {
+  animation:
+    icon-pop 0.35s var(--ease) both,
+    spin 0.9s linear 0.35s infinite;
+}
+
+.spinner-track {
+  opacity: 0.2;
+}
+
+.spinner-arc {
+  stroke-dasharray: 28 72;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* verified / failed: strokes draw in */
+.draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+
+  animation: draw-in 0.45s var(--ease) 0.15s forwards;
+}
+
+.draw-2 {
+  animation-delay: 0.35s;
+}
+
+@keyframes draw-in {
+  1% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
 }
 
 
@@ -275,7 +326,7 @@ body {
 
   margin-bottom: 8px;
 
-  color: #2563eb;
+  color: var(--state);
 
   font-size: 11px;
   font-weight: 700;
@@ -285,69 +336,143 @@ body {
 }
 
 .verification-content h1 {
-  margin: 0;
+  color: var(--ink);
 
-  color: #111827;
-
-  font-size: 28px;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: 27px;
+  line-height: 1.15;
   font-weight: 700;
 
-  letter-spacing: -0.025em;
+  letter-spacing: -0.05em;
 }
 
 .verification-content p {
-  max-width: 360px;
+  max-width: 340px;
 
-  margin: 15px auto 0;
+  margin: 12px auto 0;
 
-  color: #6b7280;
+  color: var(--ink-soft);
 
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.65;
 }
 
 
 /* =========================================================
-   LOGIN BUTTON
+   ACTIONS
    ========================================================= */
 
+.verification-actions {
+  display: grid;
+  gap: 10px;
+
+  margin-top: 26px;
+}
+
+.verification-actions:not(:has(> :not([hidden]))) {
+  margin-top: 0;
+}
+
+/* primary: same as the login submit button */
 .verification-login-button {
   width: 100%;
-
-  min-height: 46px;
+  height: 49px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  margin-top: 25px;
   padding: 0 18px;
 
-  border: 1px solid #2563eb;
-  border-radius: 10px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
 
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--accent-contrast);
 
-  font-size: 14px;
-  font-weight: 600;
-
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-decoration: none;
 
+  cursor: pointer;
+
+  box-shadow: var(--shadow-accent-sm);
+
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.15s ease;
+    transform 0.18s var(--ease),
+    box-shadow 0.18s var(--ease),
+    background-color 0.18s var(--ease);
 }
 
 .verification-login-button:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  transform: translateY(-1px);
+
+  background: var(--accent-dark);
+
+  box-shadow: var(--shadow-accent-lg);
 }
 
 .verification-login-button:active {
-  transform: translateY(1px);
+  transform: translateY(0);
+}
+
+/* secondary: same as the Google button face */
+.verification-retry-button {
+  width: 100%;
+  height: 49px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 18px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--surface-soft);
+  color: var(--ink);
+
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s var(--ease),
+    border-color 0.18s var(--ease),
+    background-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
+}
+
+.verification-retry-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  border-color: var(--border-strong);
+  background: var(--surface);
+
+  box-shadow: var(--shadow-md);
+}
+
+.verification-retry-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.verification-retry-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.verification-login-button:focus-visible,
+.verification-retry-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 
@@ -365,13 +490,13 @@ body {
    ========================================================= */
 
 @media (max-width: 520px) {
-  .verification-container {
-    padding: 18px;
+  body {
+    padding: 16px;
   }
 
   .verification-card {
-    padding: 34px 22px 30px;
-    border-radius: 17px;
+    padding: 38px 22px 28px;
+    border-radius: 18px;
   }
 
   .verification-content h1 {
@@ -379,19 +504,10 @@ body {
   }
 
   .verification-icon {
-    width: 58px;
-    height: 58px;
+    width: 64px;
+    height: 64px;
 
-    margin-bottom: 20px;
-
-    border-radius: 14px;
-
-    font-size: 24px;
-  }
-
-  .background-orb {
-    filter: blur(60px);
-    opacity: 0.18;
+    margin-bottom: 22px;
   }
 }
 
@@ -401,11 +517,18 @@ body {
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  .background-orb {
-    animation: none;
+  body {
+    transition: none;
   }
 
-  .verification-card {
+  .verification-card,
+  .state-icon {
+    animation: none !important;
+  }
+
+  .draw {
     animation: none;
+    opacity: 1;
+    stroke-dashoffset: 0;
   }
 }
