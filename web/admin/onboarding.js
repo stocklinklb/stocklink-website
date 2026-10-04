@@ -199,7 +199,6 @@ businessSearch.addEventListener("input", (event) => {
 // BUSINESS TYPE — CONTINUE (save, then go to the next step)
 // =========================================================
 
-
 const generalStoreButton = document.getElementById("business-type-general");
 
 generalStoreButton.addEventListener("click", () => {
@@ -491,8 +490,14 @@ globalSkip.addEventListener("click", () => {
 // GO TO DASHBOARD
 // =========================================================
 
+// Always lands on a URL that keeps "?from=onboarding".
+// An empty page means the dashboard itself: "/admin" with NO trailing
+// slash, because "/admin/?..." gets redirected to "/admin" and the
+// redirect drops the query string (which closes the onboarding guide).
 function goToDashboardPage(page) {
-  window.location.href = `/admin/${page}?from=onboarding`;
+  const base = page ? `/admin/${page}` : "/admin";
+
+  window.location.href = `${base}?from=onboarding`;
 }
 
 // =========================================================

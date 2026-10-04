@@ -420,7 +420,7 @@ function showVerifyPanel(email, mode) {
 }
 
 resendButton.addEventListener("click", async () => {
-  let secondsLeft = 5;
+  let secondsLeft = 60;
   resendButton.disabled = true;
   resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i>
               Resend verification email in ${secondsLeft}s`
