@@ -33,13 +33,21 @@ const authDescription = document.getElementById("auth-description");
 const authSwitch = document.getElementById("auth-switch");
 const authSwitchText = document.getElementById("auth-switch-text");
 const authSwitchButton = document.getElementById("show-signup");
+
+// Email-verification panel
+const emailVerificationPanel = document.getElementById(
+  "email-verification-panel",
+);
+const brand = document.querySelector(".brand");
 const verificationPanelBack = document.getElementById("verification-back");
+const verificationTitle = document.getElementById("verification-title");
+const openEmailButton = document.getElementById("open-email-button");
+const resendButton = document.getElementById("resend-verification");
+const resendMessage = document.getElementById("resend-message");
+
 const LOGIN_REDIRECT_URL = "/admin/index.html";
 // Point this at the onboarding screens once they exist.
 const SIGNUP_REDIRECT_URL = "/admin/onboarding.html";
-
-
-verificationPanelBack.addEventListener("click", hideVerificationPanel)
 
 // =========================================================
 // VIEW STATE
@@ -83,6 +91,14 @@ function setView(view) {
   ownerForm.classList.toggle("is-hidden", view !== "login");
   signupForm.classList.toggle("is-hidden", !isSignup);
   staffForm.classList.toggle("is-hidden", !isStaff);
+
+  // Leaving the verification panel (tab click, back button, ...):
+  // show the normal header again and hide the panel.
+  stopResendCountdown();
+  emailVerificationPanel.classList.add("is-hidden");
+  brand.classList.remove("is-hidden");
+  authDescription.classList.remove("is-hidden");
+  authSwitch.classList.remove("is-hidden");
 
   // header copy + login/signup switch (owner only)
   authDescription.textContent = VIEW_COPY[view].description;
@@ -334,6 +350,11 @@ function buildRateLimitMessage(retryAfterHeader) {
 
 // =========================================================
 // SUBMIT HANDLING (shared logic, per-form config)
+//
+// onSuccess(data)          - called instead of redirecting on a 2xx
+// onFailure(status, data)  - called on a non-2xx (after the 429 check).
+//                            Return true if you handled the error, so the
+//                            default error message is skipped.
 // =========================================================
 async function handleAuth({
   form,
@@ -370,8 +391,6 @@ async function handleAuth({
     const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
-
-      console.log("Auth successful", data);
       if (onSuccess) {
         onSuccess(data);
         return;
@@ -385,13 +404,13 @@ async function handleAuth({
         errorEl,
         buildRateLimitMessage(response.headers.get("Retry-After")),
       );
+      return;
+    }
 
+    if (onFailure && onFailure(response.status, data)) {
       return;
     }
-    if (onFailure) {
-      onFailure?.(response.status, data);
-      return;
-    }
+
     const flagged = pickFieldsForError
       ? pickFieldsForError(response.status, data.message || "")
       : fieldsToFlag;
@@ -405,57 +424,196 @@ async function handleAuth({
     submitButton.disabled = false;
   }
 }
-const emailVerificationPanel = document.getElementById("email-verification-panel")
-const brand = document.querySelector(".brand")
-const resendButton = document.getElementById("resend-verification");
-function showVerifyPanel(email, mode) {
-  if (mode === "sent") {
-    showVerificationPanel();
-    return true;
-  }
-  if (mode === "failed") {
 
-    showVerificationPanel();
+// =========================================================
+// EMAIL VERIFICATION PANEL
+//   mode "sent"       -> signup worked and the email went out
+//   mode "failed"     -> account created, but the email didn't send
+//   mode "unverified" -> tried to log in with an unverified email
+// =========================================================
+const RESEND_COOLDOWN_SECONDS = 60;
+const RESEND_LABEL_HTML = `<i class="fa-solid fa-rotate-right"></i> Resend verification email`;
+
+const VERIFY_PANEL_COPY = {
+  sent: {
+    title: "Check your email",
+    prefix: "We sent a verification link to ",
+    suffix: ".",
+    hint: "Click the link in the email to verify your account and finish setting up StockLink.",
+  },
+  failed: {
+    title: "Account created",
+    prefix: "Your account is ready, but we couldn't send the verification email to ",
+    suffix: ".",
+    hint: "Press Resend below to try again.",
+  },
+  unverified: {
+    title: "Verify your email",
+    prefix: "Your email address ",
+    suffix: " hasn't been verified yet.",
+    hint: "Press Resend below and we'll send you a new link.",
+  },
+};
+
+// Only the webmail sites listed here can become the "Open your email"
+// button. The link is never built from user input.
+const WEBMAIL_LINKS = {
+  "gmail.com": "https://mail.google.com",
+  "googlemail.com": "https://mail.google.com",
+  "outlook.com": "https://outlook.live.com/mail",
+  "hotmail.com": "https://outlook.live.com/mail",
+  "live.com": "https://outlook.live.com/mail",
+  "msn.com": "https://outlook.live.com/mail",
+  "yahoo.com": "https://mail.yahoo.com",
+  "icloud.com": "https://www.icloud.com/mail",
+  "me.com": "https://www.icloud.com/mail",
+  "proton.me": "https://mail.proton.me",
+  "protonmail.com": "https://mail.proton.me",
+};
+
+// The address the panel is about. Resend uses this, not the form fields.
+let pendingVerificationEmail = "";
+let resendTimer = null;
+
+function setResendMessage(text) {
+  resendMessage.textContent = text || "";
+  resendMessage.hidden = !text;
+  resendMessage.classList.toggle("is-hidden", !text);
+}
+
+function resetResendButton() {
+  resendButton.disabled = false;
+  resendButton.innerHTML = RESEND_LABEL_HTML;
+}
+
+function stopResendCountdown() {
+  if (resendTimer !== null) {
+    clearInterval(resendTimer);
+    resendTimer = null;
   }
 }
 
-resendButton.addEventListener("click", async () => {
-  let secondsLeft = 60;
+function startResendCountdown(seconds) {
+  stopResendCountdown();
+
+  let secondsLeft = seconds;
   resendButton.disabled = true;
-  resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i>
-              Resend verification email in ${secondsLeft}s`
+  resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i> Resend verification email in ${secondsLeft}s`;
 
-  const countDown = setInterval(() => {
+  resendTimer = setInterval(() => {
     secondsLeft--;
-    resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i>
-              Resend verification email in ${secondsLeft}s`
 
-    if (secondsLeft < 0) {
-      clearInterval(countDown);
-      resendButton.disabled = false;
-      resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i>
-              Resend verification email`
+    if (secondsLeft <= 0) {
+      stopResendCountdown();
+      resetResendButton();
+      return;
     }
-  }, 1000)
-})
 
+    resendButton.innerHTML = `<i class="fa-solid fa-rotate-right"></i> Resend verification email in ${secondsLeft}s`;
+  }, 1000);
+}
 
+function updateOpenEmailButton(email) {
+  if (!openEmailButton) return;
 
+  const domain = (email.split("@")[1] || "").toLowerCase();
+  const link = WEBMAIL_LINKS[domain];
 
-function showVerificationPanel() {
-  authSwitch.classList.add("is-hidden")
-  brand.classList.add("is-hidden")
+  if (link) {
+    openEmailButton.href = link;
+    openEmailButton.classList.remove("is-hidden");
+  } else {
+    openEmailButton.removeAttribute("href");
+    openEmailButton.classList.add("is-hidden");
+  }
+}
+
+function showVerifyPanel(email, mode = "sent") {
+  const copy = VERIFY_PANEL_COPY[mode] || VERIFY_PANEL_COPY.sent;
+
+  pendingVerificationEmail = email;
+
+  // Fresh panel: no old countdown or message from a previous attempt.
+  stopResendCountdown();
+  resetResendButton();
+  setResendMessage("");
+
+  // Text is always set with textContent / text nodes, never innerHTML,
+  // because the email address is user input.
+  if (verificationTitle) verificationTitle.textContent = copy.title;
+
+  const description = emailVerificationPanel.querySelector(
+    ".verification-description",
+  );
+  if (description) {
+    const strong = document.createElement("strong");
+    strong.id = "verification-email";
+    strong.textContent = email;
+
+    description.textContent = "";
+    description.append(copy.prefix, strong, copy.suffix);
+  }
+
+  const hint = emailVerificationPanel.querySelector(".verification-hint");
+  if (hint) hint.textContent = copy.hint;
+
+  updateOpenEmailButton(email);
+
+  // Hide everything the panel replaces.
+  ownerForm.classList.add("is-hidden");
   signupForm.classList.add("is-hidden");
+  staffForm.classList.add("is-hidden");
+  authSwitch.classList.add("is-hidden");
+  brand.classList.add("is-hidden");
   authDescription.classList.add("is-hidden");
+
   emailVerificationPanel.classList.remove("is-hidden");
 }
-function hideVerificationPanel() {
-  authSwitch.classList.remove("is-hidden")
-  brand.classList.remove("is-hidden")
-  signupForm.classList.remove("is-hidden");
-  authDescription.classList.remove("is-hidden");
-  emailVerificationPanel.classList.add("is-hidden");
-}
+
+// "Back": setView puts the header and the right form back.
+verificationPanelBack?.addEventListener("click", () => setView(currentView));
+
+resendButton.addEventListener("click", async () => {
+  if (!pendingVerificationEmail) return;
+
+  setResendMessage("");
+
+  // The countdown starts right away, before the server answers.
+  startResendCountdown(RESEND_COOLDOWN_SECONDS);
+
+  try {
+    const response = await fetch(`${API_ROOT}/auth/resend-verification`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: pendingVerificationEmail }),
+    });
+
+    if (response.ok) {
+      setResendMessage(
+        "A new verification email is on its way. If it doesn't arrive in a minute, check your spam folder.",
+      );
+      return;
+    }
+
+    // Anything that isn't a success: stop the countdown and let them retry.
+    stopResendCountdown();
+    resetResendButton();
+
+    if (response.status === 429) {
+      setResendMessage(
+        buildRateLimitMessage(response.headers.get("Retry-After")),
+      );
+      return;
+    }
+
+    setResendMessage("Couldn't send the email. Please try again.");
+  } catch (error) {
+    console.error(error);
+    stopResendCountdown();
+    resetResendButton();
+    setResendMessage("Couldn't send the email. Please try again.");
+  }
+});
 
 // ---------------------------------------------------------
 // Owner login
@@ -475,6 +633,16 @@ ownerForm.addEventListener("submit", (event) => {
       ownerPasswordInput.closest(".password-field"),
     ],
     errorEl: ownerErrorMessage,
+    // Correct password but the email isn't verified yet: offer a new link.
+    onFailure: (status, data) => {
+      if (data.code !== "EMAIL_NOT_VERIFIED") return false;
+
+      showVerifyPanel(
+        ownerEmailInput.value.trim().toLowerCase(),
+        "unverified",
+      );
+      return true;
+    },
   });
 });
 
@@ -512,14 +680,19 @@ signupForm.addEventListener("submit", (event) => {
     return;
   }
 
-
   handleAuth({
     form: signupForm,
     endpoint: "/auth/signup",
     payload: { name, email, password },
     errorEl: signupErrorMessage,
     fallbackError: "Could not create your store. Please try again.",
-    onSuccess: () => showVerificationPanel(),
+    // The account exists but is not logged in until the email is verified.
+    // emailSent === false means the store was created but the email failed.
+    onSuccess: (data) =>
+      showVerifyPanel(
+        email.toLowerCase(),
+        data.emailSent === false ? "failed" : "sent",
+      ),
     // 422 missing field / 400 weak password, invalid email, or taken email
     pickFieldsForError: (status, message) => {
       const msg = message.toLowerCase();
@@ -535,8 +708,6 @@ signupForm.addEventListener("submit", (event) => {
       return flagged;
     },
   });
-
-
 });
 
 // ---------------------------------------------------------
