@@ -98,7 +98,6 @@ function applyPermission(data, tier) {
         .pop()
         .replace(/\.html$/, "") === currentPage,
   );
-
   if (
     currentItem &&
     currentItem.permission &&
@@ -107,22 +106,25 @@ function applyPermission(data, tier) {
     window.location.href = "/admin/index.html";
     return;
   }
-  if (
-    currentItem &&
-    currentItem.feature &&
-    !hasFeature(tier, currentItem.feature)
-  ) {
-    window.location.href = "/admin/index.html";
-    return;
+
+  if (tier) {
+    if (
+      currentItem &&
+      currentItem.feature &&
+      !hasFeature(tier, currentItem.feature) && currentPage !== "index"
+    ) {
+      window.location.href = "/admin/index.html";
+      return;
+
+    }
   }
   const filteredSidebarItems = sidebarItems.filter((item) =>
     item.permission
       ? checkPermission(item.permission, data.isOwner, data.permissions)
       : true,
   );
-
   const linkHTML = (item) => {
-    const locked = item.feature && !hasFeature(tier, item.feature);
+    const locked = item.feature && tier && !hasFeature(tier, item.feature);
     const isActive =
       currentPage ===
       item.href
@@ -233,13 +235,12 @@ function renderSubscriptionPanel(sub) {
       <span>Renews / Ends</span>
       <span>${formatDate(sub.subscriptionEnd)}</span>
     </div>
-    ${
-      remaining !== null
-        ? `<div class="subscription-row">
+    ${remaining !== null
+      ? `<div class="subscription-row">
              <span>Days left</span>
              <span>${remaining >= 0 ? remaining : "Expired"}</span>
            </div>`
-        : ""
+      : ""
     }
     <div class="subscription-row">
       <span>Monthly rate</span>
