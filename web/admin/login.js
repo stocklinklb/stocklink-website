@@ -475,10 +475,13 @@ const WEBMAIL_LINKS = {
 let pendingVerificationEmail = "";
 let resendTimer = null;
 
-function setResendMessage(text) {
+// state: "success" | "warning" | "error" (styling hook only)
+function setResendMessage(text, state) {
   resendMessage.textContent = text || "";
   resendMessage.hidden = !text;
   resendMessage.classList.toggle("is-hidden", !text);
+  if (text && state) resendMessage.dataset.state = state;
+  else delete resendMessage.dataset.state;
 }
 
 function resetResendButton() {
@@ -533,6 +536,9 @@ function showVerifyPanel(email, mode = "sent") {
 
   pendingVerificationEmail = email;
 
+  // Styling hook: sent | failed | unverified
+  emailVerificationPanel.dataset.mode = VERIFY_PANEL_COPY[mode] ? mode : "sent";
+
   // Fresh panel: no old countdown or message from a previous attempt.
   stopResendCountdown();
   resetResendButton();
@@ -571,7 +577,7 @@ function showVerifyPanel(email, mode = "sent") {
 }
 
 // "Back": setView puts the header and the right form back.
-verificationPanelBack?.addEventListener("click", () => setView(currentView));
+verificationPanelBack?.addEventListener("click", () => setView("login"));
 
 resendButton.addEventListener("click", async () => {
   if (!pendingVerificationEmail) return;
@@ -591,6 +597,7 @@ resendButton.addEventListener("click", async () => {
     if (response.ok) {
       setResendMessage(
         "A new verification email is on its way. If it doesn't arrive in a minute, check your spam folder.",
+        "success",
       );
       return;
     }
@@ -602,16 +609,17 @@ resendButton.addEventListener("click", async () => {
     if (response.status === 429) {
       setResendMessage(
         buildRateLimitMessage(response.headers.get("Retry-After")),
+        "warning",
       );
       return;
     }
 
-    setResendMessage("Couldn't send the email. Please try again.");
+    setResendMessage("Couldn't send the email. Please try again.", "error");
   } catch (error) {
     console.error(error);
     stopResendCountdown();
     resetResendButton();
-    setResendMessage("Couldn't send the email. Please try again.");
+    setResendMessage("Couldn't send the email. Please try again.", "error");
   }
 });
 

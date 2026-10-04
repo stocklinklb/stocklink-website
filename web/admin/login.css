@@ -1738,3 +1738,215 @@ html[data-theme="dark"] .auth-switch button {
     stroke-dashoffset: 0;
   }
 }
+
+/* =========================================================
+   MESSAGE STATES
+   Verification panel: data-mode="sent" | "failed" | "unverified"
+   Resend message:     data-state="success" | "warning" | "error"
+   ========================================================= */
+
+/* ---------- Verification panel modes ---------- */
+
+.email-verification-panel {
+  --state: var(--accent);
+  --state-soft: var(--accent-soft);
+}
+
+.email-verification-panel[data-mode="sent"] {
+  --state: var(--success);
+  --state-soft: var(--success-soft);
+}
+
+.email-verification-panel[data-mode="failed"] {
+  --state: var(--danger);
+  --state-soft: var(--danger-soft);
+}
+
+.email-verification-panel[data-mode="unverified"] {
+  --state: var(--warning);
+  --state-soft: var(--warning-soft);
+}
+
+.email-verification-panel .verification-icon {
+  position: relative;
+  background: var(--state-soft);
+  color: var(--state);
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+
+.email-verification-panel .verification-eyebrow {
+  color: var(--state);
+}
+
+/* Small status badge on the envelope */
+.email-verification-panel[data-mode] .verification-icon::after {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+
+  width: 24px;
+  height: 24px;
+
+  display: grid;
+  place-items: center;
+
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+
+  background: var(--state);
+  color: #fff;
+
+  font-family: "Font Awesome 6 Free", sans-serif;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 1;
+
+  animation: stateBadgeIn 0.4s var(--ease) 0.7s both;
+}
+
+.email-verification-panel[data-mode="sent"] .verification-icon::after {
+  content: "\f00c";
+  /* check */
+}
+
+.email-verification-panel[data-mode="failed"] .verification-icon::after {
+  content: "\f00d";
+  /* x */
+}
+
+.email-verification-panel[data-mode="unverified"] .verification-icon::after {
+  content: "\21";
+  /* ! */
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+@keyframes stateBadgeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Failed / unverified: the sentence explaining the problem gets a tinted box */
+.email-verification-panel[data-mode="failed"] .verification-description,
+.email-verification-panel[data-mode="unverified"] .verification-description {
+  padding: 12px 14px;
+
+  border: 1px solid color-mix(in srgb, var(--state) 28%, transparent);
+  border-radius: var(--radius-md);
+
+  background: var(--state-soft);
+  color: var(--ink);
+}
+
+/* Failed: shake once to draw attention */
+.email-verification-panel[data-mode="failed"] .verification-description {
+  animation: stateShake 0.45s var(--ease) 0.3s both;
+}
+
+@keyframes stateShake {
+
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ---------- Resend message states ---------- */
+
+.resend-message {
+  --msg: var(--accent);
+  --msg-soft: var(--accent-soft);
+}
+
+.resend-message[data-state="success"] {
+  --msg: var(--success);
+  --msg-soft: var(--success-soft);
+}
+
+.resend-message[data-state="warning"] {
+  --msg: var(--danger);
+  --msg-soft: var(--danger-soft);
+}
+
+.resend-message[data-state="error"] {
+  --msg: var(--danger);
+  --msg-soft: var(--danger-soft);
+}
+
+.resend-message[data-state] {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  padding: 10px 12px;
+
+  border: 1px solid color-mix(in srgb, var(--msg) 28%, transparent);
+  border-radius: var(--radius-md);
+
+  background: var(--msg-soft);
+  color: var(--msg);
+
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+
+  animation: error-in 0.4s var(--ease);
+}
+
+.resend-message[data-state]::before {
+  flex-shrink: 0;
+
+  margin-top: 1px;
+
+  font-family: "Font Awesome 6 Free", sans-serif;
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.resend-message[data-state="success"]::before {
+  content: "\f058";
+  /* circle-check */
+}
+
+.resend-message[data-state="warning"]::before {
+  content: "\f071";
+  /* triangle-exclamation */
+}
+
+.resend-message[data-state="error"]::before {
+  content: "\f06a";
+  /* circle-exclamation */
+}
+
+/* The hidden class must still win over the flex display above */
+.resend-message.is-hidden {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .email-verification-panel[data-mode] .verification-icon::after,
+  .email-verification-panel[data-mode="failed"] .verification-description,
+  .resend-message[data-state] {
+    animation: none;
+  }
+}
