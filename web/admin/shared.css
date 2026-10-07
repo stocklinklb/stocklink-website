@@ -183,6 +183,7 @@ html[data-theme="dark"] {
   --shadow-accent-md: 0 8px 30px rgba(79, 124, 255, 0.08);
   --shadow-accent-lg: 0 10px 24px rgba(79, 124, 255, 0.12);
 }
+
 /* ============================================
    Base
    ============================================ */
@@ -190,6 +191,10 @@ html[data-theme="dark"] {
 * {
   margin: 0;
   box-sizing: border-box;
+
+  -webkit-tap-highlight-color: transparent;
+
+
 }
 
 html {
@@ -208,6 +213,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
+
 .theme-switch {
   width: 52px;
   height: 28px;
@@ -312,9 +318,11 @@ body {
 .tier-flow i {
   color: var(--ink-faint);
 }
+
 .tier-prime i {
   color: var(--accent);
 }
+
 .tier-elite i {
   color: var(--warning);
 }
@@ -359,6 +367,7 @@ body {
 .sub-on {
   color: var(--success) !important;
 }
+
 .sub-off {
   color: var(--ink-faint) !important;
 }
@@ -439,12 +448,14 @@ html[data-theme="dark"] .moon-icon {
   opacity: 1;
   transform: scale(1);
 }
+
 .kpi-value-skeleton {
   display: inline-block;
   width: 75px;
   height: 30px;
   border-radius: 6px;
 }
+
 .visitors-chart-wrapper {
   position: relative;
   width: 100%;
@@ -476,6 +487,7 @@ html[data-theme="dark"] .moon-icon {
   height: 8px;
   border-radius: 6px;
 }
+
 .theme-switch:hover .theme-switch-track {
   border-color: var(--border-strong);
 }
@@ -483,6 +495,7 @@ html[data-theme="dark"] .moon-icon {
 .theme-switch:active .theme-switch-thumb {
   width: 24px;
 }
+
 /* Light theme */
 .sun-icon {
   transform: translateY(0) scale(1);
@@ -504,6 +517,7 @@ html[data-theme="dark"] .moon-icon {
   transform: translateY(0) scale(1);
   opacity: 1;
 }
+
 /* ============================================
    Logout modal
    ============================================ */
@@ -547,6 +561,7 @@ html[data-theme="dark"] .moon-icon {
 .logout-btn:active {
   transform: scale(0.97);
 }
+
 .logout-modal-overlay {
   position: fixed;
   inset: 0;
@@ -602,6 +617,7 @@ html[data-theme="dark"] .moon-icon {
   background: var(--danger);
   color: var(--accent-contrast);
 }
+
 /* ============================================
    Logo — bar-chart mark + two-tone wordmark
    ============================================
@@ -628,7 +644,8 @@ html[data-theme="dark"] .moon-icon {
   place-items: center;
 
   border-radius: 15px;
-  overflow: hidden; /* clips the image to the rounded corners */
+  overflow: hidden;
+  /* clips the image to the rounded corners */
 
   background: var(--accent);
   color: var(--accent-contrast);
@@ -650,8 +667,10 @@ html[data-theme="dark"] .moon-icon {
 .logo img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* fills the box without distorting */
-  border-radius: inherit; /* matches the container's rounded corners */
+  object-fit: cover;
+  /* fills the box without distorting */
+  border-radius: inherit;
+  /* matches the container's rounded corners */
 }
 
 .logo-stock {
@@ -708,7 +727,7 @@ html[data-theme="dark"] .moon-icon {
   border-top: 1px solid var(--sidebar-border);
 }
 
-aside > h2 {
+aside>h2 {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -725,7 +744,7 @@ aside > h2 {
   border-bottom: 1px solid var(--sidebar-border);
 }
 
-aside > h2::before {
+aside>h2::before {
   content: "\f0e7";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
@@ -759,6 +778,7 @@ aside .sidebar-locked i:first-child {
   font-size: 11px;
   color: var(--ink-faint);
 }
+
 /* ============================================
    Typography
    ============================================ */
@@ -845,6 +865,7 @@ input:focus-visible {
 
   color: var(--ink);
 }
+
 /* ============================================
    Layout shell
    ============================================ */
@@ -1233,6 +1254,7 @@ header {
     z-index: 50;
   }
 }
+
 /* ============================================
    Notification bell
    ============================================ */
@@ -1307,10 +1329,12 @@ header {
   z-index: 60;
   transition: opacity 0.2s ease;
 }
+
 .notif-dropdown.active {
   opacity: 1;
   pointer-events: auto;
 }
+
 .notif-dropdown-header {
   display: flex;
   align-items: center;
@@ -1361,10 +1385,13 @@ header {
 .notif-item:hover {
   background: var(--surface-muted);
 }
+
 .notif-item.subscription-deadline {
   border-left: 3px solid var(--danger, #e5484d);
   background: rgba(229, 72, 77, 0.06);
-} /* ============================================
+}
+
+/* ============================================
    Subscription-expired banner
    ============================================ */
 #subscription-banner {
@@ -1382,12 +1409,10 @@ header {
 
   padding: 10px 20px;
 
-  background: linear-gradient(
-    90deg,
-    var(--danger-soft),
-    rgba(220, 38, 38, 0.14),
-    var(--danger-soft)
-  );
+  background: linear-gradient(90deg,
+      var(--danger-soft),
+      rgba(220, 38, 38, 0.14),
+      var(--danger-soft));
   background-size: 200% 100%;
   animation: banner-shimmer 6s ease-in-out infinite;
 
@@ -1484,10 +1509,12 @@ header {
   visibility: hidden;
   transform: translateX(-50%) translateY(20px);
 }
+
 .cookie-banner-text a {
   color: inherit;
   text-decoration: underline;
 }
+
 .cookie-banner-icon {
   width: 38px;
   height: 38px;
@@ -1614,26 +1641,31 @@ header {
 }
 
 @keyframes banner-shimmer {
+
   0%,
   100% {
     background-position: 0% 0%;
   }
+
   50% {
     background-position: 100% 0%;
   }
 }
 
 @keyframes banner-pulse {
+
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45);
   }
+
   50% {
     box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   #subscription-banner,
   #subscription-banner .banner-icon {
     animation: none;
@@ -1674,9 +1706,11 @@ header {
     flex-shrink: 0;
   }
 }
+
 .notif-item.subscription-deadline.unread {
   background: rgba(229, 72, 77, 0.12);
 }
+
 body.subscription-expired aside {
   top: var(--banner-height);
   height: calc(100vh - var(--banner-height));
@@ -1689,6 +1723,7 @@ body.subscription-expired header {
 body.subscription-expired main {
   padding-top: calc(32px + var(--banner-height));
 }
+
 .notif-item.unread {
   background: var(--accent-soft);
 }
@@ -1722,6 +1757,7 @@ body.subscription-expired main {
     right: -8px;
   }
 }
+
 @media (max-width: 900px) {
   header {
     display: flex;
@@ -1735,6 +1771,7 @@ body.subscription-expired main {
     z-index: 50;
   }
 }
+
 .skeleton {
   position: relative;
   display: block;
@@ -1748,12 +1785,10 @@ body.subscription-expired main {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.65),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.65),
+      transparent);
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 
@@ -1809,6 +1844,7 @@ body.subscription-expired main {
 .skel-only {
   display: none;
 }
+
 /* Masks an existing element's own text/content in place, without
    changing its layout, size, or DOM structure - safe to drop onto
    any element a page script already targets by id/selector (e.g.
@@ -1830,12 +1866,10 @@ body.subscription-expired main {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.65),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.65),
+      transparent);
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 
@@ -1951,12 +1985,12 @@ body.subscription-expired main {
 
 @keyframes slideOut {
   from {
-    transform: translateX(20px);
+    transform: translateY(0px);
     opacity: 1;
   }
 
   to {
-    transform: translateX(20px);
+    transform: translateY(20px);
     opacity: 0;
   }
 }
