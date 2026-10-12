@@ -22,13 +22,13 @@ const params = new URLSearchParams(window.location.search);
 const from = params.get("from");
 
 if (from === "onboarding") {
-  onboardingGuide.classList.remove("is-hidden");
+  onboardingGuide.classList.add("active");
   document.documentElement.style.overflow = "hidden";
   document.body.style.overflow = "hidden";
 }
 
 guideClose.addEventListener("click", () => {
-  onboardingGuide.classList.add("is-hidden");
+  onboardingGuide.classList.remove("active");
   document.documentElement.style.overflow = "";
   document.body.style.overflow = "";
 });

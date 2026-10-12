@@ -373,7 +373,7 @@ UploadManager.closeBtn.addEventListener("click", () => {
 
 saveAllBtn.addEventListener("click", saveAllProducts);
 closeModal.addEventListener("click", () => {
-  imageModal.classList.add("hidden");
+  imageModal.classList.remove("active");
   revokeModalObjectUrls();
 });
 
@@ -717,7 +717,7 @@ function openImageModal(variantKey) {
 
   if (!files || files.length === 0) {
     showToast("No images are selected", "error");
-    imageModal.classList.add("hidden");
+    imageModal.classList.remove("active");
     revokeModalObjectUrls();
     return;
   }
@@ -753,7 +753,7 @@ function openImageModal(variantKey) {
     modalImages.appendChild(imageCard);
   });
 
-  imageModal.classList.remove("hidden");
+  imageModal.classList.add("active");
 }
 
 modalImages.addEventListener("click", (e) => {
@@ -776,7 +776,7 @@ modalImages.addEventListener("click", (e) => {
   if (files.length === 0) {
     // Nothing left to show — close the modal and reset the card
     // instead of re-opening a modal with an empty image list.
-    imageModal.classList.add("hidden");
+    imageModal.classList.remove("active");
     revokeModalObjectUrls();
     resetCardPreview(card);
 
@@ -883,14 +883,14 @@ function renderMissingProducts(products) {
           </div>
 
           <div class="button">
-            <button class="update-btn">
+            <button class="update-btn pressable">
               Add Images
             </button>
           </div>
         </div>
 
         <label class="image-preview empty">
-          <div class="upload-placeholder">
+          <div class="upload-placeholder pressable">
             <i class="fa-solid fa-camera"></i>
             <span>Add photo</span>
           </div>

@@ -19,7 +19,9 @@
     <link rel="preload" as="script" href="/admin/shared.js" />
     <link rel="preload" as="script" href="/admin/skeleton.js" />
     <link rel="preload" as="script" href="/admin/sidebar.js" />
+    <link rel="stylesheet" href="/admin/tokens.css" />
     <link rel="stylesheet" href="/admin/shared.css" />
+    <link rel="stylesheet" href="/admin/modal.css" />
     <link rel="stylesheet" href="/admin/orders.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -91,12 +93,12 @@
         <div class="sidebar-links" id="sidebar-links"></div>
 
         <div class="profile-box sidebar-profile">
-          <img src="/phone-photos/user.png" alt="" />
+          <img alt="" />
           <div class="profile-info">
             <h4></h4>
             <span></span>
           </div>
-          <button class="logout-btn">Log out</button>
+          <button type="button" class="logout-btn"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>Log out</button>
         </div>
       </aside>
       <script src="/admin/config.js"></script>
@@ -322,7 +324,7 @@
          #orderForm) to switch between the two.
          ============================================ -->
     <div class="modal-overlay" id="orderFormModal">
-      <div class="modal modal-lg">
+      <div class="modal modal--lg" role="dialog" aria-modal="true">
         <div class="modal-header">
           <div>
             <h3 id="orderFormTitle">New Order</h3>
@@ -471,7 +473,7 @@
          from GET /order/:id
          ============================================ -->
     <div class="modal-overlay" id="orderDetailModal">
-      <div class="modal modal-lg">
+      <div class="modal modal--lg" role="dialog" aria-modal="true">
         <div class="modal-header">
           <div>
             <h3>Order Details</h3>
@@ -600,21 +602,19 @@
          order id (e.g. data-order-id on the overlay).
          ============================================ -->
     <div class="modal-overlay" id="confirmModal">
-      <div class="modal confirm-modal">
-        <div class="modal-body">
-          <div class="confirm-icon danger" id="confirmIcon">
-            <i class="fa-solid fa-trash" id="confirmIconGlyph"></i>
-          </div>
-          <h3 id="confirmTitle">Delete this order?</h3>
-          <p id="confirmMessage">
-            This can't be undone. The order will be permanently removed.
-          </p>
+      <div class="modal modal--sm modal--confirm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal-icon modal-icon--danger" id="confirmIcon">
+          <i class="fa-solid fa-trash" id="confirmIconGlyph"></i>
         </div>
-        <div class="modal-footer" style="justify-content: center">
-          <button type="button" class="btn btn-secondary" id="confirmCancelBtn">
+        <h3 id="confirmTitle">Delete this order?</h3>
+        <p id="confirmMessage">
+          This can't be undone. The order will be permanently removed.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-btn--secondary" id="confirmCancelBtn">
             Cancel
           </button>
-          <button type="button" class="btn btn-danger" id="confirmActionBtn">
+          <button type="button" class="modal-btn modal-btn--danger" id="confirmActionBtn">
             Delete
           </button>
         </div>

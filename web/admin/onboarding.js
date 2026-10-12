@@ -115,6 +115,7 @@ async function loadBusinessTypes() {
     const data = await response.json();
 
     businessTypes = data.businessTypes || [];
+    console.log(businessTypes)
     buildSearchList(businessTypes);
   } catch (error) {
     console.error(error);

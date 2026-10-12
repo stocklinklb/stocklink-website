@@ -1,200 +1,191 @@
-// =========================================================
-// SHARED STATE & CONFIG
-// =========================================================
-// Single source of truth for page-wide state and static config that more
-// than one feature file needs. Load this before brand-picker.js,
-// color-picker.js, color-images.js, variants.js, specifications.js, and
-// product-form.js - they all read/write these globals.
-
-
-const BRANDS = [
-  "Apple",
-  "Samsung",
-  "Xiaomi",
-  "POCO",
-  "Google",
-  "Huawei",
-  "Honor",
-  "Oppo",
-  "Realme",
-  "Vivo",
-  "OnePlus",
-  "Nothing",
-  "Tecno",
-  "Infinix",
-  "Anker",
-  "JBL",
-  "HollyLand",
-  "ONEMUST",
-  "SoundCore",
-  "Moxom",
-  "HAVIT",
-  "BWOO",
-  "VIDIVE",
-  "Jmary",
-  "Oraimo",
-  "Anker",
-  "DADU",
-  "Ace Fast",
-  "UGREEN",
-];
-
-
-// API_BASE (from config.js) IS the products resource base already
-// (".../products") — don't append "/products" again here, or every
-// request doubles up to ".../products/products".
-const API = API_BASE;
-
-let selectedBrand = "";
-const urlParams = new URLSearchParams(window.location.search);
-const deletedImages = [];
-let productId = urlParams.get("id");
-
-let editMode = productId !== null;
-
-
-let currentProduct = null;
-
-// Required specs, keyed by category. Only the fields that actually exist
-// in that category's rendered form get validated.
-const requiredSpecsByCategory = {
-  Phone: ["processor", "ram", "screenSize", "mainCamera", "battery"],
-  Tablet: ["processor", "ram", "screenSize", "mainCamera", "battery"],
-  Watch: ["caseSize", "displayType", "batteryLife"],
-  Accessory: ["accessoryType", "compatibility"],
-};
-
-const selectedOptions = {
-  storage: [],
-  ram: [],
-  size: [],
-  colors: [],
-  condition: [],
-};
-const colorImages = {};
-
-// Variants generator state
-let generatedVariants = [];
-
-// Which variant dimensions apply to each category, in display order.
-// This is the single source of truth for category-aware variants:
-// generateVariants() cartesian-products only these, renderVariantsTable()
-// only shows columns for these, validateProduct()/saveProduct() only
-// require/send these. Phone and Tablet need storage+RAM, Watch only needs
-// size, Accessory needs neither - color and condition apply everywhere.
-const CATEGORY_VARIANT_DIMENSIONS = {
-  Phone: ["storage", "ram", "color", "condition"],
-  Tablet: ["storage", "ram", "color", "condition"],
-  Watch: ["size", "color", "condition"],
-  Accessory: ["color", "condition"],
-};
-
-// Column header text for each possible dimension, used to build the
-// variant table's <thead> dynamically.
-const VARIANT_COLUMN_LABELS = {
-  storage: "Storage",
-  ram: "RAM",
-  size: "Size",
-  color: "Color",
-  condition: "Condition",
-  batteryHealth: "Battery Health",
-};
-
-// Field names that belong to the fixed, category-specific specification
-// form built by renderSpecifications() - these already have a matching
-// [name="..."] input in #specifications-container. Any other key in a
-// saved product's `specifications` is a custom spec (added via "+ Add
-// Specification") and needs its own row rebuilt in
-// #custom-specs-container instead - there's no fixed input for it to
-// fill.
-const FIXED_SPEC_FIELDS_BY_CATEGORY = {
-  Phone: [
-    "processor",
-    "ram",
-    "screenSize",
-    "refreshRate",
-    "mainCamera",
-    "frontCamera",
-    "battery",
-    "chargingSpeed",
-    "operatingSystem",
-  ],
-  Tablet: [
-    "processor",
-    "ram",
-    "screenSize",
-    "refreshRate",
-    "mainCamera",
-    "frontCamera",
-    "battery",
-    "chargingSpeed",
-    "operatingSystem",
-  ],
-  Watch: [
-    "caseSize",
-    "caseMaterial",
-    "bandMaterial",
-    "displayType",
-    "waterResistance",
-    "batteryLife",
-    "connectivity",
-    "compatibleOS",
-  ],
-  Accessory: [
-    "accessoryType",
-    "compatibility",
-    "material",
-    "color",
-    "connectorType",
-    "warranty",
-  ],
-};
-
-// Returns the dimension list for whatever category is currently selected,
-// or [] if no category (or an unrecognized one) is selected yet.
-function getVariantDimensions() {
-  const category = categoryOption.value;
-  const brand = brandOption.value;
-
-  if (category === "Phone") {
-    if (brand === "Apple") {
-      return ["storage", "color", "condition"];
-    }
-
-    return ["storage", "ram", "color", "condition"];
-  }
-
-  if (category === "Tablet") {
-    if (brand === "Apple") {
-      return ["storage", "color", "condition"];
-    }
-    return ["storage", "ram", "color", "condition"];
-  }
-
-  if (category === "Watch") {
-    return ["size", "color", "condition"];
-  }
-
-  if (category === "Accessory") {
-    return ["color", "condition"];
-  }
-
-  return [];
+// ==================================
+// DECLARATION IN AN OBJECTS < 
+// BETTER WRITING SYNTAX , 
+// READEBILTY AND STATES FROM ONE
+//  SHARED PLACE.
+// ==================================
+const formState = {
+  category: null,
+  selections: {},
+  variants: new Map(),
+  removedVariants: new Map(), // key → the deleted variant, kept so Restore brings its price back
+  images: [],
+  deleteImagesId: [],
+  viewMode: "table"
 }
 
-const paramsValue = new URLSearchParams(window.location.search).get("from");
-const guideBtn = document.getElementById("guide-close");
-if (paramsValue === "onboarding") {
-  const onboardingGuide = document.querySelector(".onboarding-guide");
-  if (paramsValue === "onboarding") {
-    onboardingGuide.classList.remove("is-hidden");
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    
+const MAX_COMBINATIONS = 200; // Q8
+
+// =================================
+//            FUNCTIONS
+// =================================
+
+// How many combinations there would be with one more value in fieldId.
+// Combinations = the number of selected values of each field, multiplied.
+function countWithOneMore(fieldId) {
+  return Object.entries(formState.selections).reduce(
+    (total, [id, values]) =>
+      total * (id === String(fieldId) ? values.length + 1 : values.length),
+    1
+  );
+}
+function setCategory(category) {
+  formState.category = category || null;
+  formState.selections = {};
+  formState.variants = new Map();
+  formState.removedVariants = new Map();
+
+  resetCategoryText();
+  categoryInput.value = category ? category.id : "";
+
+  // Fields are drawn only when the category changes, so a half-typed
+  // search input isn't wiped on every refresh
+  buildCategoryFields(formState.category);
+  refresh();
+}
+
+function toggleValue(fieldId, value) {
+  formState.selections ??= {};
+
+  formState.selections[fieldId] ??= [];
+
+  const selections = formState.selections[fieldId];
+
+  if (!selections.includes(value)) {
+    // Q8: refuse the click instead of building more than the limit
+    if (countWithOneMore(fieldId) > MAX_COMBINATIONS) {
+      showToast(
+        `Too many combinations (max ${MAX_COMBINATIONS}). Deselect some values first.`,
+        "error"
+      );
+    } else {
+      const isFirstValue = selections.length === 0;
+      selections.push(value);
+      if (isFirstValue) {
+        // it just got it's first value , we return it's fieldId.
+        return fieldId;
+      } else {
+        return null;
+      }
+
+    }
+  } else {
+    formState.selections[fieldId] = selections.filter(
+      (v) => v !== value
+    );
   }
-  guideBtn.addEventListener("click", () => {
-    onboardingGuide.classList.add("is-hidden");
-    document.documentElement.style.overflow = "";
-    document.body.style.overflow = "";
+
+  if (!formState.selections[fieldId].length) {
+    delete formState.selections[fieldId];
+  }
+}
+
+// making a key for variants in the next form [[10,"BLK"] , [8,"WHITE"]] , as 10 is the id , and WHITE or BLK is the value selected
+
+function makeVariantKey(options, fields) {
+  return JSON.stringify(fields.map(field =>
+    [field.id, options[field.id]]
+  ))
+}
+
+// The selected category's fields, in the category's own order
+function getOrderedFields() {
+  if (!formState.category) return []; // if not category is se
+  return [...formState.category.fields].filter(field => !field.archivedAt).sort((a, b) => a.position - b.position);
+  // return the category fields sorted by position (small to high)
+}
+
+// Delete one variant: out of the table, into removedVariants (with its price)
+function removeVariant(key) {
+  const variant = formState.variants.get(key);
+  if (!variant) return;
+
+  formState.variants.delete(key);
+  formState.removedVariants.set(key, variant);
+}
+
+// Put every deleted variant back. refresh() then keeps the ones whose
+// combination is still selected (with their prices) and drops the rest.
+function restoreVariants() {
+  formState.removedVariants.forEach((variant, key) => {
+    formState.variants.set(key, variant);
   });
+  formState.removedVariants.clear();
 }
+
+function hasWork() {
+  return Object.keys(formState.selections).length > 0;
+}
+
+// Show the current category's name in the search box (or empty if none)
+function resetCategoryText() {
+  categorySearch.value = formState.category ? capitalize(formState.category.name) : "";
+}
+
+// The one redraw. Every action updates formState, then calls this.
+// The screen is only drawn FROM formState, never read back.
+function refresh(newFieldId) {
+  // fields with no selected values drop out of the combinations (Q7)
+  const activeFields = getOrderedFields().filter(
+    (field) => formState.selections[field.id]
+  );
+
+  // we fitler any selections field that is present in the active field
+
+  const combinations = buildVariants(
+    activeFields.map((field) => [field.id, formState.selections[field.id]])
+  );
+  const nextVariant = new Map();
+  let removedCount = 0; // deleted variants that would otherwise be on screen
+
+  combinations.forEach((options) => {
+    const key = makeVariantKey(options, activeFields);
+
+    if (formState.removedVariants.has(key)) {
+      removedCount++;
+      return;
+    }
+
+    // same combination as before: keep it as it is
+    if (formState.variants.has(key)) {
+      nextVariant.set(key, formState.variants.get(key));
+      return;
+    }
+
+    // a new combination starts empty
+    const variant = { key, options, id: null, sku: "", price: "", stock: "" };
+
+    // First value of a new field: every key changed shape. The row this one
+    // grew from has the same key without the new field; carry its price and
+    // SKU over (never stock).
+    if (newFieldId) {
+      // newFieldId comes from data-field-id (a string), field.id is a number
+      const oldFields = activeFields.filter(
+        (field) => String(field.id) !== String(newFieldId)
+      );
+      const oldKey = makeVariantKey(options, oldFields);
+      const old =
+        formState.variants.get(oldKey) || formState.removedVariants.get(oldKey);
+
+      if (old) {
+        variant.price = old.price;
+        variant.sku = old.sku;
+      }
+
+      // the old row was deleted, so the row it grew into stays deleted
+      if (formState.removedVariants.has(oldKey)) {
+        formState.removedVariants.set(key, variant);
+        removedCount++;
+        return;
+      }
+    }
+
+    nextVariant.set(key, variant);
+  })
+  formState.variants = nextVariant;
+  // building variants , as we are assisinging that for each field , it have an id , and a selection with that field id
+
+  syncFieldSelections();
+  renderVariants(formState.variants, activeFields, removedCount);
+}
+

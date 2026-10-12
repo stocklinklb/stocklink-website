@@ -12,13 +12,12 @@ async function loadCsv() {
 
   phoneSpecs = result.data;
   const models = phoneSpecs.map((product) => {
-     return {
-      model:product.model,
-      category:product.category
-     }
-});
-  console.log(Object.keys(phoneSpecs[0]));
-  console.log(phoneSpecs[0]);
+    return {
+      model: product.model,
+      category: product.category
+    }
+  });
+
 }
 
 loadCsv();

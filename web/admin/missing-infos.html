@@ -20,7 +20,9 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
+    <link rel="stylesheet" href="/admin/tokens.css" />
     <link rel="stylesheet" href="/admin/shared.css" />
+    <link rel="stylesheet" href="/admin/modal.css" />
 
     <link
       rel="stylesheet"
@@ -90,12 +92,12 @@
         <div class="sidebar-links" id="sidebar-links"></div>
 
         <div class="profile-box sidebar-profile">
-          <img src="/phone-photos/user.png" alt="" />
+          <img alt="" />
           <div class="profile-info">
             <h4></h4>
             <span></span>
           </div>
-          <button class="logout-btn">Log out</button>
+          <button type="button" class="logout-btn"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>Log out</button>
         </div>
       </aside>
       <script src="/admin/config.js"></script>
@@ -139,24 +141,25 @@
     </div>
     <div id="toast-container"></div>
 
-    <div class="logout-modal-overlay" id="logoutModal">
-      <div class="logout-modal">
+    <div class="logout-modal-overlay modal-overlay" id="logoutModal">
+      <div class="logout-modal modal modal--sm modal--confirm" role="dialog" aria-modal="true">
+        <div class="modal-icon modal-icon--danger"><i class="fa-solid fa-right-from-bracket"></i></div>
         <h3>Confirm Logout</h3>
         <p>Are you sure you want to log out?</p>
 
-        <div class="logout-actions">
-          <button class="cancel-logout">Cancel</button>
+        <div class="logout-actions modal-actions">
+          <button type="button" class="cancel-logout modal-btn modal-btn--secondary">Cancel</button>
 
-          <button class="confirm-logout">Logout</button>
+          <button type="button" class="confirm-logout modal-btn modal-btn--danger">Logout</button>
         </div>
       </div>
     </div>
     <div style="position: absolute; left: -9999px; opacity: 0">
       <i class="fa-solid fa-box-open"></i>
     </div>
-    <div class="image-modal-overlay hidden" id="image-modal">
-      <div class="image-modal">
-        <button class="close-modal">
+    <div class="image-modal-overlay modal-overlay" id="image-modal">
+      <div class="image-modal modal modal--md modal--padded" role="dialog" aria-modal="true">
+        <button type="button" class="close-modal modal-close" aria-label="Close">
           <i class="fa-solid fa-xmark"></i>
         </button>
 

@@ -13,6 +13,9 @@
 // their target depends on a runtime value or on elements that don't
 // exist until later (custom spec rows, variant table rows, etc.).
 
+// variants
+const variantOptionsContainer = document.getElementById("variant-options-container");
+
 // --- Product info ---
 const featuredCheckBox = document.getElementById("featured-product");
 const productNameInput = document.getElementById("product-name");

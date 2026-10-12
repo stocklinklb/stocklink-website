@@ -482,6 +482,16 @@ async function loadStoreLogo() {
     const store = await response.json();
     if (store.logo) {
       applyStoreLogo(store.logo);
+    } else {
+      // No logo uploaded (or it was removed): show the StockLink icon and drop
+      // any stale cached logo. The HTML starts with no src, so pages whose
+      // store has a logo never flash this icon.
+      localStorage.removeItem("storeLogo");
+      document
+        .querySelectorAll(".sidebar-profile img, #logo-preview-image")
+        .forEach((img) => {
+          img.src = "/admin/favicon.png";
+        });
     }
   } catch (error) {
     console.warn("Could not load store logo:", error.message);

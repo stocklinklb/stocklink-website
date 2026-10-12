@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    if (!unlinkModal.hidden) closeUnlinkModal();
+    if (unlinkModal.classList.contains("active")) closeUnlinkModal();
     if (googleModal.style.display !== "none") closeGoogleModal();
   });
 
@@ -193,19 +193,19 @@ function handleGoogleButtonClick() {
 }
 
 function openUnlinkModal() {
-  unlinkModal.hidden = false;
+  unlinkModal.classList.add("active");
   document.getElementById("unlink-cancel").focus();
 }
 
 function closeUnlinkModal() {
-  unlinkModal.hidden = true;
+  unlinkModal.classList.remove("active");
   googleLinkBtn.focus();
 }
 
 // Confirmed in the modal -> ask Google to re-verify. The credential
 // callback then posts to /auth/google/unlink.
 function confirmUnlink() {
-  unlinkModal.hidden = true;
+  unlinkModal.classList.remove("active");
   openGoogleModal("unlink");
 }
 

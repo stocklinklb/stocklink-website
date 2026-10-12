@@ -33,10 +33,10 @@ removeFileBtn.addEventListener("click", removeSelectedFile);
 backBtn.addEventListener("click", removeSelectedFile);
 const onboardingGuide = document.querySelector(".onboarding-guide");
 if ((paramsValue === "onboarding")) {
-  onboardingGuide.classList.remove("is-hidden");
+  onboardingGuide.classList.add("active");
 }
 guideBtn.addEventListener("click", () => {
-  onboardingGuide.classList.add("is-hidden");
+  onboardingGuide.classList.remove("active");
 });
 function removeSelectedFile() {
   // Clear the actual file input

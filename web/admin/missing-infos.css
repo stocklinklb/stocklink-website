@@ -722,67 +722,14 @@ main {
   display: none;
 }
 /* ============================================
-   Image viewer modal
+   Image viewer modal (shell from modal.css)
    ============================================ */
 
-.image-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-
-  background: rgba(15, 23, 42, 0.55);
-}
-
-.image-modal-overlay.hidden {
-  display: none;
-}
-
-.image-modal {
-  position: relative;
-  width: 100%;
-  max-width: 640px;
-  max-height: 85vh;
-
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-
-  padding: 24px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
+/* the close button sits in the box's top-right corner */
 .close-modal {
   position: absolute;
   top: 14px;
   right: 14px;
-
-  width: 32px;
-  height: 32px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-  border-radius: 50%;
-  background: var(--bg);
-  color: var(--text-secondary);
-
-  font-size: 14px;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
-}
-
-.close-modal:hover {
-  background: var(--danger-soft);
-  color: var(--danger);
 }
 
 .modal-product-name {

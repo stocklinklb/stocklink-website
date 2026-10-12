@@ -1,0 +1,390 @@
+/* ===========================================================
+   ADMIN MODALS
+   One look and one open/close mechanism for every admin dialog.
+   Load after shared.css:
+     <link rel="stylesheet" href="/admin/modal.css" />
+
+   Markup:
+     <div class="modal-overlay" id="...">          backdrop, hidden until .active
+       <div class="modal" role="dialog">            the white box
+         <div class="modal-header">…<button class="modal-close"></div>
+         <div class="modal-body">…</div>
+         <div class="modal-footer">…buttons…</div>
+       </div>
+     </div>
+
+   Open / close from JS:  overlay.classList.add("active") / .remove("active")
+
+   Sizes:    .modal--sm (400px)  default (440px)  .modal--md (620px)  .modal--lg (680px)
+   Layouts:  .modal--padded   simple content with padding, no header/body/footer
+             .modal--confirm  centred confirmation: .modal-icon + h3 + p + .modal-actions
+   Buttons:  .modal-btn + .modal-btn--secondary / --primary / --danger
+   =========================================================== */
+
+/* ---------- Overlay (backdrop) ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000; /* above the mobile sidebar (1000), banner (1200) and AI widget (2000); toasts stay on top */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--overlay);
+
+  /* closed: laid out but invisible, so opening and closing can fade */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.2s var(--adm-ease),
+    visibility 0s linear 0.2s;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.2s var(--adm-ease),
+    visibility 0s linear 0s;
+}
+
+/* ---------- Box ---------- */
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: min(88vh, 760px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.22s var(--adm-ease);
+}
+
+.modal-overlay.active .modal {
+  transform: none;
+}
+
+.modal--sm {
+  max-width: 400px;
+}
+
+.modal--md {
+  max-width: 620px;
+}
+
+.modal--lg {
+  max-width: 680px;
+}
+
+/* simple content (no header/body/footer): the box itself is padded and scrolls */
+.modal--padded {
+  padding: 28px;
+  overflow-y: auto;
+}
+
+/* ---------- Header / body / footer ---------- */
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modal-header > div {
+  min-width: 0;
+}
+
+.modal-header h2,
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.modal-header p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.modal-close {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--adm-ease),
+    border-color 0.15s var(--adm-ease),
+    color 0.15s var(--adm-ease);
+}
+
+.modal-close:hover {
+  background: var(--surface-muted);
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.modal-body {
+  flex: 1;
+  min-height: 0;
+  padding: 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-soft);
+  flex-shrink: 0;
+}
+
+/* ---------- Confirmation dialog ---------- */
+
+.modal--confirm {
+  padding: 26px 24px 22px;
+  text-align: center;
+}
+
+.modal--confirm h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.modal--confirm p {
+  max-width: 320px;
+  margin: 0 auto 20px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.modal--confirm p strong {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.modal-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 18px;
+}
+
+.modal-icon--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.modal-icon--success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ---------- Buttons ---------- */
+
+.modal-btn {
+  min-height: 42px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--adm-ease),
+    border-color 0.15s var(--adm-ease),
+    box-shadow 0.15s var(--adm-ease),
+    transform 0.15s var(--adm-ease);
+}
+
+.modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.modal-btn--secondary {
+  border-color: var(--border-strong);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.modal-btn--secondary:hover:not(:disabled) {
+  background: var(--surface-muted);
+  border-color: var(--ink-faint);
+}
+
+.modal-btn--primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+}
+
+.modal-btn--primary:hover:not(:disabled) {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.modal-btn--danger {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #fff;
+}
+
+.modal-btn--danger:hover:not(:disabled) {
+  filter: brightness(0.92);
+  transform: translateY(-1px);
+}
+
+.modal-btn:focus-visible,
+.modal-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+/* ---------- Phones ----------
+   Forms slide up from the bottom as a sheet; short confirmations
+   stay a small centred card. Buttons always stay side by side:
+   Cancel on the left, the action on the right. */
+
+@media (max-width: 560px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    max-width: none;
+    max-height: 92dvh;
+    border-bottom: 0;
+    border-radius: 18px 18px 0 0;
+    transform: translateY(32px);
+  }
+
+  .modal-header {
+    gap: 12px;
+    padding: 18px 18px 14px;
+  }
+
+  .modal-header h2,
+  .modal-header h3 {
+    font-size: 17px;
+  }
+
+  .modal-body {
+    padding: 18px;
+  }
+
+  .modal-footer {
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .modal-footer > .modal-btn {
+    flex: 1;
+  }
+
+  .modal--padded {
+    padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
+  }
+
+  .modal-btn {
+    min-height: 40px;
+    padding: 9px 14px;
+  }
+
+  /* confirmations: compact card in the middle of the screen */
+  .modal-overlay:has(> .modal--confirm) {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .modal--confirm {
+    max-width: 320px;
+    padding: 22px 18px 18px;
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transform: translateY(8px) scale(0.98);
+  }
+
+  .modal--confirm .modal-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .modal--confirm h3 {
+    margin-bottom: 6px;
+    font-size: 16px;
+  }
+
+  .modal--confirm p {
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+}
+
+/* no stuck hover lift on touch screens */
+@media (hover: none) {
+  .modal-btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal {
+    transition: none;
+  }
+}

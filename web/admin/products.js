@@ -177,9 +177,41 @@ const ALL_DROPDOWNS = [
 ];
 
 const deleteModal = document.getElementById("delete-modal");
-const deleteProductName = document.getElementById("delete-product-name");
 const cancelDeleteBtn = document.getElementById("cancel-delete-btn");
 const confirmDeleteBtn = document.getElementById("confirm-delete-btn");
+const confirmModalIcon = document.getElementById("confirm-modal-icon");
+const confirmModalGlyph = document.getElementById("confirm-modal-glyph");
+
+// The delete modal is shared by delete / archive / unarchive (single row or bulk).
+// This is the only place that sets it up, so icon, text and button always match.
+//   mode:  "delete" | "archive" | "unarchive"
+//   name:  product name (single row)   or   count: number of selected products (bulk)
+function openProductConfirm(mode, { title, name, count }) {
+  const isDelete = mode === "delete";
+  const glyph = { delete: "fa-trash", archive: "fa-box-archive", unarchive: "fa-box-open" }[mode];
+  const label = { delete: "Delete", archive: "Archive", unarchive: "Unarchive" }[mode];
+
+  modalTitle.textContent = title;
+  confirmModalIcon.className = `modal-icon${isDelete ? " modal-icon--danger" : ""}`;
+  confirmModalGlyph.className = `fa-solid ${glyph}`;
+
+  // product names are user text: build the sentence with nodes, never innerHTML
+  modalP.replaceChildren();
+  if (name) {
+    const strong = document.createElement("strong");
+    strong.textContent = name;
+    modalP.append(`Are you sure you want to ${mode} `, strong, "?");
+  } else {
+    modalP.textContent = `Are you sure you want to ${mode} ${count === 1 ? "this product" : `these ${count} products`}?`;
+  }
+  if (isDelete) modalP.append(" This can't be undone.");
+
+  confirmDeleteBtn.textContent = label;
+  confirmDeleteBtn.classList.toggle("modal-btn--danger", isDelete);
+  confirmDeleteBtn.classList.toggle("modal-btn--primary", !isDelete);
+
+  deleteModal.classList.add("active");
+}
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toast-message");
 
@@ -571,29 +603,31 @@ function renderTable(rows) {
     .map((row) => {
       const isArchived = row.status === "ARCHIVED";
       const status = statusOf(row.stock);
+      // names, brands, categories and options are user text: escape them
+      const rowId = escapeHtml(row.rowId);
       return `
-        <tr data-row-id="${row.rowId}" class="${row.missingSpecs ? "row-missing-specs" : ""}">
+        <tr data-row-id="${rowId}" class="${row.missingSpecs ? "row-missing-specs" : ""}${isArchived ? " is-archived" : ""}">
         <td class="select-cell"><input type="checkbox" class = "row-checkbox" ${selectedProducts.has(row.rowId) ? "checked" : ""}></td>
           <td class="product-info" data-label="Product">
-            <img src="${row.image || "/default.jpg"}" alt="${row.name || ""}" />
+            <img src="${escapeHtml(row.image || "/default.jpg")}" alt="${escapeHtml(row.name || "")}" />
             <div>
-              <h4>${row.name}${row.missingSpecs ? ' <i class="fa-solid fa-triangle-exclamation missing-specs-icon" title="Missing specifications"></i>' : ""}</h4>
-              <span>${row.options || ""}</span>
+              <h4>${escapeHtml(row.name)}${row.missingSpecs ? ' <i class="fa-solid fa-triangle-exclamation missing-specs-icon" title="Missing specifications"></i>' : ""}</h4>
+              <span>${escapeHtml(row.options || "")}</span>
             </div>
           </td>
-          <td data-label="Brand">${row.brand || "—"}</td>
-          <td data-label="Category">${row.category || "—"}</td>
+          <td data-label="Brand">${escapeHtml(row.brand || "—")}</td>
+          <td data-label="Category">${escapeHtml(row.category || "—")}</td>
           <td data-label="Price">$${row.price}</td>
           <td data-label="Stock">${row.stock}</td>
           <td data-label="Status">${
             isArchived
-              ? `<span class="status archived">Archived</span>`
+              ? `<span class="status archived"><i class="fa-solid fa-box-archive"></i>Archived</span>`
               : `<span class="status ${status.cls}">${status.label}</span>`
           }</td>
           <td data-label="Actions" class="actions-cell">
-            <button class="action-btn" data-action="edit" data-row-id="${row.rowId}"><i class="fa-solid fa-pen"></i></button>
-            <button class="action-btn" data-action="archive" data-row-id="${row.rowId}" title="${isArchived ? "Unarchive" : "Archive"}"><i class="fa-solid fa-box${isArchived ? "-open" : ""}"></i></button>
-            <button class="delete-btn" data-action="delete" data-row-id="${row.rowId}"><i class="fa-solid fa-trash-can"></i></button>
+            <button class="action-btn" data-action="edit" data-row-id="${rowId}"><i class="fa-solid fa-pen"></i></button>
+            <button class="action-btn" data-action="archive" data-row-id="${rowId}" title="${isArchived ? "Unarchive" : "Archive"}"><i class="fa-solid fa-box${isArchived ? "-open" : ""}"></i></button>
+            <button class="delete-btn" data-action="delete" data-row-id="${rowId}"><i class="fa-solid fa-trash-can"></i></button>
           </td>
         </tr>`;
     })
@@ -658,8 +692,8 @@ function createBrandFilter() {
         .map(
           (brand) => `
             <label>
-                <input type="checkbox" value="${brand}">
-                ${brand}
+                <input type="checkbox" value="${escapeHtml(brand)}">
+                ${escapeHtml(brand)}
             </label>`,
         )
         .join("")
@@ -675,8 +709,8 @@ function createCategoryFilter() {
         .map(
           (category) => `
             <label>
-                <input type="checkbox" value="${category}">
-                ${category}
+                <input type="checkbox" value="${escapeHtml(category)}">
+                ${escapeHtml(category)}
             </label>`,
         )
         .join("")
@@ -908,14 +942,10 @@ tbody.addEventListener("click", (event) => {
     productToDelete = null;
     productsToDelete = [];
     const willUnarchive = row.status === "ARCHIVED";
-    modalTitle.textContent = willUnarchive
-      ? "Unarchive Product"
-      : "Archive Product";
-    confirmDeleteBtn.textContent = willUnarchive ? "Unarchive" : "Archive";
-    confirmDeleteBtn.style.background = "#3b3b3b";
-    confirmDeleteBtn.style.color = "#fff";
-    deleteProductName.textContent = row.name;
-    deleteModal.classList.add("active");
+    openProductConfirm(willUnarchive ? "unarchive" : "archive", {
+      title: willUnarchive ? "Unarchive Product" : "Archive Product",
+      name: row.name,
+    });
     return;
   }
 
@@ -923,11 +953,7 @@ tbody.addEventListener("click", (event) => {
     productToDelete = row;
     productsToDelete = [];
     productToArchive = null;
-    modalTitle.textContent = "Delete Product";
-    confirmDeleteBtn.textContent = "Delete";
-    confirmDeleteBtn.style.background = "";
-    deleteProductName.textContent = row.name;
-    deleteModal.classList.add("active");
+    openProductConfirm("delete", { title: "Delete Product", name: row.name });
   }
 });
 

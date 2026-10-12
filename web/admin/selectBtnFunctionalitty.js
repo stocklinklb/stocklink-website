@@ -1,8 +1,6 @@
 const selectBtn = document.getElementById("selectProductBtn");
-const selectHeader = document.querySelector(".select-header");
 const productsSummary = document.getElementById("productsSummary");
 const bulkDelete = document.getElementById("blkDelete");
-const actionsHeader = document.querySelector(".actions-header");
 const modalTitle = document.getElementById("modal-title");
 const selectAllCheckbox = document.getElementById("selectAllCheckbox");
 
@@ -65,17 +63,12 @@ selectAllCheckbox.addEventListener("click", () => {
 // renderTable() rebuilds the tbody - otherwise freshly rendered rows
 // always come back with checkboxes hidden and the Actions column shown,
 // regardless of whether selection mode is on.
+// The show/hide itself lives in products.css (.is-selecting): inline
+// display values would override the phone card layout.
 function applySelectionModeToTable() {
-  document.querySelectorAll(".select-cell").forEach((cell) => {
-    cell.style.display = selectionMode ? "table-cell" : "none";
-  });
-
-  document.querySelectorAll(".actions-cell").forEach((cell) => {
-    cell.style.display = selectionMode ? "none" : "table-cell";
-  });
-
-  selectHeader.style.display = selectionMode ? "table-cell" : "none";
-  actionsHeader.style.display = selectionMode ? "none" : "table-cell";
+  document
+    .getElementById("products-table")
+    .classList.toggle("is-selecting", selectionMode);
 }
 window.applySelectionModeToTable = applySelectionModeToTable;
 
@@ -104,16 +97,11 @@ blkEdit.addEventListener("click", () => {
 });
 
 blkArchive.addEventListener("click", () => {
-  deleteModal.classList.toggle("active");
-  if (selectedProducts.size === 1) {
-    modalTitle.textContent = `Archive ${selectedProducts.size} product`;
-  } else {
-    modalTitle.textContent = `Archive ${selectedProducts.size} products`;
-  }
-  confirmDeleteBtn.textContent = "Archive";
-  confirmDeleteBtn.style.background = "#3b3b3b";
-  confirmDeleteBtn.style.color = "#fff";
-  modalP.textContent = `Are you sure you want to archive?`;
+  const count = selectedProducts.size;
+  openProductConfirm("archive", {
+    title: `Archive ${count} ${count === 1 ? "product" : "products"}`,
+    count,
+  });
 });
 
 cancelBlkBtn.addEventListener("click", () => {
@@ -367,8 +355,6 @@ function updateProductsSummary() {
 // Open the delete modal on click
 
 bulkDelete.addEventListener("click", () => {
-  const deleteProductName = document.getElementById("delete-product-name");
-
   // Computed here, not at page load - the table's checkboxes don't exist
   // yet when the script first runs, so this must be read fresh on every
   // click to reflect whatever is actually checked right now.
@@ -388,14 +374,9 @@ bulkDelete.addEventListener("click", () => {
     return true;
   });
 
-  deleteModal.classList.add("active");
-
-  if (productsToDelete.length === 1) {
-    modalTitle.textContent = "Delete Product";
-    deleteProductName.textContent =
-      "Are you sure you want to delete this product?";
-  } else {
-    modalTitle.textContent = `Delete ${productsToDelete.length} Products`;
-    deleteProductName.textContent = `Are you sure you want to delete these ${productsToDelete.length} products? This action cannot be undone.`;
-  }
+  const count = productsToDelete.length;
+  openProductConfirm("delete", {
+    title: count === 1 ? "Delete Product" : `Delete ${count} Products`,
+    count,
+  });
 });

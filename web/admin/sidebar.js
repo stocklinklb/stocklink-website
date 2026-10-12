@@ -143,7 +143,7 @@ function applyPermission(data, tier) {
     }
 
     return `
-    <a href="${item.href}" class="${isActive ? "active" : ""}">
+    <a href="${item.href}" class="${isActive ? "active" : ""} pressable">
       <i class="${item.icon}"></i>
       <span>${item.name}</span>
     </a>

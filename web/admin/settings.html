@@ -15,7 +15,9 @@
 <link rel="preload" as="script" href="/admin/shared.js">
 <link rel="preload" as="script" href="/admin/skeleton.js">
 <link rel="preload" as="script" href="/admin/sidebar.js">
+  <link rel="stylesheet" href="/admin/tokens.css" />
   <link rel="stylesheet" href="/admin/shared.css">
+  <link rel="stylesheet" href="/admin/modal.css" />
   <link rel="stylesheet" href="/admin/settings.css">
   <link
       rel="stylesheet"
@@ -71,12 +73,12 @@
 
 
         <div class="profile-box sidebar-profile">
-          <img src="/phone-photos/user.png" alt="" />
+          <img alt="" />
           <div class="profile-info">
             <h4></h4>
             <span></span>
           </div>
-          <button class="logout-btn">Log out</button>
+          <button type="button" class="logout-btn"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>Log out</button>
         </div>
       </aside>
       <script src="/admin/config.js"></script>
@@ -124,7 +126,7 @@
             <div class="logo-section">
 
                 <div class="logo-preview">
-                    <img  src="/phone-photos/user.png" alt="Store Logo" id="logo-preview-image">
+                    <img alt="Store Logo" id="logo-preview-image">
                 </div>
                 <button class="upload-btn" id="upload-logo-btn">
                     Upload Logo
@@ -234,20 +236,21 @@
           </div>
         </div>
         <div id="toast-container"></div>
-      <div class="logout-modal-overlay" id="logoutModal">
-        <div class="logout-modal">
+      <div class="logout-modal-overlay modal-overlay" id="logoutModal">
+        <div class="logout-modal modal modal--sm modal--confirm" role="dialog" aria-modal="true">
+          <div class="modal-icon modal-icon--danger"><i class="fa-solid fa-right-from-bracket"></i></div>
           <h3>Confirm Logout</h3>
           <p>Are you sure you want to log out?</p>
 
-          <div class="logout-actions">
-            <button class="cancel-logout">Cancel</button>
-            <button class="confirm-logout">Logout</button>
+          <div class="logout-actions modal-actions">
+            <button type="button" class="cancel-logout modal-btn modal-btn--secondary">Cancel</button>
+            <button type="button" class="confirm-logout modal-btn modal-btn--danger">Logout</button>
           </div>
         </div>
       </div>
-      <div class="unlink-modal-overlay" id="unlink-modal" hidden>
-        <div class="unlink-modal" role="dialog" aria-modal="true" aria-labelledby="unlink-modal-title">
-          <div class="unlink-modal-icon">
+      <div class="unlink-modal-overlay modal-overlay" id="unlink-modal">
+        <div class="unlink-modal modal modal--sm modal--confirm" role="dialog" aria-modal="true" aria-labelledby="unlink-modal-title">
+          <div class="modal-icon modal-icon--danger">
             <i class="fa-solid fa-link-slash"></i>
           </div>
           <h3 id="unlink-modal-title">Unlink Google account?</h3>
@@ -255,9 +258,9 @@
             You won't be able to sign in with Google until you link it again.
             You'll be asked to confirm with Google first.
           </p>
-          <div class="unlink-modal-actions">
-            <button type="button" class="unlink-cancel" id="unlink-cancel">Cancel</button>
-            <button type="button" class="unlink-confirm" id="unlink-confirm">Unlink</button>
+          <div class="unlink-modal-actions modal-actions">
+            <button type="button" class="unlink-cancel modal-btn modal-btn--secondary" id="unlink-cancel">Cancel</button>
+            <button type="button" class="unlink-confirm modal-btn modal-btn--danger" id="unlink-confirm">Unlink</button>
           </div>
         </div>
       </div>

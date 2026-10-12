@@ -1,0 +1,188 @@
+/* ===========================================================
+   ADMIN DESIGN TOKENS
+   Colors, type, shadows and radii for every admin page.
+   Load FIRST, before shared.css / the page stylesheet:
+     <link rel="stylesheet" href="/admin/tokens.css" />
+   Dark theme: html[data-theme="dark"] (set by shared.js).
+   =========================================================== */
+
+:root {
+  /* ============================================
+     Typography
+     ============================================ */
+  --font-display: "Sora", "Inter", Arial, sans-serif;
+  --font-body: "Sora", "Inter", Arial, sans-serif;
+
+  /* ============================================
+     Text
+     ============================================ */
+  --ink: #111827;
+  --ink-soft: #475569;
+  --ink-faint: #94a3b8;
+
+  /* ============================================
+     Backgrounds / Surfaces
+     ============================================ */
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-muted: #f1f5f9;
+
+  /* ============================================
+     Borders
+     ============================================ */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* ============================================
+     Sidebar
+     ============================================ */
+  --sidebar-bg: #ffffff;
+  --sidebar-ink: #64748b;
+  --sidebar-ink-active: #0f172a;
+  --sidebar-active-bg: rgba(37, 99, 235, 0.1);
+  --sidebar-border: #eef1f6;
+  --sidebar-hover-bg: rgba(15, 23, 42, 0.035);
+
+  /* ============================================
+     Accent
+     ============================================ */
+  --accent: #2563eb;
+  --accent-hover: #487cec;
+  --accent-dark: #1d4ed8;
+  --accent-contrast: #ffffff;
+  --accent-soft: #dbeafe;
+  --accent-ring: rgba(37, 99, 235, 0.16);
+
+  /* ============================================
+     Status
+     ============================================ */
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+
+  /* ============================================
+     Overlays / Glass
+     ============================================ */
+  --overlay: rgba(15, 23, 42, 0.45);
+  --overlay-dark: rgba(15, 23, 42, 0.65);
+  --glass: rgba(255, 255, 255, 0.92);
+
+  /* ============================================
+     Shadows
+     ============================================ */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+
+  --shadow-accent-sm: 0 6px 16px rgba(37, 99, 235, 0.12);
+  --shadow-accent-md: 0 8px 30px rgba(37, 99, 235, 0.1);
+  --shadow-accent-lg: 0 10px 24px rgba(37, 99, 235, 0.18);
+
+  /* ============================================
+     Radius
+     ============================================ */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --banner-height: 0px;
+  /* ============================================
+     Admin compatibility tokens
+     ============================================ */
+  --adm-ink: var(--ink);
+  --adm-ink-soft: var(--ink-soft);
+  --adm-ink-faint: var(--ink-faint);
+
+  --adm-border: var(--border);
+  --adm-border-strong: var(--border-strong);
+
+  --adm-surface: var(--surface);
+  --adm-surface-soft: var(--surface-soft);
+  --adm-surface-muted: var(--surface-muted);
+
+  --adm-accent: var(--accent);
+  --adm-accent-dark: var(--accent-dark);
+  --adm-accent-soft: var(--accent-soft);
+  --adm-accent-ring: var(--accent-ring);
+
+  --adm-danger: var(--danger);
+  --adm-danger-soft: var(--danger-soft);
+
+  --adm-success: var(--success);
+
+  --adm-radius-sm: var(--radius-sm);
+  --adm-radius-md: var(--radius-md);
+  --adm-radius-lg: var(--radius-lg);
+  --adm-radius-pill: var(--radius-pill);
+
+  --adm-shadow-sm: var(--shadow-sm);
+  --adm-shadow-md: var(--shadow-md);
+  --adm-shadow-lg: var(--shadow-lg);
+
+  --adm-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Dark theme
+   ============================================ */
+html[data-theme="dark"] {
+  /* Text */
+  --ink: #f3f4f6;
+  --ink-soft: #a7adb7;
+  --ink-faint: #727985;
+
+  /* Backgrounds / Surfaces */
+  --bg: #0f1115;
+  --surface: #15181d;
+  --surface-soft: #1b1f25;
+  --surface-muted: #22272e;
+
+  /* Borders */
+  --border: #252b33;
+  --border-strong: #343b45;
+
+  /* Sidebar */
+  --sidebar-bg: #121419;
+  --sidebar-ink: #939aa5;
+  --sidebar-ink-active: #f5f6f7;
+  --sidebar-active-bg: rgba(255, 255, 255, 0.075);
+  --sidebar-border: #222730;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.045);
+
+  /* Accent */
+  --accent: #4f7cff;
+  --accent-dark: #3b68e8;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(79, 124, 255, 0.13);
+  --accent-ring: rgba(79, 124, 255, 0.18);
+
+  /* Status */
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.11);
+
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.11);
+
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.11);
+
+  /* Overlays / Glass */
+  --overlay: rgba(0, 0, 0, 0.48);
+  --overlay-dark: rgba(0, 0, 0, 0.68);
+  --glass: rgba(21, 24, 29, 0.94);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.35);
+
+  --shadow-accent-sm: 0 6px 16px rgba(79, 124, 255, 0.08);
+  --shadow-accent-md: 0 8px 30px rgba(79, 124, 255, 0.08);
+  --shadow-accent-lg: 0 10px 24px rgba(79, 124, 255, 0.12);
+}

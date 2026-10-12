@@ -20,50 +20,6 @@
 }
 
 /* ===========================================================
-   TOUCH POLISH
-   =========================================================== */
-
-/* Hide the focus ring for taps and clicks only.
-   Keyboard users still get the rings defined in section 1. */
-:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* Remove the double-tap zoom delay so taps respond instantly */
-button,
-.option-box,
-.file-upload-btn,
-.variant-search-dropdown-item,
-.brand-dropdown-item,
-.category-dropdown-item {
-  touch-action: manipulation;
-}
-
-/* No text-selection flash on long press (never on inputs) */
-button,
-.option-box,
-.selected-variant-chip,
-.file-upload-btn {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Default press state. :where() keeps specificity low, so your
-   existing :active rules (.save-btn, .option-box, edit/delete
-   buttons) still win where they exist. */
-:where(button, .file-upload-btn):active:not(:disabled) {
-  transform: scale(0.97);
-  opacity: 0.9;
-}
-
-/* Dropdown rows get a background press, since scaling a full-width row looks odd */
-.variant-search-dropdown-item:active,
-.brand-dropdown-item:active,
-.category-dropdown-item:active {
-  background: var(--adm-surface-muted);
-}
-
-/* ===========================================================
    1. BASE / FOCUS
    =========================================================== */
 
@@ -80,7 +36,6 @@ button,
 .admin-container button:focus-visible,
 .onboarding-guide button:focus-visible,
 .category-modal button:focus-visible,
-.delete-modal button:focus-visible,
 .option-box:focus-visible {
   outline: 2px solid var(--adm-accent);
   outline-offset: 2px;
@@ -100,7 +55,6 @@ body.modal-open {
   gap: 16px;
   margin-bottom: 24px;
 }
-
 
 /* ===========================================================
    2. FORM CARDS + FIELDS
@@ -264,7 +218,6 @@ label.checkbox:has(input:focus-visible) {
   box-shadow: 0 0 0 3px var(--adm-accent-ring);
 }
 
-
 /* ===========================================================
    3. DESCRIPTION
    =========================================================== */
@@ -318,7 +271,6 @@ label.checkbox:has(input:focus-visible) {
   font-variant-numeric: tabular-nums;
   color: var(--adm-ink-faint);
 }
-
 
 /* ===========================================================
    4. SPECIFICATIONS
@@ -479,7 +431,6 @@ label.checkbox:has(input:focus-visible) {
   background: var(--adm-accent-soft);
   border-color: var(--adm-accent);
 }
-
 
 /* ===========================================================
    5. PRODUCT VARIANTS
@@ -721,7 +672,6 @@ label.checkbox:has(input:focus-visible) {
   color: var(--adm-danger);
 }
 
-
 /* ===========================================================
    6. SEARCHABLE PICKERS (brand / product name / category)
    =========================================================== */
@@ -825,6 +775,45 @@ label.checkbox:has(input:focus-visible) {
   box-shadow: inset 3px 0 0 var(--adm-accent);
 }
 
+/* "2 variants removed · Restore" under the variants table */
+.variants-removed-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px dashed var(--adm-border-strong);
+  border-radius: var(--adm-radius-md);
+  color: var(--adm-ink-soft);
+  font-size: 13px;
+}
+
+.restore-variants-button {
+  border: 0;
+  background: none;
+  padding: 4px 8px;
+  border-radius: var(--adm-radius-sm);
+  color: var(--adm-accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.restore-variants-button:hover {
+  background: var(--adm-accent-soft);
+}
+
+/* The selected category (different from .active, the keyboard highlight) */
+.category-dropdown-item.is-current .category-dropdown-name {
+  color: var(--adm-accent);
+  font-weight: 600;
+}
+
+.category-dropdown-item.is-current .category-dropdown-name::after {
+  content: "\2713";
+  margin-left: 6px;
+}
+
 .brand-dropdown-item.brand-dropdown-add,
 .category-dropdown-item.category-dropdown-add {
   color: var(--adm-accent);
@@ -883,7 +872,6 @@ label.checkbox:has(input:focus-visible) {
 .category-delete-btn:active {
   transform: scale(0.94);
 }
-
 
 /* ===========================================================
    7. PRODUCT PHOTOS + COLOR BUILDER
@@ -1174,7 +1162,6 @@ label.checkbox:has(input:focus-visible) {
   transform: translateY(-1px);
 }
 
-
 /* ===========================================================
    8. ACTIONS (RESET / SAVE)
    =========================================================== */
@@ -1248,42 +1235,11 @@ label.checkbox:has(input:focus-visible) {
   box-shadow: none;
 }
 
-
 /* ===========================================================
-   9. CATEGORY MODAL + DELETE MODAL
+   9. CATEGORY MODAL
+   The modal shell (overlay, box, header, body, footer, buttons)
+   and the delete / switch confirmations come from modal.css.
    =========================================================== */
-
-.category-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.55);
-  animation: categoryModalFade 0.18s var(--adm-ease);
-}
-
-.category-modal.is-hidden,
-.delete-modal.is-hidden,
-.onboarding-guide.is-hidden {
-  display: none;
-}
-
-.category-modal-box {
-  width: min(100%, 620px);
-  max-height: min(90vh, 760px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--adm-border);
-  border-radius: var(--adm-radius-lg);
-  background: var(--adm-surface);
-  color: var(--adm-ink);
-  box-shadow: var(--adm-shadow-lg);
-  animation: categoryModalRise 0.22s var(--adm-ease);
-}
 
 .category-modal-form {
   display: flex;
@@ -1292,73 +1248,11 @@ label.checkbox:has(input:focus-visible) {
   min-height: 0;
 }
 
-.category-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 22px 24px 18px;
-  border-bottom: 1px solid var(--adm-border);
-  background: var(--adm-surface);
-}
-
-.category-modal-header>div {
-  min-width: 0;
-}
-
-.category-modal-header h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--adm-ink);
-}
-
-.category-modal-header p {
-  max-width: 500px;
-  margin: 5px 0 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--adm-ink-soft);
-}
-
-.category-modal-close {
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: var(--adm-radius-sm);
-  background: transparent;
-  color: var(--adm-ink-soft);
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  transition:
-    background-color 0.15s var(--adm-ease),
-    border-color 0.15s var(--adm-ease),
-    color 0.15s var(--adm-ease);
-}
-
-.category-modal-close:hover {
-  background: var(--adm-surface-muted);
-  border-color: var(--adm-border);
-  color: var(--adm-ink);
-}
-
+/* sections inside the body are stacked with a gap */
 .category-modal-body {
-  flex: 1;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 22px;
-  padding: 24px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--adm-border-strong) transparent;
 }
 
 .category-modal-body::-webkit-scrollbar {
@@ -1738,10 +1632,9 @@ label.checkbox:has(input:focus-visible) {
   border-top: 1px solid var(--adm-border);
 }
 
-/* ---- Modal buttons ---- */
+/* ---- Field editor buttons (footer buttons use .modal-btn) ---- */
 
 .category-field-save,
-.category-modal-submit,
 .category-modal-cancel {
   font-size: 13.5px;
   font-family: inherit;
@@ -1754,8 +1647,7 @@ label.checkbox:has(input:focus-visible) {
     transform 0.15s var(--adm-ease);
 }
 
-.category-field-save,
-.category-modal-submit {
+.category-field-save {
   min-height: 42px;
   padding: 10px 20px;
   border: none;
@@ -1765,20 +1657,17 @@ label.checkbox:has(input:focus-visible) {
   box-shadow: var(--adm-shadow-sm);
 }
 
-.category-field-save:hover,
-.category-modal-submit:hover {
+.category-field-save:hover {
   background: var(--adm-accent-dark);
   box-shadow: var(--adm-shadow-md);
   transform: translateY(-1px);
 }
 
-.category-field-save:active,
-.category-modal-submit:active {
+.category-field-save:active {
   transform: translateY(0);
 }
 
-.category-field-save:disabled,
-.category-modal-submit:disabled {
+.category-field-save:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
@@ -1799,225 +1688,7 @@ label.checkbox:has(input:focus-visible) {
   border-color: var(--adm-ink-faint);
 }
 
-.category-modal-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 15px 24px;
-  border-top: 1px solid var(--adm-border);
-  background: var(--adm-surface-soft);
-}
-
-/* ---- Delete modal ---- */
-
-.delete-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.55);
-  animation: categoryModalFade 0.18s var(--adm-ease);
-}
-
-.delete-modal-box {
-  width: min(100%, 400px);
-  padding: 24px;
-  border: 1px solid var(--adm-border);
-  border-radius: var(--adm-radius-lg);
-  background: var(--adm-surface);
-  color: var(--adm-ink);
-  text-align: center;
-  box-shadow: var(--adm-shadow-lg);
-  animation: categoryModalRise 0.22s var(--adm-ease);
-}
-
-.delete-modal-icon {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 14px;
-  border-radius: 50%;
-  background: var(--adm-danger-soft);
-  color: var(--adm-danger);
-  font-size: 18px;
-}
-
-.delete-modal-box h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--adm-ink);
-}
-
-.delete-modal-box p {
-  max-width: 320px;
-  margin: 0 auto 20px;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--adm-ink-soft);
-}
-
-.delete-modal-box p strong {
-  font-weight: 700;
-  color: var(--adm-ink);
-}
-
-.delete-modal-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.delete-modal-btn {
-  min-height: 42px;
-  padding: 10px 14px;
-  border-radius: var(--adm-radius-md);
-  font-size: 13.5px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition:
-    background-color 0.15s var(--adm-ease),
-    border-color 0.15s var(--adm-ease),
-    transform 0.15s var(--adm-ease);
-}
-
-.delete-modal-btn--cancel {
-  border: 1px solid var(--adm-border-strong);
-  background: var(--adm-surface);
-  color: var(--adm-ink);
-}
-
-.delete-modal-btn--cancel:hover {
-  background: var(--adm-surface-muted);
-  border-color: var(--adm-ink-faint);
-}
-
-.delete-modal-btn--danger {
-  border: 1px solid var(--adm-danger);
-  background: var(--adm-danger);
-  color: #fff;
-}
-
-.delete-modal-btn--danger:hover {
-  background: #b91c1c;
-  border-color: #b91c1c;
-  transform: translateY(-1px);
-}
-
-.delete-modal-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-
-/* ===========================================================
-   10. ONBOARDING GUIDE
-   =========================================================== */
-
-.onboarding-guide {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.55);
-  animation: categoryModalFade 0.18s var(--adm-ease);
-}
-
-.onboarding-guide-box {
-  width: 100%;
-  max-width: 460px;
-  max-height: 90vh;
-  padding: 28px;
-  overflow-y: auto;
-  border: 1px solid var(--adm-border);
-  border-radius: var(--adm-radius-lg);
-  background: var(--adm-surface);
-  color: var(--adm-ink);
-  box-shadow: var(--adm-shadow-lg);
-  animation: categoryModalRise 0.22s var(--adm-ease);
-}
-
-.onboarding-guide-box h2 {
-  margin: 0 0 4px;
-  font-family: var(--font-display);
-  font-size: 20px;
-  letter-spacing: -0.01em;
-}
-
-.guide-sub {
-  margin: 0 0 22px;
-  font-size: 14px;
-  color: var(--adm-ink-soft);
-}
-
-.guide-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 0 0 24px;
-  padding: 0;
-  list-style: none;
-}
-
-.guide-steps li {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.guide-steps strong {
-  font-size: 14.5px;
-  color: var(--adm-ink);
-}
-
-.guide-steps p {
-  margin: 2px 0 0;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--adm-ink-soft);
-}
-
-.guide-num {
-  flex: none;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--adm-accent-soft);
-  color: var(--adm-accent);
-  font-weight: 700;
-}
-
-.guide-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: var(--adm-radius-md);
-  background: var(--adm-accent);
-  color: #fff;
-  font-size: 14.5px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.15s var(--adm-ease);
-}
-
-.guide-btn:hover {
-  background: var(--adm-accent-dark);
-}
-
+/* (10. Onboarding guide: shared, see shared.css) */
 
 /* ===========================================================
    11. VARIANTS TABLE
@@ -2110,6 +1781,7 @@ label.checkbox:has(input:focus-visible) {
 
 .variant-price-input,
 .variant-stock-input,
+.variant-sku-input,
 .variant-battery-input {
   padding: 9px 12px;
   border: 1px solid var(--adm-border-strong);
@@ -2133,6 +1805,19 @@ label.checkbox:has(input:focus-visible) {
   width: 80px;
 }
 
+/* SKUs are codes: shown uppercase (the saved value is uppercased on save) */
+.variant-sku-input {
+  width: 140px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.variant-sku-input::placeholder {
+  text-transform: none;
+  font-weight: 400;
+  color: var(--adm-ink-faint);
+}
+
 .variant-battery-input {
   width: 56px;
   padding: 9px 8px;
@@ -2141,12 +1826,14 @@ label.checkbox:has(input:focus-visible) {
 
 .variant-price-input:hover,
 .variant-stock-input:hover,
+.variant-sku-input:hover,
 .variant-battery-input:hover {
   border-color: var(--adm-ink-faint);
 }
 
 .variant-price-input:focus,
 .variant-stock-input:focus,
+.variant-sku-input:focus,
 .variant-battery-input:focus {
   outline: none;
   border-color: var(--adm-accent);
@@ -2314,32 +2001,9 @@ label.checkbox:has(input:focus-visible) {
   background: rgba(139, 94, 52, 0.075);
 }
 
-
 /* ===========================================================
    12. ANIMATIONS + RESPONSIVE
    =========================================================== */
-
-@keyframes categoryModalFade {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes categoryModalRise {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
 
 @keyframes fadeInTable {
   from {
@@ -2377,12 +2041,6 @@ label.checkbox:has(input:focus-visible) {
 
 @media (prefers-reduced-motion: reduce) {
 
-  .category-modal,
-  .category-modal-box,
-  .delete-modal,
-  .delete-modal-box,
-  .onboarding-guide,
-  .onboarding-guide-box,
   #variants-table-container.table-show {
     animation: none;
   }
@@ -2433,31 +2091,9 @@ label.checkbox:has(input:focus-visible) {
 }
 
 @media (max-width: 640px) {
-  .category-modal {
-    padding: 12px;
-  }
-
-  .category-modal-box {
-    max-height: calc(100dvh - 24px);
-    border-radius: var(--adm-radius-md);
-  }
-
-  .category-modal-header,
-  .category-modal-body,
-  .category-modal-footer {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-
-  .category-modal-header {
-    padding-top: 18px;
-    padding-bottom: 16px;
-  }
 
   .category-modal-body {
     gap: 20px;
-    padding-top: 20px;
-    padding-bottom: 20px;
   }
 
   .category-type-options {
@@ -2468,27 +2104,17 @@ label.checkbox:has(input:focus-visible) {
     padding: 16px;
   }
 
-  .category-modal-footer,
   .category-field-editor-actions {
     flex-direction: column-reverse;
     align-items: stretch;
   }
 
   .category-field-save,
-  .category-modal-cancel,
-  .category-modal-submit {
+  .category-modal-cancel {
     width: 100%;
   }
 
-  .delete-modal-box {
-    padding: 22px 18px;
-  }
-
-  .delete-modal-actions {
-    grid-template-columns: 1fr;
-  }
-
-  /* Variants table becomes stacked cards */
+/* Variants table becomes stacked cards */
   #variants-table-container {
     overflow-x: visible;
   }
@@ -2544,6 +2170,11 @@ label.checkbox:has(input:focus-visible) {
   .variant-table .variant-stock-input,
   .variant-table .variant-battery-input {
     width: 110px;
+    text-align: right;
+  }
+
+  .variant-table .variant-sku-input {
+    width: 140px;
     text-align: right;
   }
 }

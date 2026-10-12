@@ -1,115 +1,100 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <script>
-      (function () {
-        var theme = localStorage.getItem("theme");
-        if (theme === "dark") {
-          document.documentElement.dataset.theme = "dark";
-        }
-      })();
-    </script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    (function () {
+      var theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
 
-    <title>Stocklink | Add Product View</title>
-    <link rel="preload" as="script" href="/admin/config.js" />
-    <link rel="preload" as="script" href="/admin/shared.js" />
-    <link rel="preload" as="script" href="/admin/skeleton.js" />
-    <link rel="preload" as="script" href="/admin/sidebar.js" />
-    <link rel="stylesheet" href="/admin/shared.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css"
-    />
+  <title>Stocklink | Add Product View</title>
+  <link rel="preload" as="script" href="/admin/config.js" />
+  <link rel="preload" as="script" href="/admin/shared.js" />
+  <link rel="preload" as="script" href="/admin/skeleton.js" />
+  <link rel="preload" as="script" href="/admin/sidebar.js" />
+  <link rel="stylesheet" href="/admin/tokens.css" />
+  <link rel="stylesheet" href="/admin/shared.css" />
+  <link rel="stylesheet" href="/admin/modal.css" />
 
-    <link rel="stylesheet" href="/admin/add-product.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/admin/add-product.css" />
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    />
-  </head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <body>
-    <div class="admin-container">
-      <header>
-        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
-          <span></span><span></span><span></span>
-        </button>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+</head>
 
-        <div class="header-actions">
-          <div class="notif-bell-wrapper">
-            <button
-              class="notif-bell"
-              id="notif-bell-btn"
-              aria-label="Notifications"
-            >
-              <i class="fa-solid fa-bell"></i>
-              <span class="notif-badge" id="notif-badge" hidden>0</span>
-            </button>
+<body>
+  <div class="admin-container">
+    <header>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
 
-            <div class="notif-dropdown" id="notif-dropdown" hidden>
-              <div class="notif-dropdown-header">
-                <h4>Notifications</h4>
-                <button id="notif-mark-all-read">Mark all as read</button>
-              </div>
-              <div class="notif-list" id="notif-list"></div>
-              <div class="notif-empty" id="notif-empty" hidden>
-                <i class="fa-regular fa-bell-slash"></i>
-                <p>No notifications yet</p>
-                <span>You're all caught up</span>
-              </div>
+      <div class="header-actions">
+        <div class="notif-bell-wrapper">
+          <button class="notif-bell" id="notif-bell-btn" aria-label="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notif-badge" id="notif-badge" hidden>0</span>
+          </button>
+
+          <div class="notif-dropdown" id="notif-dropdown" hidden>
+            <div class="notif-dropdown-header">
+              <h4>Notifications</h4>
+              <button id="notif-mark-all-read">Mark all as read</button>
+            </div>
+            <div class="notif-list" id="notif-list"></div>
+            <div class="notif-empty" id="notif-empty" hidden>
+              <i class="fa-regular fa-bell-slash"></i>
+              <p>No notifications yet</p>
+              <span>You're all caught up</span>
             </div>
           </div>
         </div>
-      </header>
-      <div class="sidebar-overlay" id="sidebar-overlay"></div>
-      <aside>
-        <h3 class="logo-text">
-          <span class="logo-stock">Stock</span
-          ><span class="logo-link">Link</span>
-        </h3>
+      </div>
+    </header>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside>
+      <h3 class="logo-text">
+        <span class="logo-stock">Stock</span><span class="logo-link">Link</span>
+      </h3>
 
-        <button
-          id="themeToggle"
-          class="theme-switch"
-          type="button"
-          aria-label="Toggle theme"
-        >
-          <span class="theme-switch-track">
-            <span class="theme-switch-thumb">
-              <i class="fa-solid fa-sun sun-icon"></i>
-              <i class="fa-solid fa-moon moon-icon"></i>
-            </span>
+      <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle theme">
+        <span class="theme-switch-track">
+          <span class="theme-switch-thumb">
+            <i class="fa-solid fa-sun sun-icon"></i>
+            <i class="fa-solid fa-moon moon-icon"></i>
           </span>
-        </button>
-        <div class="sidebar-links" id="sidebar-links"></div>
+        </span>
+      </button>
+      <div class="sidebar-links" id="sidebar-links"></div>
 
-        <div class="profile-box sidebar-profile">
-          <img src="/phone-photos/user.png" alt="" />
-          <div class="profile-info">
-            <h4></h4>
-            <span></span>
-          </div>
-          <button class="logout-btn">Log out</button>
+      <div class="profile-box sidebar-profile">
+        <img alt="" />
+        <div class="profile-info">
+          <h4></h4>
+          <span></span>
         </div>
-      </aside>
-      <script src="/admin/config.js"></script>
-      <script src="/admin/shared.js"></script>
-      <script src="/admin/skeleton.js"></script>
-      <script src="/admin/sidebar.js"></script>
-      <main>
-        <!--
+        <button type="button" class="logout-btn"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>Log out</button>
+      </div>
+    </aside>
+    <script src="/admin/config.js"></script>
+    <script src="/admin/shared.js"></script>
+    <script src="/admin/skeleton.js"></script>
+    <script src="/admin/sidebar.js"></script>
+    <main>
+      <!--
           Skeleton placeholder shown only while loadProduct() is in flight
           in edit mode (see product-form.js: showFormSkeleton /
           hideFormSkeleton). Populated at runtime with shimmer rows via
@@ -117,73 +102,53 @@
           product-form.js fills and clears it. Hidden by default so
           "Add Product" mode never sees it.
         -->
-        <div
-          id="product-form-skeleton"
-          class="form-skeleton"
-          style="display: none"
-        ></div>
+      <div id="product-form-skeleton" class="form-skeleton" style="display: none"></div>
 
-        <!--
+      <!--
           Everything below is the real form. product-form.js hides this
           whole block (display:none) while product-form-skeleton is
           showing, and reveals it again once fillProductInformation()
           has run (or the load failed) - same content as before, just
           wrapped so it can be toggled as one unit.
         -->
-        <div id="product-form-content">
-          <section class="form-card">
-            <div class="form-card-header">
-              <h2>Product Information</h2>
+      <div id="product-form-content">
+        <section class="form-card">
+          <div class="form-card-header">
+            <h2>Product Information</h2>
 
-              <p>Enter the basic details of the product</p>
+            <p>Enter the basic details of the product</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="product-name">
+                Product Name
+                <span class="required">*</span>
+              </label>
+
+              <div class="brand-search-wrapper">
+                <input type="text" id="product-name" class="brand-search-input" placeholder="e.g. iPhone 17 Pro Max"
+                  autocomplete="off" />
+
+                <div class="brand-search-dropdown" id="product-name-dropdown"></div>
+              </div>
             </div>
 
-            <div class="form-grid">
-              <div class="form-group full-width">
-                <label for="product-name">
-                  Product Name
-                  <span class="required">*</span>
-                </label>
+            <div class="form-group full-width">
+              <label for="brand-search-input">
+                Brand
+                <span class="required">*</span>
+              </label>
 
+              <div class="brand-picker" id="brand-picker">
                 <div class="brand-search-wrapper">
-                  <input
-                    type="text"
-                    id="product-name"
-                    class="brand-search-input"
-                    placeholder="e.g. iPhone 17 Pro Max"
-                    autocomplete="off"
-                  />
+                  <input type="text" id="brand-search-input" class="brand-search-input" placeholder="Search brand..."
+                    autocomplete="off" />
 
-                  <div
-                    class="brand-search-dropdown"
-                    id="product-name-dropdown"
-                  ></div>
+                  <div class="brand-search-dropdown" id="brand-search-dropdown"></div>
                 </div>
-              </div>
 
-              <div class="form-group full-width">
-                <label for="brand-search-input">
-                  Brand
-                  <span class="required">*</span>
-                </label>
-
-                <div class="brand-picker" id="brand-picker">
-                  <div class="brand-search-wrapper">
-                    <input
-                      type="text"
-                      id="brand-search-input"
-                      class="brand-search-input"
-                      placeholder="Search brand..."
-                      autocomplete="off"
-                    />
-
-                    <div
-                      class="brand-search-dropdown"
-                      id="brand-search-dropdown"
-                    ></div>
-                  </div>
-
-                  <!--
+                <!--
                   Hidden input holding the actual selected brand value.
                   add-products.js reads/writes this via
                   document.getElementById("brand") (cached as
@@ -192,160 +157,150 @@
                   The visible text field above is just the search/display
                   UI; this is what's actually submitted.
                 -->
-                  <input type="hidden" id="brand" value="" />
-                </div>
+                <input type="hidden" id="brand" value="" />
               </div>
+            </div>
 
-              <div class="form-group">
-                <label for="category">
-                  Category
-                  <span class="required">*</span>
-                </label>
-
-                <select id="category">
-                  <option value="">Select category</option>
-                  <option value="Phone">Phone</option>
-
-                  <option value="Tablet">Tablet</option>
-
-                  <option value="Watch">Watch</option>
-
-                  <option value="Accessory">Accessory</option>
-                </select>
-              </div>
-
-              <div class="form-group" style="display: none">
-                <label for="product-sku"> SKU </label>
-
-                <input
-                  type="text"
-                  id="product-sku"
-                  placeholder="APL-IP16PM-256-BLK"
-                />
-              </div>
-              <div class="form-group">
-                <label for="product-warranty"> Warranty </label>
-
-                <input
-                  type="text"
-                  id="product-warranty"
-                  placeholder="e.g. 1 year , 30 Days , No Warranty"
-                />
-              </div>
-              <label class="checkbox">
-                <input type="checkbox" id="featured-product" />
-                Show on Hot Deals
+            <div class="form-group full-width">
+              <label for="category-search-input">
+                Cateogry
+                <span class="required">*</span>
               </label>
-            </div>
-          </section>
-          <section class="form-card">
-            <div class="input-group">
-              <h3>Product Descreption</h3>
 
-              <textarea
-                id="product-description"
-                rows="8"
-                maxlength="300"
-                placeholder="Describe this product..."
-              ></textarea>
+              <div class="category-picker" id="category-picker">
+                <div class="category-search-wrapper">
+                  <input type="text" id="category-search-input" class="category-search-input"
+                    placeholder="Search categories..." autocomplete="off" />
 
-              <div class="description-footer">
-                <span id="description-count">0 / 300</span>
-              </div>
-            </div>
-          </section>
-          <section class="form-card">
-            <div id="specifications-container" class="specifications-grid">
-              <!-- Generated by JavaScript -->
-            </div>
-
-            <div class="custom-specs-section">
-              <h3>Custom Specifications</h3>
-
-              <div id="custom-specs-container"></div>
-
-              <button type="button" id="add-spec-btn">
-                + Add Specification
-              </button>
-            </div>
-          </section>
-
-          <section class="form-card">
-            <h3>Product Variants</h3>
-
-            <div class="variant-option" id="storage-option">
-              <p id="storage-icon">
-                <span class="storage-icon-inline">
-                  <span class="label"></span>
-                  <span class="ports"></span>
-                </span>
-              </p>
-              <h4>Available Storage</h4>
-
-              <div class="option-boxes" id="storage-options">
-                <div class="option-box">64GB</div>
-
-                <div class="option-box">128GB</div>
-
-                <div class="option-box">256GB</div>
-
-                <div class="option-box">512GB</div>
-
-                <div class="option-box">1TB</div>
-
-                <div class="option-box">2TB</div>
-              </div>
-            </div>
-
-            <div class="variant-option" id="ram-option">
-              <p id="ram-icon">
-                <span class="ram-icon-inline">
-                  <span class="chip"></span>
-                  <span class="chip"></span>
-                  <span class="chip"></span>
-                  <span class="pins"></span>
-                </span>
-              </p>
-              <h4>Available Memory</h4>
-
-              <div class="option-boxes" id="ram-options">
-                <div class="option-box">3GB</div>
-                <div class="option-box">4GB</div>
-                <div class="option-box">6GB</div>
-                <div class="option-box">8GB</div>
-                <div class="option-box">10GB</div>
-                <div class="option-box">12GB</div>
-                <div class="option-box">16GB</div>
-              </div>
-            </div>
-            <div class="variant-option" id="size-option">
-              <h4>Available Size</h4>
-
-              <div class="color-picker" id="size-picker">
-                <div class="color-search-wrapper">
-                  <input
-                    type="text"
-                    id="size-search-input"
-                    class="color-search-input"
-                    placeholder="Search or type a size..."
-                    autocomplete="off"
-                  />
-                  <div
-                    class="color-search-dropdown"
-                    id="size-search-dropdown"
-                  ></div>
+                  <div class="category-search-dropdown" id="category-search-dropdown"></div>
                 </div>
 
-                <div class="selected-color-chips" id="size-options"></div>
+                <!--
+                  Hidden input holding the actual selected brand value.
+                  add-products.js reads/writes this via
+                  document.getElementById("brand") (cached as
+                  `brandOption`) everywhere it needs the current brand -
+                  save/validate/reset/edit-mode load all go through it.
+                  The visible text field above is just the search/display
+                  UI; this is what's actually submitted.
+                -->
+                <input type="hidden" id="category" value="" />
               </div>
             </div>
-            <div class="variant-option">
-              <div class="color-title section-title">
-                <div class="color-variant-dot"></div>
-                <h4>Available Colors</h4>
+
+            <div class="form-group" style="display: none">
+              <label for="product-sku"> SKU </label>
+
+              <input type="text" id="product-sku" placeholder="APL-IP16PM-256-BLK" />
+            </div>
+            <div class="form-group">
+              <label for="product-warranty"> Warranty </label>
+
+              <input type="text" id="product-warranty" placeholder="e.g. 1 year , 30 Days , No Warranty" />
+            </div>
+            <label class="checkbox">
+              <input type="checkbox" id="featured-product" />
+              Show on Hot Deals
+            </label>
+          </div>
+        </section>
+        <section class="form-card">
+          <div class="input-group">
+            <h3>Product Descreption</h3>
+
+            <textarea id="product-description" rows="8" maxlength="300"
+              placeholder="Describe this product..."></textarea>
+
+            <div class="description-footer">
+              <span id="description-count">0 / 300</span>
+            </div>
+          </div>
+        </section>
+        <section class="form-card">
+          <div id="specifications-container" class="specifications-grid">
+            <!-- Generated by JavaScript -->
+          </div>
+
+          <div class="custom-specs-section">
+            <h3>Custom Specifications</h3>
+
+            <div id="custom-specs-container"></div>
+
+            <button type="button" id="add-spec-btn">
+              + Add Specification
+            </button>
+          </div>
+        </section>
+
+        <!---
+        <section class="form-card">
+          <h3>Product Variants</h3>
+
+          <div class="variant-option" id="storage-option">
+            <p id="storage-icon">
+              <span class="storage-icon-inline">
+                <span class="label"></span>
+                <span class="ports"></span>
+              </span>
+            </p>
+            <h4>Available Storage</h4>
+
+            <div class="option-boxes" id="storage-options">
+              <div class="option-box">64GB</div>
+
+              <div class="option-box">128GB</div>
+
+              <div class="option-box">256GB</div>
+
+              <div class="option-box">512GB</div>
+
+              <div class="option-box">1TB</div>
+
+              <div class="option-box">2TB</div>
+            </div>
+          </div>
+
+          <div class="variant-option" id="ram-option">
+            <p id="ram-icon">
+              <span class="ram-icon-inline">
+                <span class="chip"></span>
+                <span class="chip"></span>
+                <span class="chip"></span>
+                <span class="pins"></span>
+              </span>
+            </p>
+            <h4>Available Memory</h4>
+
+            <div class="option-boxes" id="ram-options">
+              <div class="option-box">3GB</div>
+              <div class="option-box">4GB</div>
+              <div class="option-box">6GB</div>
+              <div class="option-box">8GB</div>
+              <div class="option-box">10GB</div>
+              <div class="option-box">12GB</div>
+              <div class="option-box">16GB</div>
+            </div>
+          </div>
+          <div class="variant-option" id="size-option">
+            <h4>Available Size</h4>
+
+            <div class="color-picker" id="size-picker">
+              <div class="color-search-wrapper">
+                <input type="text" id="size-search-input" class="color-search-input"
+                  placeholder="Search or type a size..." autocomplete="off" />
+                <div class="color-search-dropdown" id="size-search-dropdown"></div>
               </div>
 
-              <!--
+              <div class="selected-color-chips" id="size-options"></div>
+            </div>
+          </div>
+          <div class="variant-option">
+            <div class="color-title section-title">
+              <div class="color-variant-dot"></div>
+              <h4>Available Colors</h4>
+            </div>
+
+
               BUG FIX / FEATURE: this used to be 3 hardcoded option-boxes
               (Black, White, Blue) - any color not in that fixed list simply
               couldn't be added as a variant option. Replaced with a
@@ -357,188 +312,363 @@
               Photos section) already key off selectedOptions.colors, so
               they pick up new/removed colors automatically with no
               further changes needed.
-            -->
-              <div class="color-picker" id="color-picker">
-                <div class="color-search-wrapper">
-                  <input
-                    type="text"
-                    id="color-search-input"
-                    class="color-search-input"
-                    placeholder="Search or type a color name..."
-                    autocomplete="off"
-                  />
 
-                  <div
-                    class="color-search-dropdown"
-                    id="color-search-dropdown"
-                  ></div>
-                </div>
+            <div class="color-picker" id="color-picker">
+              <div class="color-search-wrapper">
+                <input type="text" id="color-search-input" class="color-search-input"
+                  placeholder="Search or type a color name..." autocomplete="off" />
 
-                <div class="selected-color-chips" id="color-options"></div>
-              </div>
-            </div>
-
-            <div class="variant-option">
-              <div class="section-title">
-                <span class="condition-title-icon" aria-hidden="true">
-                  <span class="condition-title-dot new"></span>
-                  <span class="condition-title-dot used"></span>
-                  <span class="condition-title-dot open-box"></span>
-                  <span class="condition-title-dot refurbished"></span>
-                </span>
-                <h4>Available Condition</h4>
+                <div class="color-search-dropdown" id="color-search-dropdown"></div>
               </div>
 
-              <div class="option-boxes" id="condition-options">
-                <div class="option-box">
-                  <span class="condition-dot new"></span>
+              <div class="selected-color-chips" id="color-options"></div>
+            </div>
+          </div>
 
-                  New
-                </div>
+          <div class="variant-option">
+            <div class="section-title">
+              <span class="condition-title-icon" aria-hidden="true">
+                <span class="condition-title-dot new"></span>
+                <span class="condition-title-dot used"></span>
+                <span class="condition-title-dot open-box"></span>
+                <span class="condition-title-dot refurbished"></span>
+              </span>
+              <h4>Available Condition</h4>
+            </div>
 
-                <div class="option-box">
-                  <span class="condition-dot open-box"></span>
-                  Open box
-                </div>
-                <div class="option-box">
-                  <span class="condition-dot used"></span>
-                  Used
-                </div>
+            <div class="option-boxes" id="condition-options">
+              <div class="option-box">
+                <span class="condition-dot new"></span>
 
-                <div class="option-box">
-                  <span class="condition-dot refurbished"></span>
-                  Refurbished
-                </div>
+                New
+              </div>
+
+              <div class="option-box">
+                <span class="condition-dot open-box"></span>
+                Open box
+              </div>
+              <div class="option-box">
+                <span class="condition-dot used"></span>
+                Used
+              </div>
+
+              <div class="option-box">
+                <span class="condition-dot refurbished"></span>
+                Refurbished
               </div>
             </div>
+          </div>-->
 
-            <div id="variants-table-container"></div>
-          </section>
-          <section class="product-images-section">
-            <h3>Product Photos</h3>
 
-            <div id="color-images-container"></div>
-            <div class="product-actions">
-              <button type="button" id="reset-product-btn" class="reset-btn">
-                Reset
-              </button>
+        <section class="form-card">
+          <h3>Product Variants</h3>
 
-              <button type="button" id="save-product-btn" class="save-btn">
-                Save Product
-              </button>
-            </div>
-          </section>
-        </div>
-      </main>
+          <!-- Category fields are generated here -->
+          <div id="variant-options-container" class="variant-options-container"></div>
+
+          <!-- Generated combinations / variants table -->
+
+        </section>
+
+        <div id="variants-table-container"></div>
+        </section>
+        <section class="product-images-section">
+          <h3>Product Photos</h3>
+
+          <div id="color-images-container"></div>
+          <div class="product-actions">
+            <button type="button" id="reset-product-btn" class="reset-btn">
+              Reset
+            </button>
+
+            <button type="button" id="save-product-btn" class="save-btn">
+              Save Product
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <div class="onboarding-guide modal-overlay" id="onboarding-guide">
+    <div class="onboarding-guide-box modal modal--padded" role="dialog" aria-labelledby="guide-title">
+      <h2 id="guide-title">Add your first product</h2>
+      <p class="guide-sub">Three quick steps and it's in your store.</p>
+
+      <ol class="guide-steps">
+        <li>
+          <span class="guide-num">1</span>
+          <div>
+            <strong>Fill in the basics</strong>
+            <p>Enter the brand, model name and category.</p>
+          </div>
+        </li>
+        <li>
+          <span class="guide-num">2</span>
+          <div>
+            <strong>Add your options</strong>
+            <p>
+              Set the storage, colors and condition, then a price and stock
+              for each.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span class="guide-num">3</span>
+          <div>
+            <strong>Save the product</strong>
+            <p>
+              It goes live in your store right away. You can edit it any time.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <button type="button" class="guide-btn" id="guide-close">Got it</button>
     </div>
-    <div class="onboarding-guide is-hidden" id="onboarding-guide">
-      <div
-        class="onboarding-guide-box"
-        role="dialog"
-        aria-labelledby="guide-title"
-      >
-        <h2 id="guide-title">Add your first product</h2>
-        <p class="guide-sub">Three quick steps and it's in your store.</p>
+  </div>
+  <div id="toast-container"></div>
+  <div id="cookie-banner" class="cookie-banner hidden">
+    <div class="cookie-banner-icon">
+      <i class="fa-solid fa-cookie-bite"></i>
+    </div>
 
-        <ol class="guide-steps">
-          <li>
-            <span class="guide-num">1</span>
-            <div>
-              <strong>Fill in the basics</strong>
-              <p>Enter the brand, model name and category.</p>
-            </div>
-          </li>
-          <li>
-            <span class="guide-num">2</span>
-            <div>
-              <strong>Add your options</strong>
-              <p>
-                Set the storage, colors and condition, then a price and stock
-                for each.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span class="guide-num">3</span>
-            <div>
-              <strong>Save the product</strong>
-              <p>
-                It goes live in your store right away. You can edit it any time.
-              </p>
-            </div>
-          </li>
-        </ol>
+    <div class="cookie-banner-content">
+      <div class="cookie-banner-text">
+        <strong>Cookies on StockLink</strong>
+        <p>
+          We use cookies to improve your experience and understand how the
+          site is used.
+          <a href="/admin/legal.html#privacy" target="_blank" rel="noopener">Privacy Policy</a>
+        </p>
+      </div>
 
-        <button type="button" class="guide-btn" id="guide-close">Got it</button>
+      <div class="cookie-banner-actions">
+        <button id="cookie-decline" class="cookie-btn cookie-btn-decline">
+          Decline
+        </button>
+
+        <button id="cookie-accept" class="cookie-btn cookie-btn-accept">
+          Accept
+        </button>
       </div>
     </div>
-    <div id="toast-container"></div>
-    <div id="cookie-banner" class="cookie-banner hidden">
-      <div class="cookie-banner-icon">
-        <i class="fa-solid fa-cookie-bite"></i>
-      </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
+  <div class="logout-modal-overlay modal-overlay" id="logoutModal">
+    <div class="logout-modal modal modal--sm modal--confirm" role="dialog" aria-modal="true">
+      <div class="modal-icon modal-icon--danger"><i class="fa-solid fa-right-from-bracket"></i></div>
+      <h3>Confirm Logout</h3>
+      <p>Are you sure you want to log out?</p>
 
-      <div class="cookie-banner-content">
-        <div class="cookie-banner-text">
-          <strong>Cookies on StockLink</strong>
-          <p>
-            We use cookies to improve your experience and understand how the
-            site is used.
-            <a href="/admin/legal.html#privacy" target="_blank" rel="noopener"
-              >Privacy Policy</a
-            >
-          </p>
+      <div class="logout-actions modal-actions">
+        <button type="button" class="cancel-logout modal-btn modal-btn--secondary">Cancel</button>
+
+        <button type="button" class="confirm-logout modal-btn modal-btn--danger">Logout</button>
+      </div>
+    </div>
+  </div>
+  <!--
+  CREATE / EDIT CATEGORY MODAL  (multi-field version)
+
+  A category now owns many fields:
+    { id, name, fields: [ { name, type: "SELECTABLE" | "WRITABLE", values: [...] } ] }
+
+  - #category-fields-list      -> JS renders one card per field already added
+  - #category-values-list      -> JS renders the value chips of the field being edited
+  - The "field editor" builds ONE field at a time; "Add field" pushes it into the list.
+-->
+  <div class="category-modal modal-overlay" id="category-modal" role="dialog" aria-modal="true"
+    aria-labelledby="category-modal-title">
+
+    <div class="category-modal-box modal modal--md">
+
+      <!-- Header -->
+      <header class="category-modal-header modal-header">
+        <div>
+          <h2 id="category-modal-title">Create category</h2>
+          <p>Group product attributes (fields) under a category such as Clothes or Phones.</p>
         </div>
 
-        <div class="cookie-banner-actions">
-          <button id="cookie-decline" class="cookie-btn cookie-btn-decline">
-            Decline
+        <button type="button" class="category-modal-close modal-close" id="category-modal-close" aria-label="Close">
+          &times;
+        </button>
+      </header>
+
+      <form class="category-modal-form" id="category-form" novalidate>
+
+        <!-- Body -->
+        <div class="category-modal-body modal-body">
+
+          <!-- Category name -->
+          <div class="category-modal-field">
+            <label for="category-name-input">
+              Category name
+              <span class="required">*</span>
+            </label>
+
+            <input type="text" id="category-name-input" name="category-name" placeholder="e.g. Clothes, Phones, Shoes"
+              maxlength="60" autocomplete="off" />
+
+            <p class="category-modal-error" id="category-name-error" role="alert"></p>
+          </div>
+
+          <!-- Fields already added -->
+          <div class="category-modal-field">
+            <span class="category-modal-label">
+              Fields
+              <span class="required">*</span>
+            </span>
+
+            <div class="category-fields-list" id="category-fields-list"></div>
+
+            <p class="category-modal-error" id="category-fields-error" role="alert"></p>
+          </div>
+
+          <!-- Field editor (builds one field at a time) -->
+          <div class="category-field-editor" id="category-field-editor">
+            <h3 class="category-field-editor-title" id="field-editor-title">New field</h3>
+
+            <!-- Field name -->
+            <div class="category-modal-field">
+              <label for="field-name-input">
+                Field name
+                <span class="required">*</span>
+              </label>
+              <input type="text" id="field-name-input" placeholder="e.g. Size, Color, Storage" maxlength="60"
+                autocomplete="off" />
+              <p class="category-modal-error" id="field-name-error" role="alert"></p>
+            </div>
+
+            <!-- Field type -->
+            <div class="category-modal-field">
+              <span class="category-modal-label">
+                Type
+                <span class="required">*</span>
+              </span>
+
+              <div class="category-type-options">
+
+                <label class="category-type-option">
+                  <input type="radio" name="field-type" value="SELECT" checked />
+                  <span class="category-type-card">
+                    <strong>Selectable</strong>
+                    <span>Choose from a fixed list of values.</span>
+                  </span>
+                </label>
+
+                <label class="category-type-option">
+                  <input type="radio" name="field-type" value="WRITABLE" />
+                  <span class="category-type-card">
+                    <strong>Writable</strong>
+                    <span>Type any value, with your list as suggestions.</span>
+                  </span>
+                </label>
+
+              </div>
+            </div>
+
+            <!-- Field values -->
+            <div class="category-modal-field">
+              <label for="category-value-input">Values</label>
+
+              <div class="category-value-row">
+                <input type="text" id="category-value-input" placeholder="Type a value and press Enter"
+                  autocomplete="off" />
+
+                <button type="button" class="category-value-add" id="category-value-add">
+                  Add
+                </button>
+              </div>
+
+              <p class="category-modal-hint">
+                Selectable fields need at least one value. Paste a comma-separated list to add several at once.
+              </p>
+
+              <div class="category-values-list" id="category-values-list"></div>
+
+              <p class="category-modal-error" id="category-values-error" role="alert"></p>
+            </div>
+
+            <div class="category-field-editor-actions">
+              <button type="button" class="category-modal-cancel is-hidden" id="field-cancel-btn">
+                Cancel edit
+              </button>
+              <button type="button" class="category-field-save" id="field-save-btn">
+                Add field
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="category-modal-footer modal-footer">
+          <button type="button" class="modal-btn modal-btn--secondary" id="category-modal-cancel">
+            Cancel
           </button>
 
-          <button id="cookie-accept" class="cookie-btn cookie-btn-accept">
-            Accept
+          <button type="submit" class="category-modal-submit modal-btn modal-btn--primary" id="category-modal-submit">
+            Create category
           </button>
-        </div>
+        </footer>
+
+      </form>
+    </div>
+  </div>
+  <div id="category-delete-modal" class="modal-overlay" role="dialog" aria-modal="true"
+    aria-labelledby="category-delete-title">
+    <div class="modal modal--sm modal--confirm">
+      <div class="modal-icon modal-icon--danger"><i class="fa-solid fa-trash"></i></div>
+      <h3 id="category-delete-title">Delete category?</h3>
+      <p>You're about to delete <strong id="category-delete-name"></strong>. This can't be undone.</p>
+      <div class="modal-actions">
+        <button type="button" id="category-delete-cancel"
+          class="modal-btn modal-btn--secondary">Cancel</button>
+        <button type="button" id="category-delete-confirm"
+          class="modal-btn modal-btn--danger">Delete</button>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.js"></script>
-    <div class="logout-modal-overlay" id="logoutModal">
-      <div class="logout-modal">
-        <h3>Confirm Logout</h3>
-        <p>Are you sure you want to log out?</p>
+  </div>
 
-        <div class="logout-actions">
-          <button class="cancel-logout">Cancel</button>
-
-          <button class="confirm-logout">Logout</button>
-        </div>
+  <!-- Switch category confirmation (reuses the delete modal styles) -->
+  <div id="category-switch-modal" class="modal-overlay" role="dialog" aria-modal="true"
+    aria-labelledby="category-switch-title">
+    <div class="modal modal--sm modal--confirm">
+      <div class="modal-icon modal-icon--danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 id="category-switch-title">Switch category?</h3>
+      <p>Switching to <strong id="category-switch-name"></strong> will clear your selections.</p>
+      <div class="modal-actions">
+        <button type="button" id="category-switch-cancel"
+          class="modal-btn modal-btn--secondary">Cancel</button>
+        <button type="button" id="category-switch-confirm"
+          class="modal-btn modal-btn--danger">Switch</button>
       </div>
     </div>
-    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+  </div>
+  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="/admin/state.js"></script>
+  <script src="/admin/dom.js"></script>
+  <script src="/admin/csv-load/specsLoader.js"></script>
+  <script src="/admin/csv-load/specsLookUp.js"></script>
+  <script src="/admin/csv-load/specsAutoFill.js"></script>
+  <script src="/admin/modelNameSearch.js"></script>
 
-    <script src="/admin/dom.js"></script>
-    <script src="/admin/csv-load/specsLoader.js"></script>
-    <script src="/admin/csv-load/specsLookUp.js"></script>
-    <script src="/admin/csv-load/specsAutoFill.js"></script>
-    <script src="/admin/modelNameSearch.js"></script>
-
-    <!--
+  <!--
       add-products.js has been split by functionality. Order matters here:
       each file is a plain (non-module) script sharing the global scope,
       so state.js/utils.js must load first, and every feature file must
       load before product-form.js, whose top-level code calls into all of
       them to bootstrap the page.
     -->
-    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-    <script src="/admin/state.js"></script>
-    <script src="/admin/utils.js"></script>
-    <script src="/admin/brand-picker.js"></script>
-    <script src="/admin/color-picker.js"></script>
-    <script src="/admin/size-picker.js"></script>
-    <script src="/admin/upload-progress.js"></script>
-    <script src="/admin/color-images.js"></script>
-    <script src="/admin/variants.js"></script>
-    <script src="/admin/specifications.js"></script>
-    <script src="/admin/product-form.js"></script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+
+  <script src="/admin/utils.js"></script>
+
+  <script src="/admin/category-picker.js"></script>
+  <script src="/admin/upload-progress.js"></script>
+  <script src="/admin/color-images.js"></script>
+  <script src="/admin/addProductForm.js"></script>
+  <script src="/admin/variant-field-renderer.js"></script>
+</body>
+
 </html>

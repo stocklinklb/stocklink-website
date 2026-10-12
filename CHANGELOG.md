@@ -1,3 +1,14 @@
+## 1.7.0 - 2026-10-12
+
+- Products: redesigned the page with a cleaner toolbar, table, status badges and pagination
+- Products: on phones and tablets, products now show as cards (one per row on phones, two on tablets) instead of a table you had to swipe sideways
+- Products: on phones, filter menus open full width under the toolbar so they no longer run off the screen
+- Products: Edit, Archive and Delete now have text labels on phones and tablets
+- Products: in Select mode on phones, each card has its own checkbox and selected cards are outlined
+- Products: products with missing specifications now have a red edge
+- Products: fixed product names, brands, categories and options being able to inject HTML into the products table and filter menus
+
+
 ## 1.6.0 - 2026-10-04
 
 - Auth: new accounts must now verify their email before they can log in

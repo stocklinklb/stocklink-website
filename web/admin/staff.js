@@ -78,7 +78,7 @@ editStaffClose.addEventListener("click", editMenuToggle);
 editStafffCancel.addEventListener("click", editMenuToggle);
 // Toggle menu function
 function menuToggle() {
-  createModalOverlay.classList.toggle("is-open");
+  createModalOverlay.classList.toggle("active");
   usernameInput.value = "";
   passwordInput.value = "";
   permissionCheckboxes.forEach((checkbox) => {
@@ -87,7 +87,7 @@ function menuToggle() {
 }
 // Edit staff menu toggle
 function editMenuToggle() {
-  editModalOverlay.classList.toggle("is-open");
+  editModalOverlay.classList.toggle("active");
 }
 function deleteModalToggle() {
   deleteModalOverlay.classList.toggle("active");
