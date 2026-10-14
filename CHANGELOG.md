@@ -1,3 +1,14 @@
+## 1.7.1 - 2026-10-14
+
+- Sidebar: no longer flickers or goes blank when moving between pages
+- Sidebar: moving between pages now fades smoothly, and the highlight glides to the new page instead of jumping
+- Sidebar: shows straight away after signing in instead of starting empty, and shows placeholder rows while it loads in a new tab
+- Sidebar: lock icons no longer disappear after the page loads
+- Sidebar: your name, role and store logo no longer blink on each page
+- Sidebar: the expired-subscription banner no longer pushes the sidebar down after the page appears
+- Auth: logging out now also clears the cached subscription and sidebar, so the next account never sees the previous one's plan
+
+
 ## 1.7.0 - 2026-10-12
 
 - Products: redesigned the page with a cleaner toolbar, table, status badges and pagination
