@@ -5,6 +5,45 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=JetBrains+Mono:wght@500;600&display=swap");
 
 /* ============================================
+   Page-to-page transitions
+   Every admin page is a full page load, so the sidebar used to be torn
+   down and redrawn on each click. With cross-document view transitions
+   the browser keeps the sidebar in place and only fades the content.
+   Browsers without support just navigate as before.
+   ============================================ */
+@view-transition {
+  navigation: auto;
+}
+
+aside {
+  view-transition-name: admin-sidebar;
+}
+
+/* The sidebar is identical on every page except the active link, so a short
+   crossfade leaves everything still and only glides the highlight from the
+   old row to the new one (instead of it jumping). */
+::view-transition-old(admin-sidebar),
+::view-transition-new(admin-sidebar) {
+  animation-duration: 0.18s;
+  animation-timing-function: ease-out;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.18s;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(admin-sidebar),
+  ::view-transition-new(admin-sidebar),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ============================================
    Base
    ============================================ */
 
@@ -462,6 +501,11 @@ html[data-theme="dark"] .moon-icon {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+/* Same height as a sidebar link, shown until the first real draw */
+.sidebar-skeleton-row {
+  padding: 12px;
 }
 
 .sidebar-section-label {

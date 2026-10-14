@@ -49,6 +49,30 @@ const LOGIN_REDIRECT_URL = "/admin/index.html";
 // Point this at the onboarding screens once they exist.
 const SIGNUP_REDIRECT_URL = "/admin/onboarding.html";
 
+// Fill the sidebar's cache (same keys sidebar.js reads) before leaving the
+// login page, so the first admin page draws its sidebar instantly instead
+// of showing it empty. Never blocks the redirect if it fails.
+async function primeSidebarCache() {
+  sessionStorage.removeItem("staffMe");
+  sessionStorage.removeItem("subscriptionInfo");
+  sessionStorage.removeItem("sidebarHTML");
+  try {
+    const [staffRes, subRes] = await Promise.all([
+      fetch(`${API_ROOT}/staff/me`, { credentials: "include" }),
+      fetch(`${API_ROOT}/subscription`, { credentials: "include" }),
+    ]);
+    if (staffRes.ok) {
+      const { data } = await staffRes.json();
+      sessionStorage.setItem("staffMe", JSON.stringify(data));
+    }
+    if (subRes.ok) {
+      sessionStorage.setItem("subscriptionInfo", JSON.stringify(await subRes.json()));
+    }
+  } catch (error) {
+    console.error("Couldn't preload the sidebar data", error);
+  }
+}
+
 // =========================================================
 // VIEW STATE
 //   "login"  -> owner login   (Store Owner tab)
@@ -298,6 +322,7 @@ async function handleGoogleCredential(response) {
     // Staff never go through onboarding; only brand-new owner stores do.
     // Stay in the loading state until the page actually changes.
     redirecting = true;
+    await primeSidebarCache();
     window.location.href =
       !isStaff && data.isNewStore ? SIGNUP_REDIRECT_URL : LOGIN_REDIRECT_URL;
   } catch (error) {
@@ -395,6 +420,7 @@ async function handleAuth({
         onSuccess(data);
         return;
       }
+      await primeSidebarCache();
       window.location.href = redirectTo;
       return;
     }

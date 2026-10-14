@@ -258,6 +258,8 @@ async function logout() {
 
     if (response.ok) {
       sessionStorage.removeItem("staffMe");
+      sessionStorage.removeItem("subscriptionInfo");
+      sessionStorage.removeItem("sidebarHTML");
       window.location.replace("/admin/login.html");
     }
   } catch (error) {
@@ -355,17 +357,25 @@ function cacheProfile(user) {
     // just means no instant-paint next time.
   }
 }
-function showExpiredBanner() {
-  if (document.getElementById("subscription-banner")) return;
+// The inline script at the top of each admin page's <body> already adds this
+// banner from the cached profile before the first paint (otherwise the sidebar
+// paints at the top and then jumps down). Keep its markup in sync with this one.
+let expiredBannerShown = false;
 
-  const banner = document.createElement("div");
-  banner.id = "subscription-banner";
-  banner.innerHTML = `
+function showExpiredBanner() {
+  if (expiredBannerShown) return;
+  expiredBannerShown = true;
+
+  if (!document.getElementById("subscription-banner")) {
+    const banner = document.createElement("div");
+    banner.id = "subscription-banner";
+    banner.innerHTML = `
   <span class="banner-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
   <span class="banner-text">Your subscription has ended. You can still view your data, but adding or editing anything is disabled until you renew.</span>
   <a href="settings.html"><i class="fa-solid fa-arrow-rotate-right"></i> Renew now</a>
 `;
-  document.body.prepend(banner);
+    document.body.prepend(banner);
+  }
   document.body.classList.add("subscription-expired");
 
   updateBannerHeightVar();
@@ -382,6 +392,7 @@ function updateBannerHeightVar() {
 }
 
 function hideExpiredBanner() {
+  expiredBannerShown = false;
   document.getElementById("subscription-banner")?.remove();
   document.body.classList.remove("subscription-expired");
   window.removeEventListener("resize", updateBannerHeightVar);
@@ -448,26 +459,58 @@ function resolveLogoUrl(logo) {
 // Exposed on window so settings.js can call this directly after a
 // successful upload, instead of duplicating the "write it everywhere"
 // logic.
+// The inline profile script in each page paints the avatar before the first
+// paint and marks it with data-logo-src. Skip images already showing that
+// logo: re-setting src (even to the same URL) makes the avatar blink.
+function setSidebarAvatar(url) {
+  document.querySelectorAll(".sidebar-profile img").forEach((img) => {
+    if (img.dataset.logoSrc === url) return;
+    img.dataset.logoSrc = url;
+    img.src = url;
+  });
+}
+
+// Keep a small copy of the logo as a data URL, so the inline profile script
+// can draw it without any network round trip (the host makes the browser
+// re-check images on every page, which left the avatar empty for a frame).
+// Fails quietly for big files or hosts without CORS; the URL still works.
+async function cacheLogoData(url) {
+  try {
+    const cached = JSON.parse(localStorage.getItem("storeLogoData") || "null");
+    if (cached && cached.src === url) return;
+    const response = await fetch(url);
+    if (!response.ok) return;
+    const blob = await response.blob();
+    if (blob.size > 150 * 1024) return;
+    const data = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    localStorage.setItem("storeLogoData", JSON.stringify({ src: url, data }));
+  } catch (error) {
+    // Not fatal: the avatar just loads from its URL as before.
+  }
+}
+
 function applyStoreLogo(logo) {
   const resolvedUrl = resolveLogoUrl(logo);
 
-  document.querySelectorAll(".sidebar-profile img").forEach((img) => {
-    img.src = resolvedUrl;
-  });
+  setSidebarAvatar(resolvedUrl);
 
   const preview = document.querySelector("#logo-preview-image");
   if (preview) preview.src = resolvedUrl;
 
   localStorage.setItem("storeLogo", resolvedUrl);
+  cacheLogoData(resolvedUrl);
 }
 window.applyStoreLogo = applyStoreLogo;
 
 async function loadStoreLogo() {
   const cached = localStorage.getItem("storeLogo");
   if (cached) {
-    document.querySelectorAll(".sidebar-profile img").forEach((img) => {
-      img.src = cached;
-    });
+    setSidebarAvatar(cached);
     const preview = document.querySelector("#logo-preview-image");
     if (preview) preview.src = cached;
   }
@@ -483,15 +526,15 @@ async function loadStoreLogo() {
     if (store.logo) {
       applyStoreLogo(store.logo);
     } else {
-      // No logo uploaded (or it was removed): show the StockLink icon and drop
-      // any stale cached logo. The HTML starts with no src, so pages whose
-      // store has a logo never flash this icon.
-      localStorage.removeItem("storeLogo");
-      document
-        .querySelectorAll(".sidebar-profile img, #logo-preview-image")
-        .forEach((img) => {
-          img.src = "/admin/favicon.png";
-        });
+      // No logo uploaded (or it was removed): show the StockLink icon, and cache
+      // the icon itself so the next page paints it instantly instead of
+      // starting with an empty avatar. The HTML starts with no src, so pages
+      // whose store has a logo never flash this icon.
+      localStorage.setItem("storeLogo", "/admin/favicon.png");
+      cacheLogoData("/admin/favicon.png");
+      setSidebarAvatar("/admin/favicon.png");
+      const preview = document.querySelector("#logo-preview-image");
+      if (preview) preview.src = "/admin/favicon.png";
     }
   } catch (error) {
     console.warn("Could not load store logo:", error.message);

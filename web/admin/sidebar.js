@@ -125,12 +125,6 @@ function applyPermission(data, tier) {
   );
   const linkHTML = (item) => {
     const locked = item.feature && tier && !hasFeature(tier, item.feature);
-    const isActive =
-      currentPage ===
-      item.href
-        .split("/")
-        .pop()
-        .replace(/\.html$/, "");
 
     if (locked) {
       return `
@@ -142,15 +136,24 @@ function applyPermission(data, tier) {
     `;
     }
 
+    // On clean-URL hosts (Vercel, `vercel dev`) "/admin/x.html" answers with a
+    // redirect, and a redirect makes the browser skip the page transition, so the
+    // whole page (sidebar included) blinks. Link straight to the URL the host uses.
+    // ("/admin/index" itself redirects to "/admin" there.)
+    const path = window.location.pathname;
+    const href = path.endsWith(".html") || path.endsWith("/")
+      ? item.href
+      : item.href.replace(/\.html$/, "").replace(/\/index$/, "");
+
     return `
-    <a href="${item.href}" class="${isActive ? "active" : ""} pressable">
+    <a href="${href}" class="pressable">
       <i class="${item.icon}"></i>
       <span>${item.name}</span>
     </a>
   `;
   };
 
-  sidebar.innerHTML = sidebarGroups
+  const html = sidebarGroups
     .map((group) => {
       const itemsInGroup = filteredSidebarItems.filter(
         (item) => item.group === group.key,
@@ -164,7 +167,43 @@ function applyPermission(data, tier) {
       return `<div class="sidebar-section">${label}${itemsInGroup.map(linkHTML).join("")}</div>`;
     })
     .join("");
+
+  // The sidebar is drawn up to 4 times per page load (cached + fresh staff
+  // and subscription data). Only touch the DOM when the result changed,
+  // otherwise every redraw rebuilds the links and they flicker.
+  // The HTML is the same on every page (the active link is marked separately),
+  // so it's also cached for the inline restore script in each page's HTML.
+  if (html !== lastSidebarHTML) {
+    lastSidebarHTML = html;
+    sidebar.innerHTML = html;
+    sessionStorage.setItem("sidebarHTML", html);
+  }
+  markActiveSidebarLink(sidebar, currentPage);
 }
+
+// The inline script after #sidebar-links may have already drawn the cached
+// HTML before this file loaded; if so, there's nothing to redraw.
+let lastSidebarHTML = window.__sidebarRestored
+  ? sessionStorage.getItem("sidebarHTML")
+  : null;
+
+function markActiveSidebarLink(sidebar, currentPage) {
+  sidebar.querySelectorAll("a[href]").forEach((link) => {
+    const page = link.getAttribute("href").split("/").pop().replace(/\.html$/, "");
+    link.classList.toggle("active", page === currentPage);
+  });
+}
+
+// Placeholder rows while nothing is cached yet (first load in a new tab),
+// so the sidebar is never an empty column.
+function renderSidebarSkeleton() {
+  const sidebar = document.getElementById("sidebar-links");
+  if (!sidebar) return;
+  sidebar.innerHTML = `<div class="sidebar-section">${Array.from({ length: 6 })
+    .map(() => `<div class="sidebar-skeleton-row"><span class="skeleton skeleton-text"></span></div>`)
+    .join("")}</div>`;
+}
+
 async function renderSideBar() {
   const rawData = sessionStorage.getItem("staffMe");
   const cachedSub = sessionStorage.getItem("subscriptionInfo");
@@ -173,6 +212,8 @@ async function renderSideBar() {
   if (rawData) {
     const parsedData = JSON.parse(rawData);
     applyPermission(parsedData, cachedTier);
+  } else if (!window.__sidebarRestored) {
+    renderSidebarSkeleton();
   }
   const response = await fetch(`${API_ROOT}/staff/me`, {
     credentials: "include",
@@ -185,7 +226,9 @@ async function renderSideBar() {
 
   const { data } = await response.json();
   sessionStorage.setItem("staffMe", JSON.stringify(data));
-  applyPermission(data, cachedTier);
+  // Re-read the tier: /subscription may have answered while /staff/me was in flight
+  const latestSub = sessionStorage.getItem("subscriptionInfo");
+  applyPermission(data, latestSub ? JSON.parse(latestSub).subscriptionTier : cachedTier);
 }
 
 const TIER_META = {

@@ -11,6 +11,8 @@
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Don't paint until the sidebar is built (#admin-main comes right after it), so a page change never shows a half-built page -->
+    <link rel="expect" href="#admin-main" blocking="render" />
     <title>Stocklink | Product View</title>
     <link rel="preload" as="script" href="/admin/config.js" />
     <link rel="preload" as="script" href="/admin/shared.js" />
@@ -39,6 +41,7 @@
     />
   </head>
   <body>
+    <script>/* Expired banner before the first paint, so the sidebar doesn't jump down (see showExpiredBanner in shared.js) */(function(){try{var p=JSON.parse(localStorage.getItem("adminProfile")||"null");if(!p||p.subscriptionStatus!=="EXPIRED")return;var b=document.createElement("div");b.id="subscription-banner";b.innerHTML='<span class="banner-icon"><i class="fa-solid fa-triangle-exclamation"></i></span><span class="banner-text">Your subscription has ended. You can still view your data, but adding or editing anything is disabled until you renew.</span><a href="settings.html"><i class="fa-solid fa-arrow-rotate-right"></i> Renew now</a>';document.body.prepend(b);document.body.classList.add("subscription-expired");document.documentElement.style.setProperty("--banner-height",b.offsetHeight+"px")}catch(e){}})();</script>
     <div class="admin-container">
       <header>
         <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">
@@ -91,6 +94,7 @@
           </span>
         </button>
         <div class="sidebar-links" id="sidebar-links"></div>
+        <script>/* Draw the cached sidebar before the first paint (see sidebar.js) */(function(){var h=sessionStorage.getItem("sidebarHTML");if(!h)return;var s=document.getElementById("sidebar-links");s.innerHTML=h;window.__sidebarRestored=true;var n=function(x){x=x.split("/").pop().replace(/\.html$/,"");return !x||x==="admin"?"index":x};var p=n(location.pathname);s.querySelectorAll("a[href]").forEach(function(a){a.classList.toggle("active",n(a.getAttribute("href"))===p)})})();</script>
 
         <div class="profile-box sidebar-profile">
           <img alt="" />
@@ -100,12 +104,13 @@
           </div>
           <button type="button" class="logout-btn"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>Log out</button>
         </div>
+        <script>/* Paint the cached profile before the first paint (see shared.js) */(function(){try{var b=document.querySelector(".sidebar-profile");if(!b)return;var p=JSON.parse(localStorage.getItem("adminProfile")||"null");if(p){b.querySelector(".profile-info h4").textContent=p.name||"User";b.querySelector(".profile-info span").textContent=p.role||"Admin"}var l=localStorage.getItem("storeLogo");if(l){var d=JSON.parse(localStorage.getItem("storeLogoData")||"null");var i=b.querySelector("img");i.decoding="sync";i.dataset.logoSrc=l;i.src=d&&d.src===l?d.data:l}}catch(e){}})();</script>
       </aside>
       <script src="/admin/config.js"></script>
       <script src="/admin/shared.js"></script>
       <script src="/admin/skeleton.js"></script>
       <script src="/admin/sidebar.js"></script>
-      <main>
+      <main id="admin-main">
         <div class="title-row">
           <div>
             <h1>Products</h1>
