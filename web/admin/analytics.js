@@ -345,31 +345,13 @@ function renderVisitorsChart(data) {
     visitorsChart.destroy();
   }
 
-  visitorsChart = new Chart(visitorsChartCanvas, {
+  // Look and colors come from chart-theme.js (shared with the dashboard).
+  // "count" format keeps whole numbers - can't have 2.5 visitors.
+  visitorsChart = StockCharts.create(visitorsChartCanvas, {
     type: currentChartType,
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Visitors",
-          data: counts,
-          borderColor: "#2793ec75",
-          backgroundColor: "rgba(13, 0, 255, 0.1)",
-          fill: true,
-          tension: 0.3,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { precision: 0 }, // whole numbers only - can't have 2.5 visitors
-        },
-      },
-    },
+    labels,
+    series: [{ key: "visitors", label: "Visitors", data: counts }],
+    format: "count",
   });
 }
 

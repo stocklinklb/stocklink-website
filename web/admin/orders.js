@@ -73,6 +73,7 @@ let currentType = "line";
 let currentPage = 1;
 let currentDetailOrder = null; // full order object for whichever order is open in #orderDetailModal, used by printReceiptBtn
 let salesChart = null;
+let salesChartOrders = null; // second chart, only for the "Both" metric
 
 // ============================================
 // Shared body-scroll lock for modals.
@@ -326,12 +327,21 @@ function hideSalesEmptyStates() {
   salesEmptyNoSales.hidden = true;
 }
 
-async function showSalesEmptyState(canvas) {
-  // Drop the old chart so it can't linger behind the message.
+function destroySalesCharts() {
   if (salesChart) {
     salesChart.destroy();
     salesChart = null;
   }
+  if (salesChartOrders) {
+    salesChartOrders.destroy();
+    salesChartOrders = null;
+  }
+}
+
+async function showSalesEmptyState(canvas) {
+  // Drop the old charts so they can't linger behind the message.
+  destroySalesCharts();
+  setSalesSplit(false);
   // Chart.js sets an inline display:block on the canvas, which beats the
   // `hidden` attribute, so hide it through the style instead.
   canvas.style.display = "none";
@@ -380,151 +390,79 @@ async function loadSalesChart(
   hideSalesEmptyStates();
   canvas.style.display = "";
 
-  const chartData = formatChartData(buckets, metric, type);
-  const ctx = canvas.getContext("2d");
+  const specs = formatChartData(buckets, metric, type);
 
-  if (salesChart) {
-    salesChart.destroy();
+  destroySalesCharts();
+  setSalesSplit(specs.length > 1);
+
+  salesChart = StockCharts.create(canvas, specs[0]);
+  if (specs[1]) {
+    salesChartOrders = StockCharts.create(
+      document.getElementById("salesChartOrders"),
+      specs[1],
+    );
   }
+}
 
-  salesChart = new Chart(ctx, {
-    type: type,
-
-    data: chartData,
-
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            precision: 0,
-          },
-        },
-      },
-    },
-  });
+// "Both" shows two charts stacked on the same dates (revenue on top,
+// orders below) instead of one chart with two y axes: dollars and
+// order counts don't share a scale, and two scales on one chart make
+// the lines' crossings look meaningful when they aren't.
+function setSalesSplit(isSplit) {
+  document
+    .querySelector(".sales-chart-canvas-wrapper")
+    ?.classList.toggle("is-split", isSplit);
+  const ordersPane = document.getElementById("salesChartOrdersPane");
+  if (ordersPane) ordersPane.hidden = !isSplit;
 }
 
 loadSalesChart();
 
+// formatChartData(buckets, "revenue" | "count" | "both", "line" | "bar")
+// → one StockCharts spec per chart to draw (two for "both").
+// Styling and colors live in chart-theme.js.
 function formatChartData(buckets, metric, type) {
-  const isBar = type === "bar";
-  const rootStyles = getComputedStyle(document.documentElement);
-
-  // Original orders-chart colors
-  const countColor = "#fa8b8b";
-  const revenueColor = rootStyles.getPropertyValue("--accent").trim();
-  const revenueBackground = isBar ? revenueColor : "rgba(39, 147, 236, 0.10)";
-
-  const countBackground = isBar ? countColor : "rgba(250, 139, 139, 0.10)";
-
-  const labels = buckets.map((bucket) => bucket.date);
-
-  // ------------------------------------------
-  // Revenue
-  // ------------------------------------------
-
-  if (metric === "revenue") {
-    return {
-      labels,
-
-      datasets: [
-        {
-          label: "Revenue",
-
-          data: buckets.map((bucket) => bucket.revenue),
-
-          borderColor: revenueColor,
-
-          backgroundColor: revenueBackground,
-
-          fill: true,
-
-          tension: 0.3,
-        },
-      ],
-    };
-  }
-
-  // ------------------------------------------
-  // Orders
-  // ------------------------------------------
-
-  if (metric === "count") {
-    return {
-      labels,
-
-      datasets: [
-        {
-          label: "Orders",
-
-          data: buckets.map((bucket) => bucket.count),
-
-          borderColor: countColor,
-
-          backgroundColor: countBackground,
-
-          fill: true,
-
-          tension: 0.3,
-        },
-      ],
-    };
-  }
-
-  // ------------------------------------------
-  // Both
-  // ------------------------------------------
-
-  if (metric === "both") {
-    return {
-      labels,
-
-      datasets: [
-        {
-          label: "Revenue",
-
-          data: buckets.map((bucket) => bucket.revenue),
-
-          borderColor: revenueColor,
-
-          backgroundColor: revenueBackground,
-
-          fill: true,
-
-          tension: 0.3,
-
-          yAxisID: "y-revenue",
-        },
-
-        {
-          label: "Orders",
-
-          data: buckets.map((bucket) => bucket.count),
-
-          borderColor: countColor,
-
-          backgroundColor: countBackground,
-
-          fill: true,
-
-          tension: 0.3,
-
-          yAxisID: "y-count",
-        },
-      ],
-    };
-  }
-
-  return {
-    labels: [],
-    datasets: [],
+  const labels = buckets.map((bucket) =>
+    new Date(bucket.date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    }),
+  );
+  const revenue = {
+    type,
+    labels,
+    series: [
+      {
+        key: "revenue",
+        label: "Revenue",
+        data: buckets.map((bucket) => bucket.revenue),
+      },
+    ],
+    format: "money",
   };
+  const orders = {
+    type,
+    labels,
+    series: [
+      {
+        key: "orders",
+        label: "Orders",
+        data: buckets.map((bucket) => bucket.count),
+      },
+    ],
+    format: "count",
+  };
+
+  if (metric === "count") return [orders];
+  if (metric === "both") {
+    // each half names its own metric, since there's no shared legend
+    return [
+      { ...revenue, showLegend: true },
+      { ...orders, showLegend: true },
+    ];
+  }
+  return [revenue];
 }
-// formatChartData(Array , string {"revenue " , "count", "both"})
 function checkRowStock(itemRow) {
   const variantId = Number(itemRow.dataset.selectedVariantId);
   const variant = allVariants.find((v) => v.variantId === variantId);

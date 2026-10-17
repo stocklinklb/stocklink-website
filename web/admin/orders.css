@@ -43,15 +43,15 @@
   justify-content: center;
   margin-bottom: 14px;
   border-radius: 10px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--accent-soft);
+  color: var(--accent);
   font-size: 18px;
 }
 .orders-empty-state h3 {
   margin: 0 0 6px;
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--ink);
 }
 .orders-empty-state p {
   max-width: 320px;
@@ -119,7 +119,7 @@
 }
 
 .btn-danger {
-  background: var(--danger);
+  background: var(--danger-fill);
   color: #fff;
 }
 
@@ -314,6 +314,30 @@
   position: relative;
   height: 300px;
   width: 100%;
+}
+
+.sales-chart-pane {
+  position: relative;
+  height: 100%;
+}
+
+.sales-chart-pane[hidden] {
+  display: none;
+}
+
+/* "Both" metric: revenue and orders as two charts stacked on the same
+   dates (see setSalesSplit() in orders.js) */
+.sales-chart-canvas-wrapper.is-split {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 440px;
+}
+
+.sales-chart-canvas-wrapper.is-split .sales-chart-pane {
+  flex: 1;
+  min-height: 0;
+  height: auto;
 }
 
 /* ============================================
@@ -1161,6 +1185,10 @@
 
   .sales-chart-canvas-wrapper {
     height: 220px;
+  }
+
+  .sales-chart-canvas-wrapper.is-split {
+    height: 360px;
   }
 
   .orders-toolbar {

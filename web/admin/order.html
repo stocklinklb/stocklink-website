@@ -13,6 +13,7 @@
       })();
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="/admin/chart-theme.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Don't paint until the sidebar is built (#admin-main comes right after it), so a page change never shows a half-built page -->
     <link rel="expect" href="#admin-main" blocking="render" />
@@ -220,7 +221,14 @@
             </div>
           </div>
           <div class="sales-chart-canvas-wrapper">
-            <canvas id="salesChart"></canvas>
+            <!-- each canvas gets its own pane: Chart.js sizes a canvas
+                 from its parent, so two canvases can't share one -->
+            <div class="sales-chart-pane">
+              <canvas id="salesChart"></canvas>
+            </div>
+            <div class="sales-chart-pane" id="salesChartOrdersPane" hidden>
+              <canvas id="salesChartOrders"></canvas>
+            </div>
             <div class="orders-empty-state" id="salesEmptyNoOrders" hidden>
               <div class="orders-empty-icon">
                 <i class="fa-solid fa-cart-shopping"></i>

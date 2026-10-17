@@ -1139,12 +1139,17 @@ header {
   display: grid;
   place-items: center;
   border-radius: var(--radius-pill);
-  background: var(--danger);
+  background: var(--danger-fill); /* not --danger: too pale in dark mode */
   color: #fff;
   font-size: 10.5px;
   font-weight: 700;
   line-height: 1;
   border: 2px solid var(--surface);
+}
+
+/* display:grid above would otherwise beat the hidden attribute and show "0" */
+.notif-badge[hidden] {
+  display: none;
 }
 
 .notif-dropdown {
@@ -1269,7 +1274,7 @@ header {
   height: 22px;
   border-radius: 50%;
 
-  background: var(--danger);
+  background: var(--danger-fill);
   color: #fff;
   font-size: 11px;
 
@@ -1294,7 +1299,7 @@ header {
   padding: 5px 14px;
   border-radius: var(--radius-pill);
 
-  background: var(--danger);
+  background: var(--danger-fill);
   color: #fff;
 
   font-size: 12.5px;

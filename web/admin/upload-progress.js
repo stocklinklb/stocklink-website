@@ -33,13 +33,13 @@ function ensureUploadProgressUI() {
       width: 320px;
       max-height: 70vh;
       overflow-y: auto;
-      background: #fff;
+      background: var(--surface, #fff);
       border-radius: 10px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
       z-index: 9999;
-      font-family: "Inter", sans-serif;
+      font-family: var(--font-body, "Inter", sans-serif);
       display: none;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border, #e5e7eb);
     }
     #upload-progress-panel.open {
       display: block;
@@ -49,22 +49,22 @@ function ensureUploadProgressUI() {
       align-items: center;
       justify-content: space-between;
       padding: 12px 14px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border, #eee);
       font-weight: 600;
       font-size: 14px;
-      color: #111827;
+      color: var(--ink, #111827);
     }
     #upload-progress-close {
       cursor: pointer;
       border: none;
       background: none;
       font-size: 18px;
-      color: #6b7280;
+      color: var(--ink-soft, #6b7280);
       line-height: 1;
       padding: 0;
     }
     #upload-progress-close:hover {
-      color: #111827;
+      color: var(--ink, #111827);
     }
     #upload-progress-overall-wrap {
       padding: 10px 14px 0;
@@ -72,18 +72,18 @@ function ensureUploadProgressUI() {
     #upload-progress-overall-bar-bg {
       height: 6px;
       border-radius: 4px;
-      background: #eef2f7;
+      background: var(--surface-muted, #eef2f7);
       overflow: hidden;
     }
     #upload-progress-overall-bar {
       height: 100%;
       width: 0%;
-      background: #2f6fed;
+      background: var(--accent, #2f6fed);
       transition: width 0.15s ease;
     }
     #upload-progress-overall-label {
       font-size: 11px;
-      color: #6b7280;
+      color: var(--ink-soft, #6b7280);
       margin: 4px 0 8px;
     }
     #upload-progress-list {
@@ -91,7 +91,7 @@ function ensureUploadProgressUI() {
     }
     .upload-progress-row {
       padding: 8px 0;
-      border-bottom: 1px solid #f3f4f6;
+      border-bottom: 1px solid var(--border, #f3f4f6);
     }
     .upload-progress-row:last-child {
       border-bottom: none;
@@ -101,7 +101,7 @@ function ensureUploadProgressUI() {
       justify-content: space-between;
       align-items: center;
       font-size: 12.5px;
-      color: #374151;
+      color: var(--ink, #374151);
       margin-bottom: 5px;
       gap: 8px;
     }
@@ -112,29 +112,29 @@ function ensureUploadProgressUI() {
     }
     .upload-progress-row-status {
       font-size: 11px;
-      color: #9ca3af;
+      color: var(--ink-faint, #9ca3af);
       flex-shrink: 0;
     }
     .upload-progress-row-status.done {
-      color: #16a34a;
+      color: var(--success, #16a34a);
     }
     .upload-progress-row-status.error {
-      color: #dc2626;
+      color: var(--danger, #dc2626);
     }
     .upload-progress-bar-bg {
       height: 5px;
       border-radius: 4px;
-      background: #eef2f7;
+      background: var(--surface-muted, #eef2f7);
       overflow: hidden;
     }
     .upload-progress-bar {
       height: 100%;
       width: 0%;
-      background: #2f6fed;
+      background: var(--accent, #2f6fed);
       transition: width 0.15s ease;
     }
     .upload-progress-bar.done {
-      background: #16a34a;
+      background: var(--success, #16a34a);
       width: 100% !important;
     }
     .upload-progress-bar.error {

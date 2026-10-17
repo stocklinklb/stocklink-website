@@ -17,10 +17,11 @@
   justify-content: center;
   gap: 12px;
 
-  background: rgba(255, 255, 255, 0.72);
+  /* a haze of the card's own surface, so it works in both themes */
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
   backdrop-filter: blur(4px);
 
-  color: #166534;
+  color: var(--success);
 
   font-size: 16px;
   font-weight: 800;
@@ -319,6 +320,7 @@
 .activity-box h2,
 .low-stock-box h2,
 .visitors-chart-box h2,
+.visitors-chart-box h3,
 .revenue-chart-box h3 {
   font-size: 13px;
   font-weight: 600;
@@ -691,7 +693,7 @@
   justify-content: center;
 
   border-radius: 50%;
-  background: var(--danger);
+  background: var(--danger-fill);
   color: white;
 
   font-size: 12px;

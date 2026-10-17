@@ -51,6 +51,32 @@
     visibility 0s linear 0s;
 }
 
+/* ---------- Scroll lock ----------
+   While any dialog is open the page behind it stays put. Without this a
+   swipe on the backdrop (or past the end of a scrolling modal) scrolled
+   the page underneath, mostly noticeable on phones.
+   - overflow:hidden on html + body stops the page scrolling
+   - scrollbar-gutter keeps the scrollbar's space on desktop, so the page
+     doesn't jump sideways when the scrollbar disappears
+   - overscroll-behavior stops a scroll inside the modal from "chaining"
+     to the page once the modal reaches its top or bottom
+   Works for every .modal-overlay, so no JS changes are needed. */
+html:has(.modal-overlay.active) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+html:has(.modal-overlay.active) body {
+  overflow: hidden;
+}
+
+.modal-overlay,
+.modal,
+.modal--padded,
+.modal-body {
+  overscroll-behavior: contain;
+}
+
 /* ---------- Box ---------- */
 
 .modal {
@@ -277,8 +303,8 @@
 }
 
 .modal-btn--danger {
-  border-color: var(--danger);
-  background: var(--danger);
+  border-color: var(--danger-fill);
+  background: var(--danger-fill);
   color: #fff;
 }
 

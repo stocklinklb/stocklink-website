@@ -902,7 +902,7 @@ input.input-error:focus {
 
   border-radius: 50%;
 
-  background: var(--danger);
+  background: var(--danger-fill);
   color: white;
 
   font-size: 11px;

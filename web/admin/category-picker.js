@@ -88,6 +88,7 @@ function addField() {
   const field = {
     name: fieldName,
     type: fieldTypeInput.value,
+    id: fields[editingFieldIndex]?.id || null,
     values: [...values],
   };
 
@@ -380,6 +381,7 @@ function startEditCategory(category) {
   fields = category.fields.map((field) => ({
     name: field.name,
     type: field.type,
+    id: field.id,
     values: [...field.values],
   }));
 

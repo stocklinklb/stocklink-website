@@ -65,6 +65,18 @@
 
   --danger: #dc2626;
   --danger-soft: #fee2e2;
+  /* solid red behind white text (buttons, badges). Same in both themes:
+     dark mode's --danger is a light red meant for text, too pale here */
+  --danger-fill: #dc2626;
+
+  /* ============================================
+     Charts (chart-theme.js)
+     One color per metric on every page. Checked as a set for
+     colorblind separation and contrast on the light surface.
+     ============================================ */
+  --chart-revenue: #2563eb;
+  --chart-orders: #0d9488;
+  --chart-visitors: #7c3aed;
 
   /* ============================================
      Overlays / Glass
@@ -126,6 +138,26 @@
   --adm-shadow-lg: var(--shadow-lg);
 
   --adm-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ============================================
+     Legacy names still used by page stylesheets
+     (settings, excel-import, missing-infos, analytics, staff).
+     They were never defined, so those rules fell back to hard-coded
+     light-mode colors and showed dark text in dark mode. Aliasing them
+     here makes them follow the theme like everything else.
+     ============================================ */
+  --text-color: var(--ink);
+  --text-muted: var(--ink-soft);
+  --muted-text: var(--ink-soft);
+  --border-color: var(--border);
+  --card-background: var(--surface);
+  --background: var(--surface-muted);
+  --surface-hover: var(--surface-muted);
+  --primary: var(--accent);
+  --a-font: var(--font-body);
+  --a-font-body: var(--font-body);
+  --a-font-display: var(--font-display);
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 /* ============================================
@@ -171,6 +203,11 @@ html[data-theme="dark"] {
 
   --danger: #f87171;
   --danger-soft: rgba(248, 113, 113, 0.11);
+
+  /* Charts: own dark steps, checked against the dark surface */
+  --chart-revenue: #5b8cff;
+  --chart-orders: #12a594;
+  --chart-visitors: #8b5cf6;
 
   /* Overlays / Glass */
   --overlay: rgba(0, 0, 0, 0.48);
