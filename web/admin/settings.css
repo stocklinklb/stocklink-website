@@ -238,7 +238,7 @@
   border-radius: 50%;
   border: 1px solid var(--border);
   overflow: hidden;
-  background: white;
+  background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: center;

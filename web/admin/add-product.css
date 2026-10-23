@@ -1027,7 +1027,7 @@ label.checkbox:has(input:focus-visible) {
 
 .delete-image-btn {
   right: 6px;
-  background: var(--adm-danger);
+  background: var(--danger-fill);
   color: #fff;
   font-weight: 700;
   transition: background 0.15s var(--adm-ease);

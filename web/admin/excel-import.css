@@ -130,8 +130,8 @@ main {
 }
 
 .step.completed .step-circle {
-  background: var(--success);
-  border-color: var(--success);
+  background: var(--success-fill);
+  border-color: var(--success-fill);
   color: #fff;
 }
 
@@ -442,6 +442,10 @@ main {
   background: #fde2e2;
 }
 
+html[data-theme="dark"] .remove-file:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
+
 .continue-btn {
   flex: 1;
   background: var(--accent);
@@ -687,6 +691,10 @@ tbody tr.row-invalid td {
 
 tbody tr.row-invalid:hover td {
   background: #fde4e4;
+}
+
+html[data-theme="dark"] tbody tr.row-invalid:hover td {
+  background: rgba(248, 113, 113, 0.18);
 }
 
 /* Status badge cell */

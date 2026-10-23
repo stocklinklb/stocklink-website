@@ -58,7 +58,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: #6b7280;
+  color: var(--ink-soft);
 }
 
 .orders-empty-state[hidden]{
@@ -608,7 +608,7 @@
 .icon-btn.danger:hover {
   background: var(--danger-soft);
   color: var(--danger);
-  border-color: #fecaca;
+  border-color: var(--danger-border);
 }
 
 .icon-btn:disabled {
@@ -973,7 +973,7 @@
 .remove-item-btn:hover {
   background: var(--danger-soft);
   color: var(--danger);
-  border-color: #fecaca;
+  border-color: var(--danger-border);
 }
 
 .add-item-btn {
@@ -1551,7 +1551,7 @@
 
 .receipt-status-pill.is-sold {
   color: #fff;
-  background: var(--success);
+  background: var(--success-fill);
   transform: rotate(-2deg);
 }
 

@@ -80,6 +80,10 @@
   background: linear-gradient(90deg, #111827 0%, #64748b 100%);
 }
 
+html[data-theme="dark"] .hero::before {
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink-faint) 100%);
+}
+
 .hero h1 {
   font-size: 24px;
   font-weight: 700;
@@ -202,6 +206,18 @@
   background: var(--danger-soft);
 }
 
+/* the light-mode icon colors are too dark on the dark tints */
+html[data-theme="dark"] .in-stock,
+html[data-theme="dark"] .excel-import-card i {
+  color: var(--success);
+}
+html[data-theme="dark"] .low-stock {
+  color: var(--warning);
+}
+html[data-theme="dark"] .out-of-stock {
+  color: var(--danger);
+}
+
 /* ---------- quick action cards ---------- */
 .quick-actions .cards {
   grid-template-columns: repeat(4, 1fr);
@@ -303,7 +319,7 @@
   padding: 10px 0 0;
   border: none;
   background: transparent;
-  color: #2563eb;
+  color: var(--accent);
   cursor: pointer;
   font-weight: 600;
 }
@@ -564,7 +580,7 @@
 #view-orders {
   display: flex;
   align-items: center;
-  color:#2563eb;
+  color: var(--accent);
   width: fit-content;
   margin-top: 10px;
 }
@@ -653,7 +669,7 @@
   gap: 8px;
 
   border-radius: 10px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--danger-border);
 
   background: var(--danger-soft);
   color: var(--danger);
@@ -676,6 +692,10 @@
   border-color: #fca5a5;
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(220, 38, 38, 0.12);
+}
+
+html[data-theme="dark"] #view-low-stock:hover {
+  border-color: rgba(248, 113, 113, 0.5);
 }
 
 #view-low-stock:active {

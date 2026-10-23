@@ -68,6 +68,11 @@
   /* solid red behind white text (buttons, badges). Same in both themes:
      dark mode's --danger is a light red meant for text, too pale here */
   --danger-fill: #dc2626;
+  /* soft red outline next to --danger-soft backgrounds */
+  --danger-border: #fecaca;
+  /* solid green behind white text. Same in both themes for the same
+     reason as --danger-fill */
+  --success-fill: #16a34a;
 
   /* ============================================
      Charts (chart-theme.js)
@@ -84,6 +89,8 @@
   --overlay: rgba(15, 23, 42, 0.45);
   --overlay-dark: rgba(15, 23, 42, 0.65);
   --glass: rgba(255, 255, 255, 0.92);
+  /* highlight that sweeps across loading skeletons */
+  --skeleton-shine: rgba(255, 255, 255, 0.65);
 
   /* ============================================
      Shadows
@@ -147,6 +154,10 @@
      here makes them follow the theme like everything else.
      ============================================ */
   --text-color: var(--ink);
+  --text: var(--ink);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-soft);
+  --ease: var(--adm-ease);
   --text-muted: var(--ink-soft);
   --muted-text: var(--ink-soft);
   --border-color: var(--border);
@@ -203,6 +214,7 @@ html[data-theme="dark"] {
 
   --danger: #f87171;
   --danger-soft: rgba(248, 113, 113, 0.11);
+  --danger-border: rgba(248, 113, 113, 0.3);
 
   /* Charts: own dark steps, checked against the dark surface */
   --chart-revenue: #5b8cff;
@@ -213,6 +225,7 @@ html[data-theme="dark"] {
   --overlay: rgba(0, 0, 0, 0.48);
   --overlay-dark: rgba(0, 0, 0, 0.68);
   --glass: rgba(21, 24, 29, 0.94);
+  --skeleton-shine: rgba(255, 255, 255, 0.06);
 
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
