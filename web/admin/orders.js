@@ -342,9 +342,9 @@ async function showSalesEmptyState(canvas) {
   // Drop the old charts so they can't linger behind the message.
   destroySalesCharts();
   setSalesSplit(false);
-  // Chart.js sets an inline display:block on the canvas, which beats the
-  // `hidden` attribute, so hide it through the style instead.
-  canvas.style.display = "none";
+  // Hide the canvas's pane, not just the canvas: the pane keeps its full
+  // height and would push the message out of the chart area.
+  canvas.parentElement.hidden = true;
 
   const totals = await fetchOrderTotals();
   const hasOrders = Boolean(totals && totals.total > 0);
@@ -388,7 +388,7 @@ async function loadSalesChart(
 
   // Normal path: undo whatever the empty state did.
   hideSalesEmptyStates();
-  canvas.style.display = "";
+  canvas.parentElement.hidden = false;
 
   const specs = formatChartData(buckets, metric, type);
 
